@@ -1,15 +1,25 @@
 {
   "app": {
-    "title": "Report Builder"
+    "title": "Report Builder",
+    "version": "v0.1"
   },
   "toolbar": {
     "undo": "Undo",
     "undoHint": "Ctrl+Z",
     "redo": "Redo",
-    "redoHint": "Ctrl+Shift+Z"
+    "redoHint": "Ctrl+Shift+Z",
+    "bar": "Bar",
+    "donut": "Donut",
+    "line": "Line",
+    "gantt": "Gantt",
+    "map": "Map",
+    "table": "Table",
+    "text": "Text"
   },
   "export": {
-    "exportPdf": "Export PDF"
+    "exportPdf": "Export PDF",
+    "exporting": "Exporting…",
+    "done": "Done"
   },
   "language": {
     "ua": "UA",
@@ -30,6 +40,19 @@
     "backToSlide": "← Back to slide",
     "noSelection": "Select a slide to edit its properties.",
     "comingSoon": "Editor coming soon.",
+    "slideProperties": "Slide Properties",
+    "tileEditor": "Tile Editor",
+    "chartTitle": "Chart Title",
+    "dataInput": "Data Input",
+    "manual": "Manual",
+    "csv": "CSV",
+    "addRow": "Add Row",
+    "display": "Display",
+    "showValues": "Show Values",
+    "showLegend": "Show Legend",
+    "showAxis": "Show Axis",
+    "deleteSlide": "Delete Slide",
+    "deleteTile": "Delete Tile",
     "title": {
       "sectionLabel": "Title Slide",
       "heading": "Report Title",
