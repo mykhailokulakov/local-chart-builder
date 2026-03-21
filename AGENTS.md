@@ -24,6 +24,19 @@ in the browser.
 2. **Run the test suite.** Confirm the baseline passes before making changes: `npm run test -- --run`
 3. **Understand the data model.** Key types live in `src/types/`. The discriminated union `SlideData` and `ReportAction` drive the entire application. Know them.
 4. **Check for existing utilities.** Before writing a helper, search `src/utils/`, `src/hooks/`, and `src/services/` for something that already does it.
+5. **Read `DECISIONS.md`.** It explains the *why* behind every key architectural choice. When a situation isn't covered by the rules, the reasoning in `DECISIONS.md` is what enables correct judgment.
+
+## Design-first ritual — mandatory for any non-trivial change
+
+Answer all three questions before opening a source file to write implementation. If you cannot answer them in one sentence each, stop and redesign.
+
+| Question | If you can't answer it in one sentence… |
+|---|---|
+| **What is the single responsibility of what I'm building?** If the sentence contains "and", redesign. | The abstraction is doing too much. Split it. |
+| **What is the public TypeScript interface?** Write the signature/props/return type before the body. Does every caller need every field? | Narrow the interface — remove what callers don't need. |
+| **How do I test this in isolation?** If the answer requires a React tree, DOM, or network, the design has a dependency problem. | Move logic to a pure function. Test the function, not the component. |
+
+Only after all three answers are clear should you write implementation. Write the test structure (`describe` blocks and test names) before writing the function body.
 
 ---
 
@@ -107,6 +120,122 @@ These are enforced on every task. Violations found in touched files must be fixe
 - `services/` files have zero React imports. They are pure TypeScript.
 - `pdfExport.ts` accepts `HTMLElement` — it does not import React components.
 - Signal of violation: a service file imports from `react`, `antd`, or a component.
+
+---
+
+## Canonical patterns — before and after
+
+These show the correct pattern for the two most commonly violated principles in this codebase. When in doubt, match these shapes.
+
+### SRP: component that renders AND manages state (wrong) vs. separated concerns (right)
+
+```tsx
+// ❌ WRONG — ChartSlide manages tile selection state AND renders the grid.
+//    Two reasons to change: selection logic changes, or rendering changes.
+function ChartSlide({ slideId }: { slideId: string }) {
+  const [selectedTileId, setSelectedTileId] = useState<string | null>(null)
+  const { state, dispatch } = useReport()
+  const slide = state.present.slides.find((s) => s.id === slideId)
+
+  const handleClick = (tileId: string) => {
+    setSelectedTileId(tileId)          // local state
+    dispatch(selectTile(tileId))       // also updates global state — two sources of truth
+  }
+  return <TileGrid tiles={slide?.tiles ?? []} onTileClick={handleClick} selectedId={selectedTileId} />
+}
+
+// ✅ RIGHT — component only renders. Selection comes from context via a hook.
+//    One reason to change: rendering changes.
+function ChartSlide({ slideId }: { slideId: string }) {
+  const slide = useSlideById(slideId)          // hook owns data-fetching concern
+  const { selectedTileId } = useReport().state // selection is global state, read once
+  const { dispatch } = useReport()
+  return (
+    <TileGrid
+      tiles={slide?.tiles ?? []}
+      selectedId={selectedTileId}
+      onTileClick={(tileId) => dispatch(selectTile(tileId))}
+    />
+  )
+}
+```
+
+### OCP: if/else chain for chart types (wrong) vs. registry map (right)
+
+```tsx
+// ❌ WRONG — every new ChartType requires modifying this file.
+function TileRenderer({ tile }: { tile: TileConfig }) {
+  if (tile.type === 'bar-v') return <BarChart data={tile.data} options={tile.options} />
+  if (tile.type === 'bar-h') return <BarChart data={tile.data} options={tile.options} horizontal />
+  if (tile.type === 'donut') return <DonutChart data={tile.data} options={tile.options} />
+  if (tile.type === 'line')  return <LineChart data={tile.data} options={tile.options} />
+  // Adding 'gantt' means editing this file. OCP violated.
+  return null
+}
+
+// ✅ RIGHT — adding a new ChartType means adding one entry to the map.
+//    TileRenderer itself is never modified.
+import type { ChartType } from '../types/chart'
+import type { TileConfig } from '../types/layout'
+
+type TileProps = { tile: TileConfig }
+const TILE_REGISTRY: Record<ChartType | 'text', React.ComponentType<TileProps>> = {
+  'bar-v':      BarChart,
+  'bar-h':      BarChartHorizontal,
+  'donut':      DonutChart,
+  'line':       LineChart,
+  'gantt':      GanttChart,
+  'choropleth': ChoroplethMap,
+  'data-table': DataTable,
+  'text':       TextTile,
+}
+
+function TileRenderer({ tile }: TileProps) {
+  const Component = TILE_REGISTRY[tile.type]
+  return <Component tile={tile} />
+}
+```
+
+### ISP: fat props object (wrong) vs. narrow props (right)
+
+```tsx
+// ❌ WRONG — BarChart receives the full Report just to get theme colors.
+//    It is now coupled to the Report schema.
+function BarChart({ report, data }: { report: Report; data: ChartData }) {
+  const colors = resolveTheme(report.theme).chartColors
+  // ...
+}
+
+// ✅ RIGHT — BarChart receives only what it needs.
+//    Caller decides how to source it.
+function BarChart({ chartColors, data }: { chartColors: string[]; data: ChartData }) {
+  // ...
+}
+
+// At the callsite, the caller resolves the theme:
+const { chartColors } = resolveTheme(state.present.theme)
+return <BarChart chartColors={chartColors} data={tile.data} />
+```
+
+---
+
+## When NOT to apply the rules — judgment over mechanical compliance
+
+Rules applied mechanically without judgment produce worse code than no rules at all.
+
+| Rule | When NOT to apply it |
+|---|---|
+| Extract shared hook/utility | Fewer than 3 real callsites. Wait — two similar things are often coincidentally similar and will diverge. |
+| Split component at 150 lines | The component has one concern and one reason to change. Split on concerns, not line count. |
+| Apply OCP (extension point) | The code is not yet stable. Premature extension points add complexity with no payoff. Inline first; extract when the shape of variation is clear. |
+| Use context instead of props | Data is only needed one level deep. Props are explicit and easier to trace. Use context for cross-cutting values only. |
+| Add `useMemo` / `useCallback` | You have not profiled a problem. Speculative memoisation adds complexity and can hide bugs. |
+| Enforce no-duplication | Two things look alike but represent different concerns. Duplication is sometimes the correct choice. |
+
+**When you deviate from a rule**, mark it explicitly:
+```typescript
+// Intentional exception to [rule]: [one-sentence reason]
+```
 
 ---
 
@@ -233,14 +362,17 @@ These are never negotiable regardless of task description.
 ## Workflow summary
 
 ```
-1. Read AGENTS.md (this file) completely
-2. Read every file you plan to touch
-3. Run: npm run test -- --run   (confirm baseline)
-4. Implement the feature
-5. Run: npm run format && npm run lint && npm run typecheck && npm run test -- --run
-6. Fix any issues
-7. Run the post-task audit checklist (see CLAUDE.md)
-8. Commit feature changes with feat:/fix: prefix
-9. Fix any anti-patterns found; commit separately with refactor: prefix
-10. Push
+1.  Read AGENTS.md (this file) completely
+2.  Read DECISIONS.md — understand the why behind the architecture
+3.  Read every file you plan to touch
+4.  Run: npm run test -- --run   (confirm baseline passes)
+5.  Answer the design-first ritual (3 questions) before writing any code
+6.  Write the test structure (describe + test names) before writing implementation
+7.  Implement
+8.  Run: npm run format && npm run lint && npm run typecheck && npm run test -- --run
+9.  Fix any issues until all four pass with zero warnings
+10. Run the post-task audit checklist (see CLAUDE.md)
+11. Commit feature changes:  feat: or fix:
+12. Fix any anti-patterns found; commit separately: refactor:
+13. Push
 ```

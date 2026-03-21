@@ -72,6 +72,52 @@ High-level modules must not depend on low-level modules. Both should depend on a
 - Test files inject dependencies via parameters or mocks — no hard-coded imports of singletons inside tested functions.
 - **Violation signal:** a service file imports from `react`, `antd`, or any UI component.
 
+## Design-first protocol — required before any non-trivial implementation
+
+For any change that touches more than one file or introduces a new abstraction, answer these three questions **before opening any source file to write code**. If you cannot answer all three in one sentence each, stop and redesign until you can.
+
+**1. Single responsibility:** What is the one thing this function, hook, or component does? Write it as a sentence. If the sentence contains "and", redesign.
+
+**2. Interface first:** What is the public contract — the TypeScript signature, props type, or hook return type? Write it out as types before writing any implementation body. Ask: does every caller need every field I'm exposing? If not, narrow it.
+
+**3. Testability:** How will I test this in isolation? If the answer requires a full React tree, a real DOM, or a running server, the design has a dependency problem. Redesign until the core logic can be called as a plain function with plain inputs.
+
+Only after answering all three should you write implementation. Tests written before implementation are not a formality — they confirm that the interface is actually usable.
+
+## When NOT to apply the rules — judgment over mechanical compliance
+
+Rules applied mechanically without judgment produce worse code than no rules at all. The following counterweights are as mandatory as the rules themselves.
+
+### Do not extract an abstraction for fewer than three real callsites
+
+One callsite: inline it. Two callsites: duplicate it (leave a `// NOTE: similar to X in Y.ts — extract if a third callsite appears` comment so the duplication is visible). Three callsites: extract, because now you have enough evidence to understand the genuine shared boundary.
+
+The first abstraction is always a guess. Two similar-looking things are often coincidentally similar and will diverge under different requirements. Premature unification creates coupling that is expensive to undo.
+
+### Do not split a component because it hit 150 lines
+
+Split on **concerns**, not on line count. A 170-line component with exactly one reason to change and one level of abstraction is better than two 85-line components that must communicate through callbacks, adding coupling that didn't exist before. The line limit is a warning signal — investigate whether multiple concerns are present; don't split automatically.
+
+### Do not apply OCP to unstable code
+
+OCP protects **stable** code from modification. Early in a feature's life, when requirements are still evolving, premature extension points add complexity with no benefit. Inline the logic first. Extract the extension point once the shape of variation is clear and the code is stable. The wrong abstraction is harder to remove than duplicated code.
+
+### Do not use context when props are sufficient
+
+Context adds indirection that makes data flow harder to trace. Use props when a value travels one level. Use context when a value is needed by many components at different nesting depths, and passing it through intermediate components would force those intermediates to know about data they do not use.
+
+### Do not memoize speculatively
+
+`useMemo` and `useCallback` add cognitive overhead and can mask bugs by hiding dependency changes. Use them only when: (a) a computation is measurably expensive, or (b) a reference is passed to a memoised child and its instability is causing unnecessary re-renders you have confirmed with profiling. Do not memoize "just in case".
+
+### When deviating from a rule is correct
+
+Write a comment immediately above the deviation:
+```typescript
+// Intentional exception to [rule name]: [one-sentence justification]
+```
+This makes the deviation visible during review and prevents it from being silently copied elsewhere.
+
 ## Project structure
 
 ```
@@ -212,6 +258,8 @@ interface UndoableState {
 ## Best practices — non-negotiable standards
 
 These apply to every file touched, regardless of task scope. Following them is not optional.
+
+> **Understanding the "why":** `DECISIONS.md` records the reasoning behind every major architectural choice in this project. When a rule feels arbitrary or a situation is not covered by the rules, read `DECISIONS.md` first. Understanding why a decision was made is what enables correct judgment in cases the rules don't explicitly cover.
 
 ### Code correctness
 - **Read before writing.** Never modify a file without reading it first. Understand the existing structure before proposing changes.
