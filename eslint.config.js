@@ -5,7 +5,7 @@ import globals from 'globals'
 
 export default tseslint.config(
   { ignores: ['dist', 'node_modules'] },
-  // CJS config files (postcss.config.cjs, vite.config.cjs, etc.)
+  // CJS config files (if any)
   {
     files: ['**/*.cjs'],
     languageOptions: { globals: globals.node },
