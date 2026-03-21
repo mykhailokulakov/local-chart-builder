@@ -102,6 +102,7 @@ export function Canvas() {
         '--slide-accent': theme.accent,
         '--slide-accent-secondary': theme.accentSecondary,
         '--slide-font': theme.fontFamily,
+        // CSS custom properties are valid at runtime but not in the CSSProperties type
       }) as CSSProperties,
     [slideW, slideH, theme],
   )
