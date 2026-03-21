@@ -259,7 +259,7 @@ interface UndoableState {
 
 These apply to every file touched, regardless of task scope. Following them is not optional.
 
-> **Understanding the "why":** The key architectural decisions and their reasoning are summarized inline in `AGENTS.md` under "Key architectural decisions". `DECISIONS.md` contains the extended version of the same reasoning for engineers who want more depth. When a rule feels arbitrary or a situation isn't covered, start there.
+> **Understanding the "why":** `AGENTS.md` contains a "Key architectural decisions" section with the full reasoning behind every major choice in this project — what was decided, why, and what was explicitly ruled out. When a rule feels arbitrary or a situation isn't covered by the rules, read that section. Understanding why a decision was made is what enables correct judgment in cases the rules don't explicitly cover.
 
 ### Code correctness
 - **Read before writing.** Never modify a file without reading it first. Understand the existing structure before proposing changes.

@@ -362,23 +362,48 @@ These are never negotiable regardless of task description.
 
 These are not rules; they are the reasoning behind the rules. When a situation is not explicitly covered elsewhere in this file, use this reasoning to extrapolate the correct answer.
 
-**Why `useReducer` + Context, not Zustand or Redux:**
-The reducer is a plain function — `reportReducer(report, action) → Report`. It can be imported and called in a test with no setup, no mocks, no providers. That testability is the entire point. Adding a library trades that simplicity for features this app does not need.
+### `useReducer` + Context, not Zustand or Redux
 
-**Why discriminated unions for `SlideData` and `ReportAction`, not optional fields:**
-A `switch (action.type)` on a discriminated union is exhaustively checked at compile time. Add a new `SlideType` without handling it in a switch statement and TypeScript reports a type error — not a silent runtime bug. Optional fields have no such guarantee; every use site must defensively check which fields are present, and none of those checks are verified by the compiler.
+The reducer is a plain function — `reportReducer(report, action) → Report`. It can be imported and called in a test with no setup, no mocks, no providers. That testability is the entire point. Adding a library trades that simplicity for features this app does not need. The component tree is three panels — there is no cross-cutting subscription problem that justifies Redux's action → store → selector → component indirection.
 
-**Why `services/` have zero React imports:**
-Services are plain TypeScript functions testable with a direct call — no `renderHook`, no `act`, no DOM. If a service imports React, it can only be tested inside a React environment. Beyond testing: components depend on services; services must never depend on components. Allowing the reverse would create a circular dependency in the module graph.
+Ruled out: **Zustand** — mutable store model (`set(state => ...)`) conflicts with the immutability that makes the reducer testable. **Redux Toolkit** — `createSlice`, `configureStore`, `createSelector` machinery is overkill for a single-domain app. **Jotai/Recoil** — atom-based models fragment a `Report` that is naturally one cohesive document, making cross-cutting operations (undo, PDF export) harder.
 
-**Why `createUndoReducer()` is a factory function, not a singleton:**
-The debounce closure (`lastDebounce`) must persist across React renders but has no visual consequence — it must never be React state. A factory function gives each test a fresh instance with zero shared state. A singleton would carry debounce timestamps between tests, producing order-dependent failures.
+### Discriminated unions for `SlideData` and `ReportAction`, not optional fields
 
-**Why no abstraction before three real callsites:**
-Two similar-looking pieces of code are often coincidentally similar — they represent different concerns that will diverge under different requirements. Unifying them creates coupling: when one changes, you must either break the other or add a configuration parameter that makes the abstraction more complex than the original duplication. The third callsite provides enough evidence to see the genuine shared boundary.
+A `switch (action.type)` on a discriminated union is exhaustively checked at compile time with `noFallthroughCasesInSwitch`. Add a new `SlideType` without handling it in a switch and TypeScript reports a type error — not a silent runtime bug. `TitleSlideData` cannot have a `ganttTasks` field; an optional-field approach allows any combination of fields and every use site must defensively guard against impossible states.
 
-**Why no persistence (`localStorage`, IndexedDB, File System API):**
-The workflow is: open → build → export PDF → close. The PDF is the only deliverable. Persistence adds a schema migration story: every structural change to `Report` or `SlideData` must upgrade previously saved data. That cost is not justified. It also introduces `file://` compatibility risk — some browser configurations restrict storage APIs in `file://` contexts, and the app must work unconditionally.
+Ruled out: **single interface with optional fields** — every component reimplements type discrimination with `if (data.heading !== undefined)` guards; none of those checks are compiler-verified. **String enums** — `enum SlideType { title = 'title' }` adds indirection; literal string unions are simpler and serialize naturally.
+
+### `services/` have zero React imports
+
+Services are plain TypeScript functions: `const result = csvParser(input)`. No `renderHook`, no `act`, no DOM setup. If a service imports React it can only be tested inside a React environment — a 5-line unit test becomes a 50-line integration test. Dependency direction must be: components depend on services, services depend on types, types depend on nothing. A React import in a service reverses that direction and is always a sign that concerns need to be split.
+
+Ruled out: **services as hooks** — `useCsvParser()` requires `renderHook` to test; the parsing logic doesn't need React, only the wiring does.
+
+### `createUndoReducer()` is a factory function, not a singleton or class
+
+The debounce tracking state (`lastDebounce` — a timestamp and action type) must persist across React renders but has no visual consequence and must never trigger a re-render. Module-level closure is exactly the right scope for this. A factory function gives each test a fresh closure instance with no shared state between tests. A singleton would carry debounce timestamps between tests, producing order-dependent failures. `useReducer` calls the reducer as a plain function so a class method would lose its `this` binding.
+
+Ruled out: **class with instance methods** — `this` binding, `new` required, awkward to pass to `useReducer`. **singleton module** — shared state between tests.
+
+### No abstraction before three real callsites
+
+Two similar-looking pieces of code are often coincidentally similar — they will diverge under different requirements. Unifying them creates coupling: when one changes, you must either modify the shared abstraction (breaking the other) or add a configuration parameter that makes it more complex than the original duplication. The third callsite provides enough evidence to identify the genuine shared boundary.
+
+```typescript
+// One callsite — inline it.
+// Two callsites — duplicate it:
+// NOTE: similar to X in Y.ts — extract if a third callsite appears.
+// Three callsites — extract to src/utils/ and import everywhere.
+```
+
+Ruled out: **extract at callsite one** — speculative abstraction based on one example, almost always the wrong interface. **extract at callsite two to follow DRY** — DRY applies to knowledge, not to coincidentally similar syntax.
+
+### No persistence (`localStorage`, IndexedDB, File System API)
+
+The workflow is open → build → export PDF → close. The PDF is the deliverable. Persistence adds a schema migration story: every change to `Report`, `Slide`, or `TileConfig` must upgrade previously saved data. Some browser configurations also restrict storage APIs in `file://` contexts, and the app must work unconditionally in `file://`.
+
+Ruled out: **`localStorage` autosave** — migration story starts immediately; 5MB limit is easily exceeded by a complex report. **File System Access API** — not universally available in `file://`; adds file picker UX, conflict resolution, and significant scope.
 
 ---
 
