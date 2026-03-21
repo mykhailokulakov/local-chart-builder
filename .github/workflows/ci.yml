@@ -3,6 +3,11 @@ on:
   push:
     branches: [main]
   pull_request:
+# Suppress DEP0040: actions/setup-node post-run cleanup uses uri-js (via
+# ajv@6) which imports the deprecated built-in `punycode` on Node 22.
+# Remove once actions/setup-node drops the ajv@6 dependency.
+env:
+  NODE_OPTIONS: --no-deprecation
 jobs:
   lint:
     runs-on: ubuntu-latest
