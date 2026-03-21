@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import { useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useReport } from '../../hooks/useReport'
+import { useTheme } from '../../hooks/useTheme'
 import { useSelectedSlide } from '../../hooks/useSelectedSlide'
 import { useContainerSize } from '../../hooks/useContainerSize'
 import { TileToolbar } from '../toolbar/TileToolbar'
@@ -78,6 +79,7 @@ function computeSlideSize(
 export function Canvas() {
   const { t } = useTranslation()
   const { state } = useReport()
+  const theme = useTheme()
   const slide = useSelectedSlide()
   const slideAreaRef = useRef<HTMLDivElement>(null)
   const { width: containerW, height: containerH } = useContainerSize(slideAreaRef)
@@ -88,8 +90,20 @@ export function Canvas() {
   )
 
   const slideFrameStyle = useMemo<CSSProperties>(
-    () => ({ ...SLIDE_FRAME_SHADOW, width: slideW, height: slideH }),
-    [slideW, slideH],
+    () =>
+      ({
+        ...SLIDE_FRAME_SHADOW,
+        width: slideW,
+        height: slideH,
+        '--slide-bg': theme.background,
+        '--slide-surface': theme.surface,
+        '--slide-fg': theme.foreground,
+        '--slide-muted': theme.muted,
+        '--slide-accent': theme.accent,
+        '--slide-accent-secondary': theme.accentSecondary,
+        '--slide-font': theme.fontFamily,
+      }) as CSSProperties,
+    [slideW, slideH, theme],
   )
 
   const slideIndex = slide ? state.present.slides.findIndex((s) => s.id === slide.id) + 1 : 0

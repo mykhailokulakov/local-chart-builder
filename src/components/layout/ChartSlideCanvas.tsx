@@ -9,7 +9,7 @@ import type { Slide } from '../../types/slide'
 import type { TileConfig, GridLayout as TileGridLayout } from '../../types/layout'
 import { useReport } from '../../hooks/useReport'
 import { updateTileLayout, selectTile } from '../../store/actions'
-import { GRID_COLS, GRID_ROWS, SLIDE_TYPE_COLORS } from '../../utils/constants'
+import { GRID_COLS, GRID_ROWS } from '../../utils/constants'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -28,14 +28,14 @@ interface ChartSlideCanvasProps {
 const GRID_MARGIN: readonly [number, number] = [8, 8]
 
 const TILE_BASE_STYLE: CSSProperties = {
-  background: SLIDE_TYPE_COLORS.chart,
+  background: 'var(--slide-surface)',
   borderRadius: 4,
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
   gap: 6,
-  color: '#fff',
+  color: 'var(--slide-fg)',
   fontSize: 13,
   fontWeight: 500,
   cursor: 'pointer',
@@ -45,7 +45,7 @@ const TILE_BASE_STYLE: CSSProperties = {
 
 const TILE_SELECTED_STYLE: CSSProperties = {
   ...TILE_BASE_STYLE,
-  outline: '2px solid #1677ff',
+  outline: '2px solid var(--slide-accent)',
   outlineOffset: -2,
 }
 
@@ -127,7 +127,7 @@ export function ChartSlideCanvas({ slide, width, height }: ChartSlideCanvasProps
       width={width}
       gridConfig={{ cols: GRID_COLS, rowHeight, margin: GRID_MARGIN }}
       onLayoutChange={handleLayoutChange}
-      style={{ width: '100%', height: '100%' }}
+      style={{ width: '100%', height: '100%', background: 'var(--slide-bg)' }}
     >
       {tiles.map((tile) => {
         const isSelected = tile.id === selectedTileId
