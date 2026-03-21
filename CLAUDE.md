@@ -22,11 +22,55 @@
 
 ## Architecture principles
 
-- **SOLID everywhere.** Single responsibility per component/hook. Depend on abstractions (interfaces), not implementations.
 - **No network calls.** The app must function entirely offline. No CDN imports at runtime, no analytics, no telemetry. All libraries are bundled.
 - **`file://` compatible output.** The `dist/` folder must work when opened directly in Chrome without a server. Use relative paths only. No absolute URLs. Test with `file://` after every build.
 - **Separation of concerns.** Builder UI logic (React/Ant Design) is completely separate from slide rendering logic (Canvas/SVG for PDF). Slide renderers must be pure functions: `(slideData, theme) => HTMLElement`.
 - **Type everything.** No `any` types. All slide data, chart configs, theme objects, and layout positions have explicit TypeScript interfaces.
+
+## SOLID principles — mandatory, not optional
+
+Every piece of code written or modified must conform to all five SOLID principles. These are hard requirements, not guidelines.
+
+### S — Single Responsibility Principle
+Each module, component, hook, or function does exactly one thing and has exactly one reason to change.
+
+- A component renders UI. It does not fetch data, format strings, or compute derived values inline.
+- A hook encapsulates one behavior (e.g. `useUndoRedo` manages undo/redo; it does not also manage selection).
+- A service function does one transformation (e.g. `csvParser` parses CSV; it does not also validate chart config).
+- **Violation signal:** a function/component name contains "and" or "or", or a file exceeds 150 lines.
+
+### O — Open/Closed Principle
+Code is open for extension, closed for modification. Add new behavior by adding new code, not by editing existing stable code.
+
+- New slide types are added by creating a new file in `components/slides/` and registering in a map — never by adding another `if/else` branch inside existing renderers.
+- New chart types extend `ChartType` union and get a new component in `components/charts/` — not a new `switch` arm in an existing chart component.
+- New theme presets are new files in `themes/` — not new branches in `ThemeColors` resolution logic.
+- **Violation signal:** adding a feature requires modifying 3+ existing files that previously worked correctly.
+
+### L — Liskov Substitution Principle
+Any implementation of an interface or abstract shape must be fully substitutable without breaking callers.
+
+- All slide data types implement `SlideData` fully — no `type` field can be conditionally absent.
+- Chart components must accept the same props interface and render without crashing when given valid but minimal data (e.g. empty `points` array).
+- Hooks that return `null` must be explicitly typed as `T | null` — callers must not need to know the implementation to handle absence.
+- **Violation signal:** a caller does `instanceof` checks or type-narrows on a concrete implementation class rather than using the discriminated union.
+
+### I — Interface Segregation Principle
+No module should be forced to depend on interfaces it does not use. Keep interfaces narrow and composable.
+
+- Component props interfaces include only what that component needs — no passing a full `Report` object when only `report.theme` is needed.
+- Hooks return only what callers need — `useSelectedSlide` returns `Slide | null`, not the entire `UndoableState`.
+- Do not create a single `utils.ts` barrel file — split by domain (`formatters.ts`, `constants.ts`, etc.).
+- **Violation signal:** a component receives a large object prop but only destructures one or two fields from it.
+
+### D — Dependency Inversion Principle
+High-level modules must not depend on low-level modules. Both should depend on abstractions.
+
+- `reportReducer` depends on `Report`, `Slide`, `TileConfig` interfaces — not on concrete component implementations.
+- `pdfExport.ts` accepts a `HTMLElement` — it does not import React components or call `ReactDOM.render`.
+- Services (`csvParser`, `slideFactory`, `pdfExport`) have zero React imports — they are pure TypeScript functions.
+- Test files inject dependencies via parameters or mocks — no hard-coded imports of singletons inside tested functions.
+- **Violation signal:** a service file imports from `react`, `antd`, or any UI component.
 
 ## Project structure
 
@@ -165,6 +209,51 @@ interface UndoableState {
 // SET_THEME DOES push to history (it changes the report output).
 ```
 
+## Best practices — non-negotiable standards
+
+These apply to every file touched, regardless of task scope. Following them is not optional.
+
+### Code correctness
+- **Read before writing.** Never modify a file without reading it first. Understand the existing structure before proposing changes.
+- **Immutability by default.** State is never mutated. Use spread, `map`, `filter`, `slice` for all updates. The `reportReducer` tests enforce this.
+- **Pure functions wherever possible.** Functions with no side effects are preferred. Side effects are isolated to hooks, context, and services.
+- **Fail loudly.** Do not swallow errors silently. Unhandled promise rejections must be caught and reported. Missing required data should throw, not return `undefined` silently.
+- **Exhaustive switches.** Every `switch` on a discriminated union must cover all variants. TypeScript's `noFallthroughCasesInSwitch` enforces this at compile time — do not add `default` as an escape hatch.
+
+### TypeScript strictness
+- Zero `any`. If a type is unknown, use `unknown` and narrow explicitly.
+- Zero `as X` type casts unless crossing a genuine system boundary (e.g. DOM API). Every cast must have a comment explaining why it is safe.
+- Explicit return types on all exported functions and hooks.
+- Prefer `interface` for object shapes, `type` for unions and aliases.
+- Discriminated unions are preferred over optional fields. `SlideData` is a discriminated union — do not add `type?: SlideType` optional fields.
+- No `!` non-null assertions. Narrow with `if` guards or use the nullish coalescing operator.
+
+### React-specific
+- Functional components only. No class components.
+- Every `useEffect` must have a correct dependency array. ESLint's `react-hooks/exhaustive-deps` enforces this — fix the warning, do not disable it.
+- `useMemo` and `useCallback` are used for expensive computations and stable references passed to child components. They are not used speculatively.
+- Key props on lists must be stable, unique IDs — never array index.
+- Do not read from context in components that render inside a hot loop (e.g. inside a tile grid). Derive data in the parent and pass it down.
+
+### Anti-pattern identification and mandatory refactoring
+
+When working on any task, if the following anti-patterns are encountered in touched files, **they must be fixed** in the same PR as a separate commit with the `refactor:` prefix. Do not leave known anti-patterns behind.
+
+| Anti-pattern | What to do instead |
+|---|---|
+| God component (>150 lines, multiple concerns) | Split into focused sub-components and hooks |
+| Prop drilling (>2 levels deep) | Lift to context or use composition |
+| Inline object/array literals in JSX props | Extract to `useMemo` or module-level constant |
+| Boolean prop flags controlling render variants (`isLarge`, `isError`) | Use discriminated union props or separate components |
+| `useEffect` for derived state | Compute inline or with `useMemo`; `useEffect` is for synchronisation only |
+| Direct DOM manipulation inside React components | Use refs with careful scoping; prefer declarative rendering |
+| `any` or type cast in a data path | Introduce a proper interface or type guard |
+| Business logic inside a component body | Extract to a hook or service function |
+| Magic number or magic string inline | Move to `src/utils/constants.ts` with a named export |
+| Multiple `useState` for related data | Combine into one `useReducer` or a single state object |
+| Duplicate logic in 2+ components | Extract to a shared hook or utility |
+| `console.log` left in committed code | Remove; use error boundaries for runtime errors |
+
 ## Code quality rules
 
 ### Formatting and linting
@@ -227,18 +316,42 @@ jobs:
 7. **Chart.js renders to `<canvas>` which html2canvas handles well.** But D3 renders to SVG — test that the choropleth map exports correctly to PDF.
 8. **react-grid-layout v2 is TypeScript-native.** Don't install `@types/react-grid-layout` — it conflicts.
 
-## Passive code audit checklist
+## Mandatory post-task code audit
 
-After completing any task, review the codebase for:
+After completing any task, run this checklist against all files touched in the task. This is not optional — incomplete audits are a reason to not merge.
 
-- [ ] **Dead code** — unused imports, unreachable branches, commented-out code
-- [ ] **Type safety** — any `as any` casts, missing return types, loose generics
-- [ ] **Component size** — any component over 150 lines should be split
-- [ ] **Prop drilling** — more than 2 levels of props? Use context or composition
-- [ ] **Duplicate logic** — same pattern in 2+ places? Extract a hook or utility
-- [ ] **Magic numbers** — any raw numbers? Move to constants
-- [ ] **Error handling** — unhandled promise rejections, missing try/catch on PDF export
-- [ ] **Accessibility** — form labels, keyboard navigation, ARIA attributes on custom controls
-- [ ] **i18n coverage** — any hardcoded strings visible to the user?
+**If any item is found violated, fix it.** Fixes go in a separate commit with the `refactor:` prefix. Do not bundle refactoring with feature commits.
 
-If any issues are found, propose fixes as a separate commit with `refactor:` prefix.
+### Correctness
+- [ ] No `any` types introduced
+- [ ] No `as X` casts without an explanatory comment
+- [ ] No `!` non-null assertions
+- [ ] All `switch` statements on discriminated unions are exhaustive
+- [ ] No unhandled promise rejections; PDF export pipeline has try/catch
+- [ ] No silent `undefined` returns where the caller expects a value
+
+### Design
+- [ ] No component exceeds 150 lines — split if so
+- [ ] No prop drilling deeper than 2 levels — use context or composition
+- [ ] No duplicate logic across 2+ files — extract a hook or utility
+- [ ] No `useEffect` used for derived state computation
+- [ ] No business logic inside JSX or component render bodies
+- [ ] No inline object/array literals in JSX props (creates new references every render)
+
+### Code hygiene
+- [ ] No dead code: unused imports, unreachable branches, commented-out blocks
+- [ ] No magic numbers or magic strings — all in `src/utils/constants.ts`
+- [ ] No `console.log` statements
+- [ ] File names match their default export (PascalCase for components, camelCase for hooks/utils)
+
+### Project constraints
+- [ ] No hardcoded UI strings — all through i18next
+- [ ] No `localStorage`, `sessionStorage`, or `IndexedDB` usage
+- [ ] No runtime CDN imports — all dependencies in `node_modules`
+- [ ] Services (`services/`) have zero React imports
+- [ ] No `position: fixed` or CSS `calc()` in slide renderer components
+
+### Accessibility
+- [ ] Form inputs have associated `<label>` elements
+- [ ] Interactive elements are keyboard-navigable
+- [ ] Custom controls have appropriate ARIA attributes
