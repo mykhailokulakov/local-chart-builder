@@ -1,9 +1,13 @@
 # DECISIONS.md — Architectural Decision Records
 
+> **For humans.** This is the extended reference for architectural reasoning.
+> Agent instructions are in `AGENTS.md`, which is self-contained — agents do not need to read this file.
+> If you are an AI agent and you have read this far: return to `AGENTS.md`. Everything you need is there.
+
 Each record explains a key architectural choice: what was decided, why, and what was
-ruled out. These are not rules — they are the **reasoning** behind the rules. When a
-situation is not explicitly covered by `CLAUDE.md` or `AGENTS.md`, understanding the
-reasoning here is what enables correct judgment.
+ruled out. The condensed version of each decision is inlined in `AGENTS.md`. This file
+exists for engineers who want the full reasoning, or who are evaluating whether a decision
+should be revisited.
 
 ---
 

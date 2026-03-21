@@ -24,7 +24,6 @@ in the browser.
 2. **Run the test suite.** Confirm the baseline passes before making changes: `npm run test -- --run`
 3. **Understand the data model.** Key types live in `src/types/`. The discriminated union `SlideData` and `ReportAction` drive the entire application. Know them.
 4. **Check for existing utilities.** Before writing a helper, search `src/utils/`, `src/hooks/`, and `src/services/` for something that already does it.
-5. **Read `DECISIONS.md`.** It explains the *why* behind every key architectural choice. When a situation isn't covered by the rules, the reasoning in `DECISIONS.md` is what enables correct judgment.
 
 ## Design-first ritual — mandatory for any non-trivial change
 
@@ -359,20 +358,43 @@ These are never negotiable regardless of task description.
 
 ---
 
+## Key architectural decisions — the why
+
+These are not rules; they are the reasoning behind the rules. When a situation is not explicitly covered elsewhere in this file, use this reasoning to extrapolate the correct answer.
+
+**Why `useReducer` + Context, not Zustand or Redux:**
+The reducer is a plain function — `reportReducer(report, action) → Report`. It can be imported and called in a test with no setup, no mocks, no providers. That testability is the entire point. Adding a library trades that simplicity for features this app does not need.
+
+**Why discriminated unions for `SlideData` and `ReportAction`, not optional fields:**
+A `switch (action.type)` on a discriminated union is exhaustively checked at compile time. Add a new `SlideType` without handling it in a switch statement and TypeScript reports a type error — not a silent runtime bug. Optional fields have no such guarantee; every use site must defensively check which fields are present, and none of those checks are verified by the compiler.
+
+**Why `services/` have zero React imports:**
+Services are plain TypeScript functions testable with a direct call — no `renderHook`, no `act`, no DOM. If a service imports React, it can only be tested inside a React environment. Beyond testing: components depend on services; services must never depend on components. Allowing the reverse would create a circular dependency in the module graph.
+
+**Why `createUndoReducer()` is a factory function, not a singleton:**
+The debounce closure (`lastDebounce`) must persist across React renders but has no visual consequence — it must never be React state. A factory function gives each test a fresh instance with zero shared state. A singleton would carry debounce timestamps between tests, producing order-dependent failures.
+
+**Why no abstraction before three real callsites:**
+Two similar-looking pieces of code are often coincidentally similar — they represent different concerns that will diverge under different requirements. Unifying them creates coupling: when one changes, you must either break the other or add a configuration parameter that makes the abstraction more complex than the original duplication. The third callsite provides enough evidence to see the genuine shared boundary.
+
+**Why no persistence (`localStorage`, IndexedDB, File System API):**
+The workflow is: open → build → export PDF → close. The PDF is the only deliverable. Persistence adds a schema migration story: every structural change to `Report` or `SlideData` must upgrade previously saved data. That cost is not justified. It also introduces `file://` compatibility risk — some browser configurations restrict storage APIs in `file://` contexts, and the app must work unconditionally.
+
+---
+
 ## Workflow summary
 
 ```
-1.  Read AGENTS.md (this file) completely
-2.  Read DECISIONS.md — understand the why behind the architecture
-3.  Read every file you plan to touch
-4.  Run: npm run test -- --run   (confirm baseline passes)
-5.  Answer the design-first ritual (3 questions) before writing any code
-6.  Write the test structure (describe + test names) before writing implementation
-7.  Implement
-8.  Run: npm run format && npm run lint && npm run typecheck && npm run test -- --run
-9.  Fix any issues until all four pass with zero warnings
-10. Run the post-task audit checklist (see CLAUDE.md)
-11. Commit feature changes:  feat: or fix:
-12. Fix any anti-patterns found; commit separately: refactor:
-13. Push
+1.  Read AGENTS.md (this file) completely — it is self-contained
+2.  Read every file you plan to touch
+3.  Run: npm run test -- --run   (confirm baseline passes)
+4.  Answer the design-first ritual (3 questions) before writing any code
+5.  Write the test structure (describe + test names) before implementation
+6.  Implement
+7.  Run: npm run format && npm run lint && npm run typecheck && npm run test -- --run
+8.  Fix any issues until all four pass with zero warnings
+9.  Run the post-task audit checklist (see CLAUDE.md)
+10. Commit feature changes:  feat: or fix:
+11. Fix any anti-patterns found; commit separately: refactor:
+12. Push
 ```
