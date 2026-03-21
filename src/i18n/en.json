@@ -26,6 +26,51 @@
     "canvas": "Canvas",
     "propertiesPanel": "Properties"
   },
+  "editors": {
+    "backToSlide": "← Back to slide",
+    "noSelection": "Select a slide to edit its properties.",
+    "comingSoon": "Editor coming soon.",
+    "title": {
+      "sectionLabel": "Title Slide",
+      "heading": "Report Title",
+      "subheading": "Subtitle",
+      "author": "Organization",
+      "date": "Date"
+    },
+    "ending": {
+      "sectionLabel": "Ending Slide",
+      "message": "Closing Text",
+      "contact": "Contact Info",
+      "footnote": "Disclaimer"
+    },
+    "divider": {
+      "sectionLabel": "Section Divider",
+      "label": "Section Name",
+      "description": "Subtitle"
+    },
+    "textSlide": {
+      "sectionLabel": "Text Slide",
+      "heading": "Heading",
+      "body": "Body"
+    },
+    "chartSlide": {
+      "sectionLabel": "Chart Slide",
+      "slideTitle": "Slide Title",
+      "tilesHeading": "Tiles",
+      "editTile": "Edit",
+      "noTiles": "No tiles on this slide."
+    },
+    "tileType": {
+      "bar-v": "Vertical Bar",
+      "bar-h": "Horizontal Bar",
+      "donut": "Donut",
+      "line": "Line",
+      "gantt": "Gantt",
+      "choropleth": "Map",
+      "data-table": "Table",
+      "text": "Text"
+    }
+  },
   "slides": {
     "addSlide": "Add Slide",
     "duplicate": "Duplicate",
