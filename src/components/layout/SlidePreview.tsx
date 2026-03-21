@@ -1,7 +1,6 @@
 import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Slide } from '../../types/slide'
-import { SLIDE_TYPE_COLORS } from '../../utils/constants'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -23,10 +22,12 @@ const CONTAINER_STYLE: CSSProperties = {
   justifyContent: 'center',
   flexDirection: 'column',
   gap: 8,
+  background: 'var(--slide-bg)',
+  fontFamily: 'var(--slide-font)',
 }
 
 const LABEL_STYLE: CSSProperties = {
-  color: '#fff',
+  color: 'var(--slide-accent)',
   fontSize: 24,
   fontWeight: 600,
   letterSpacing: 1,
@@ -35,7 +36,7 @@ const LABEL_STYLE: CSSProperties = {
 }
 
 const SUBTITLE_STYLE: CSSProperties = {
-  color: '#fff',
+  color: 'var(--slide-fg)',
   fontSize: 14,
   opacity: 0.7,
 }
@@ -59,10 +60,6 @@ function resolveSubtitle(slide: Slide): string {
   }
 }
 
-function resolveBackgroundColor(type: string): string {
-  return SLIDE_TYPE_COLORS[type] ?? '#888'
-}
-
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -70,10 +67,9 @@ function resolveBackgroundColor(type: string): string {
 export function SlidePreview({ slide }: SlidePreviewProps) {
   const { t } = useTranslation()
   const subtitle = resolveSubtitle(slide)
-  const backgroundColor = resolveBackgroundColor(slide.type)
 
   return (
-    <div style={{ ...CONTAINER_STYLE, backgroundColor }}>
+    <div style={CONTAINER_STYLE}>
       <div style={LABEL_STYLE}>{t(`slides.type.${slide.type}`)}</div>
       {subtitle ? <div style={SUBTITLE_STYLE}>{subtitle}</div> : null}
     </div>
