@@ -18,10 +18,9 @@ export default tseslint.config(
     },
   },
   ...tseslint.configs.recommended,
+  reactHooks.configs.flat['recommended-latest'],
   {
-    plugins: { 'react-hooks': reactHooks },
     rules: {
-      ...reactHooks.configs.recommended.rules,
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
