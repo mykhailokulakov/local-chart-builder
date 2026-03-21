@@ -1,0 +1,29 @@
+{
+  "app": {
+    "title": "Report Builder"
+  },
+  "toolbar": {
+    "undo": "Скасувати",
+    "undoHint": "Ctrl+Z",
+    "redo": "Повторити",
+    "redoHint": "Ctrl+Shift+Z"
+  },
+  "export": {
+    "exportPdf": "Експорт PDF"
+  },
+  "language": {
+    "ua": "УА",
+    "en": "EN"
+  },
+  "themes": {
+    "dark": "Темна",
+    "mindigit": "МінЦифра",
+    "light": "Світла",
+    "slate": "Сіра"
+  },
+  "panels": {
+    "slidePanel": "Панель слайдів",
+    "canvas": "Полотно",
+    "propertiesPanel": "Властивості"
+  }
+}

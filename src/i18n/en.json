@@ -1,0 +1,29 @@
+{
+  "app": {
+    "title": "Report Builder"
+  },
+  "toolbar": {
+    "undo": "Undo",
+    "undoHint": "Ctrl+Z",
+    "redo": "Redo",
+    "redoHint": "Ctrl+Shift+Z"
+  },
+  "export": {
+    "exportPdf": "Export PDF"
+  },
+  "language": {
+    "ua": "UA",
+    "en": "EN"
+  },
+  "themes": {
+    "dark": "Dark",
+    "mindigit": "MinDigit",
+    "light": "Light",
+    "slate": "Slate"
+  },
+  "panels": {
+    "slidePanel": "Slide Panel",
+    "canvas": "Canvas",
+    "propertiesPanel": "Properties"
+  }
+}
