@@ -26,6 +26,51 @@
     "canvas": "Полотно",
     "propertiesPanel": "Властивості"
   },
+  "editors": {
+    "backToSlide": "← До слайду",
+    "noSelection": "Оберіть слайд для редагування властивостей.",
+    "comingSoon": "Редактор незабаром.",
+    "title": {
+      "sectionLabel": "Титульний слайд",
+      "heading": "Назва звіту",
+      "subheading": "Підзаголовок",
+      "author": "Організація",
+      "date": "Дата"
+    },
+    "ending": {
+      "sectionLabel": "Завершальний слайд",
+      "message": "Завершальний текст",
+      "contact": "Контактна інформація",
+      "footnote": "Застереження"
+    },
+    "divider": {
+      "sectionLabel": "Розділювач",
+      "label": "Назва розділу",
+      "description": "Підзаголовок"
+    },
+    "textSlide": {
+      "sectionLabel": "Текстовий слайд",
+      "heading": "Заголовок",
+      "body": "Текст"
+    },
+    "chartSlide": {
+      "sectionLabel": "Слайд з діаграмами",
+      "slideTitle": "Назва слайду",
+      "tilesHeading": "Елементи",
+      "editTile": "Редагувати",
+      "noTiles": "На цьому слайді немає елементів."
+    },
+    "tileType": {
+      "bar-v": "Вертикальні стовпці",
+      "bar-h": "Горизонтальні стовпці",
+      "donut": "Кільцева",
+      "line": "Лінійна",
+      "gantt": "Гант",
+      "choropleth": "Карта",
+      "data-table": "Таблиця",
+      "text": "Текст"
+    }
+  },
   "slides": {
     "addSlide": "Додати слайд",
     "duplicate": "Дублювати",
