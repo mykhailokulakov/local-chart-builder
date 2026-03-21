@@ -25,5 +25,20 @@
     "slidePanel": "Панель слайдів",
     "canvas": "Полотно",
     "propertiesPanel": "Властивості"
+  },
+  "slides": {
+    "addSlide": "Додати слайд",
+    "duplicate": "Дублювати",
+    "delete": "Видалити",
+    "moveUp": "Перемістити вгору",
+    "moveDown": "Перемістити вниз",
+    "moreOptions": "Більше опцій",
+    "type": {
+      "title": "Титульний",
+      "chart": "Діаграма",
+      "divider": "Розділювач",
+      "text": "Текст",
+      "ending": "Завершення"
+    }
   }
 }

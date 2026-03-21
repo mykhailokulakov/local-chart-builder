@@ -25,5 +25,20 @@
     "slidePanel": "Slide Panel",
     "canvas": "Canvas",
     "propertiesPanel": "Properties"
+  },
+  "slides": {
+    "addSlide": "Add Slide",
+    "duplicate": "Duplicate",
+    "delete": "Delete",
+    "moveUp": "Move Up",
+    "moveDown": "Move Down",
+    "moreOptions": "More options",
+    "type": {
+      "title": "Title",
+      "chart": "Chart",
+      "divider": "Section Divider",
+      "text": "Free Text",
+      "ending": "Ending"
+    }
   }
 }
