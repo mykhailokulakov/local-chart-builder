@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import type { TileConfig } from '../../types/layout'
 
 interface GanttEditorProps {
-  slideId: string
   tile: TileConfig
 }
 

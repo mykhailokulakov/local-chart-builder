@@ -33,21 +33,21 @@ function slideEditorFor(slide: Slide): React.ReactElement {
   }
 }
 
-function tileEditorFor(slideId: string, tile: TileConfig): React.ReactElement {
+function tileEditorFor(tile: TileConfig): React.ReactElement {
   switch (tile.type) {
     case 'bar-v':
     case 'bar-h':
     case 'donut':
     case 'line':
-      return <ChartTileEditor slideId={slideId} tile={tile} />
+      return <ChartTileEditor tile={tile} />
     case 'gantt':
-      return <GanttEditor slideId={slideId} tile={tile} />
+      return <GanttEditor tile={tile} />
     case 'choropleth':
-      return <MapEditor slideId={slideId} tile={tile} />
+      return <MapEditor tile={tile} />
     case 'data-table':
-      return <DataTableEditor slideId={slideId} tile={tile} />
+      return <DataTableEditor tile={tile} />
     case 'text':
-      return <TextTileEditor slideId={slideId} tile={tile} />
+      return <TextTileEditor tile={tile} />
   }
 }
 
@@ -73,7 +73,7 @@ export function PropertiesPanel() {
             {t('editors.backToSlide')}
           </Button>
         </div>
-        <div className="flex-1 overflow-y-auto p-4">{tileEditorFor(slide.id, tile)}</div>
+        <div className="flex-1 overflow-y-auto p-4">{tileEditorFor(tile)}</div>
       </div>
     )
   }
