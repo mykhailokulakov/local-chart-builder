@@ -1,15 +1,25 @@
 {
   "app": {
-    "title": "Report Builder"
+    "title": "Report Builder",
+    "version": "v0.1"
   },
   "toolbar": {
     "undo": "Скасувати",
     "undoHint": "Ctrl+Z",
     "redo": "Повторити",
-    "redoHint": "Ctrl+Shift+Z"
+    "redoHint": "Ctrl+Shift+Z",
+    "bar": "Стовпці",
+    "donut": "Кільцева",
+    "line": "Лінійна",
+    "gantt": "Гант",
+    "map": "Карта",
+    "table": "Таблиця",
+    "text": "Текст"
   },
   "export": {
-    "exportPdf": "Експорт PDF"
+    "exportPdf": "Експорт PDF",
+    "exporting": "Експортування…",
+    "done": "Готово"
   },
   "language": {
     "ua": "УА",
@@ -30,6 +40,19 @@
     "backToSlide": "← До слайду",
     "noSelection": "Оберіть слайд для редагування властивостей.",
     "comingSoon": "Редактор незабаром.",
+    "slideProperties": "Властивості слайду",
+    "tileEditor": "Редактор елементу",
+    "chartTitle": "Назва діаграми",
+    "dataInput": "Введення даних",
+    "manual": "Вручну",
+    "csv": "CSV",
+    "addRow": "Додати рядок",
+    "display": "Відображення",
+    "showValues": "Показати значення",
+    "showLegend": "Показати легенду",
+    "showAxis": "Показати вісі",
+    "deleteSlide": "Видалити слайд",
+    "deleteTile": "Видалити елемент",
     "title": {
       "sectionLabel": "Титульний слайд",
       "heading": "Назва звіту",
