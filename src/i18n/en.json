@@ -71,6 +71,27 @@
       "text": "Text"
     }
   },
+  "canvas": {
+    "noSlide": "Select a slide to preview",
+    "slideOf": "Slide {{current}} of {{total}}",
+    "hint": {
+      "chart": "Drag to move · Resize from corners",
+      "title": "Edit properties in the right panel",
+      "divider": "Edit properties in the right panel",
+      "text": "Edit properties in the right panel",
+      "ending": "Edit properties in the right panel"
+    }
+  },
+  "tileToolbar": {
+    "bar-v": "Bar",
+    "bar-h": "Horiz. Bar",
+    "donut": "Donut",
+    "line": "Line",
+    "gantt": "Gantt",
+    "choropleth": "Map",
+    "data-table": "Table",
+    "text": "Text"
+  },
   "slides": {
     "addSlide": "Add Slide",
     "duplicate": "Duplicate",
