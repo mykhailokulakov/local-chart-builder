@@ -58,6 +58,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: actions/download-artifact@v4
         with:
           name: dist
@@ -68,13 +70,57 @@ jobs:
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             echo "value=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
           else
-            # workflow_dispatch on main: derive version from package.json
+            # workflow_dispatch: derive version from package.json
             echo "value=v$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
           fi
+      - name: Generate changelog
+        run: |
+          TAG="${{ steps.tag.outputs.value }}"
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          if [[ -n "$PREV_TAG" ]]; then
+            RANGE="${PREV_TAG}..HEAD"
+            COMPARE_URL="https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${TAG}"
+          else
+            RANGE="HEAD"
+            COMPARE_URL=""
+          fi
+
+          {
+            FEATS=$(git log "$RANGE" --pretty=format:"%s" --no-merges \
+              | grep -E "^feat(\([^)]+\))?: " \
+              | sed -E 's/^feat(\([^)]+\))?: /- /' || true)
+            FIXES=$(git log "$RANGE" --pretty=format:"%s" --no-merges \
+              | grep -E "^fix(\([^)]+\))?: " \
+              | sed -E 's/^fix(\([^)]+\))?: /- /' || true)
+            OTHERS=$(git log "$RANGE" --pretty=format:"%s" --no-merges \
+              | grep -vE "^(feat|fix)(\([^)]+\))?: " \
+              | grep -vE "^Merge " || true)
+
+            if [[ -n "$FEATS" ]]; then
+              echo "### Features"
+              echo "$FEATS"
+              echo ""
+            fi
+            if [[ -n "$FIXES" ]]; then
+              echo "### Bug Fixes"
+              echo "$FIXES"
+              echo ""
+            fi
+            if [[ -n "$OTHERS" ]]; then
+              echo "### Other Changes"
+              echo "$OTHERS" | sed 's/^/- /'
+              echo ""
+            fi
+            if [[ -n "$COMPARE_URL" ]]; then
+              echo "**Full Changelog**: ${COMPARE_URL}"
+            fi
+          } > changelog.md
       - name: Zip dist
         run: zip -r "report-builder-${{ steps.tag.outputs.value }}.zip" dist/
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.value }}
           name: Release ${{ steps.tag.outputs.value }}
+          body_path: changelog.md
           files: report-builder-${{ steps.tag.outputs.value }}.zip
