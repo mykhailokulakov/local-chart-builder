@@ -8,6 +8,31 @@ import type { Slide } from '../../types/slide'
 import { SLIDE_TYPE_COLORS } from '../../utils/constants'
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns the primary user-defined text for a slide (heading, label, message,
+ * or chart title). Used as the thumbnail label so the card reflects edits made
+ * in the properties panel. Falls back to an empty string when the field is
+ * blank so the caller can decide whether to show a fallback.
+ */
+function resolveSlideLabel(slide: Slide): string {
+  switch (slide.data.type) {
+    case 'title':
+      return slide.data.heading
+    case 'divider':
+      return slide.data.label
+    case 'text':
+      return slide.data.heading
+    case 'ending':
+      return slide.data.message
+    case 'chart':
+      return slide.data.title ?? ''
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
@@ -145,7 +170,9 @@ export function SlideCard({
         onDrop={handleDrop}
       >
         <div style={thumbnailStyle}>
-          <span style={THUMBNAIL_LABEL}>{t(`slides.type.${slide.type}`)}</span>
+          <span style={THUMBNAIL_LABEL}>
+            {resolveSlideLabel(slide) || t(`slides.type.${slide.type}`)}
+          </span>
         </div>
         <div style={LABEL_ROW}>
           <span style={NUMBER_STYLE}>{index + 1}</span>

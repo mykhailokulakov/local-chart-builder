@@ -9,15 +9,7 @@ import { TileToolbar } from '../toolbar/TileToolbar'
 import { ChartSlideCanvas } from './ChartSlideCanvas'
 import { SlidePreview } from './SlidePreview'
 import { SlideErrorBoundary } from './SlideErrorBoundary'
-import {
-  SLIDE_ASPECT_RATIO,
-  CANVAS_PADDING_PX,
-  STATUS_BAR_HEIGHT_PX,
-  SLIDE_FONT_SCALE_TITLE,
-  SLIDE_FONT_SCALE_HEADING,
-  SLIDE_FONT_SCALE_BODY,
-  SLIDE_FONT_SCALE_CAPTION,
-} from '../../utils/constants'
+import { SLIDE_ASPECT_RATIO, CANVAS_PADDING_PX, STATUS_BAR_HEIGHT_PX } from '../../utils/constants'
 
 // ---------------------------------------------------------------------------
 // Module-level style constants
@@ -133,12 +125,6 @@ export function Canvas() {
         '--slide-accent': theme.accent,
         '--slide-accent-secondary': theme.accentSecondary,
         '--slide-font': theme.fontFamily,
-        // Font-size scale: computed from slideH so text scales proportionally at every
-        // canvas zoom level and at the 1920×1080 PDF export resolution.
-        '--slide-fs-title': `${Math.round(slideH * SLIDE_FONT_SCALE_TITLE)}px`,
-        '--slide-fs-heading': `${Math.round(slideH * SLIDE_FONT_SCALE_HEADING)}px`,
-        '--slide-fs-body': `${Math.round(slideH * SLIDE_FONT_SCALE_BODY)}px`,
-        '--slide-fs-caption': `${Math.round(slideH * SLIDE_FONT_SCALE_CAPTION)}px`,
         // CSS custom properties are valid at runtime but not in the CSSProperties type
       }) as CSSProperties,
     [slideW, slideH, theme],

@@ -1,9 +1,6 @@
-import type { ReactElement } from 'react'
+import type { CSSProperties } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Slide } from '../../types/slide'
-import { TitleSlide } from '../slides/TitleSlide'
-import { DividerSlide } from '../slides/DividerSlide'
-import { TextSlide } from '../slides/TextSlide'
-import { EndingSlide } from '../slides/EndingSlide'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -14,27 +11,67 @@ interface SlidePreviewProps {
 }
 
 // ---------------------------------------------------------------------------
-// Component
-//
-// Dispatches to the type-specific renderer based on slide.data.type.
-// The switch is exhaustive over the SlideData discriminated union — TypeScript
-// will report a compile error if a new SlideType is added without a renderer.
-// Chart slides are handled by ChartSlideCanvas in Canvas.tsx and never reach
-// this component; the 'chart' case returns null as a compile-time guard.
+// Module-level constants
 // ---------------------------------------------------------------------------
 
-export function SlidePreview({ slide }: SlidePreviewProps): ReactElement | null {
+const CONTAINER_STYLE: CSSProperties = {
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'column',
+  gap: 8,
+  background: 'var(--slide-bg)',
+  fontFamily: 'var(--slide-font)',
+}
+
+const LABEL_STYLE: CSSProperties = {
+  color: 'var(--slide-accent)',
+  fontSize: 24,
+  fontWeight: 600,
+  letterSpacing: 1,
+  textTransform: 'uppercase',
+  opacity: 0.9,
+}
+
+const SUBTITLE_STYLE: CSSProperties = {
+  color: 'var(--slide-fg)',
+  fontSize: 14,
+  opacity: 0.7,
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function resolveSubtitle(slide: Slide): string {
   switch (slide.data.type) {
     case 'title':
-      return <TitleSlide data={slide.data} />
+      return slide.data.heading || ''
     case 'divider':
-      return <DividerSlide data={slide.data} />
+      return slide.data.label || ''
     case 'text':
-      return <TextSlide data={slide.data} />
+      return slide.data.heading || ''
     case 'ending':
-      return <EndingSlide data={slide.data} />
+      return slide.data.message || ''
     case 'chart':
-      // Canvas.tsx routes chart slides to ChartSlideCanvas before reaching here.
-      return null
+      return slide.data.title ?? ''
   }
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
+export function SlidePreview({ slide }: SlidePreviewProps) {
+  const { t } = useTranslation()
+  const subtitle = resolveSubtitle(slide)
+
+  return (
+    <div style={CONTAINER_STYLE}>
+      <div style={LABEL_STYLE}>{t(`slides.type.${slide.type}`)}</div>
+      {subtitle ? <div style={SUBTITLE_STYLE}>{subtitle}</div> : null}
+    </div>
+  )
 }
