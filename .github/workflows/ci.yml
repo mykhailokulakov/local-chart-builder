@@ -47,3 +47,29 @@ jobs:
           name: dist
           path: dist/
           retention-days: 7
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci
+      # Download the dist artifact built in the build job so we test the exact
+      # same output that gets released — not a fresh rebuild.
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - run: npx playwright install chromium --with-deps
+      - run: npm run test:e2e
+      # Upload the HTML report on failure so the team can inspect screenshots
+      # and traces without re-running locally.
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

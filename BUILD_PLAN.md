@@ -317,7 +317,7 @@ Features:
 - Delete tile button (danger style)
 
 Create src/services/csvParser.ts:
-- Parse CSV (comma or tab separated) into { label: string; value: number }[] 
+- Parse CSV (comma or tab separated) into { label: string; value: number }[]
 - Handle: header row detection, empty lines, quoted values, number formatting with comma decimals
 - Throw descriptive errors for malformed input
 

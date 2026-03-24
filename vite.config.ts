@@ -7,26 +7,49 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
     react(),
-    // Strip `crossorigin` attributes from the built HTML so the app loads
-    // correctly when opened via file:// (Chrome enforces CORS on null-origin
-    // requests, which blocks crossorigin-tagged module scripts and stylesheets).
+    // Vite v8 injects `<script type="module" crossorigin>` regardless of the
+    // rollup output format. Strip both attributes and add `defer` so the app
+    // loads correctly from file://:
+    //   • Chrome blocks type="module" from null-origin file:// (CORS policy).
+    //   • crossorigin is meaningless without type="module".
+    //   • defer is required because type="module" is implicitly deferred — a
+    //     plain <script> in <head> executes before <body> is parsed, making
+    //     document.getElementById('root') return null (React error #299).
+    // apply:'build' keeps the dev server untouched (it serves ESM natively).
     {
-      name: 'remove-crossorigin',
+      name: 'file-url-compatible-script',
+      apply: 'build' as const,
       transformIndexHtml(html: string): string {
-        return html.replace(/ crossorigin/g, '')
+        return html
+          .replace(/ type="module"/g, '')
+          .replace(/ crossorigin/g, '')
+          .replace(/(<script) (src=)/, '$1 defer $2')
       },
     },
   ],
   build: {
     outDir: 'dist',
-    // Disable the modulePreload polyfill — it injects a hidden iframe to probe
-    // browser support, which Chrome also blocks under file:// (null origin).
-    // Chrome fully supports modulepreload natively so the polyfill is redundant.
-    modulePreload: { polyfill: false },
+    // IIFE format: bundles everything into one classic script with no ES module
+    // semantics. Combined with removing type="module" above, this ensures
+    // Chrome loads the script without CORS enforcement under file://.
+    //
+    // Terser minifier: Rolldown's built-in oxc minifier (Vite 8 default) produces
+    // a runtime crash when minifying the IIFE bundle — it incorrectly mangles a
+    // property access, causing "Cannot read properties of undefined (reading 'a')".
+    // Terser handles IIFE minification correctly.
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        format: 'iife',
+        inlineDynamicImports: true,
+      },
+    },
   },
   test: {
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./tests/setup.ts'],
+    // Playwright e2e specs are not run by Vitest — they use their own runner.
+    exclude: ['**/node_modules/**', '**/dist/**', 'tests/e2e/**'],
   },
 })

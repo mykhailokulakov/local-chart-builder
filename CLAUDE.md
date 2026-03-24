@@ -9,19 +9,19 @@
 
 ## Tech stack
 
-| Layer | Technology | Notes |
-|---|---|---|
-| Build | Vite 6+ | `npm run build` → static `dist/` folder |
-| Framework | React 18 + TypeScript | Strict mode, functional components only |
-| UI library | Ant Design 5 | Builder interface (not PDF output) |
-| Styling | Tailwind CSS 3 | Custom theming for PDF slide output |
-| Charts | Chart.js 4 + react-chartjs-2 | Bar, donut, line charts |
-| Gantt | Custom SVG renderer | No library — matches specific design reference |
-| Choropleth | D3.js + Ukraine GeoJSON | Oblast-level map with data-driven fills |
-| Grid layout | react-grid-layout v2 | Drag/resize tiles on slide canvas |
-| PDF export | html2canvas + jsPDF | Render slides at 1920x1080 → assemble PDF |
-| i18n | i18next + react-i18next | UA/EN toggle |
-| Font | e-Ukraine (bundled .woff2) | Official MinDigit typeface, Cyrillic-first |
+| Layer       | Technology                   | Notes                                          |
+| ----------- | ---------------------------- | ---------------------------------------------- |
+| Build       | Vite 6+                      | `npm run build` → static `dist/` folder        |
+| Framework   | React 18 + TypeScript        | Strict mode, functional components only        |
+| UI library  | Ant Design 5                 | Builder interface (not PDF output)             |
+| Styling     | Tailwind CSS 3               | Custom theming for PDF slide output            |
+| Charts      | Chart.js 4 + react-chartjs-2 | Bar, donut, line charts                        |
+| Gantt       | Custom SVG renderer          | No library — matches specific design reference |
+| Choropleth  | D3.js + Ukraine GeoJSON      | Oblast-level map with data-driven fills        |
+| Grid layout | react-grid-layout v2         | Drag/resize tiles on slide canvas              |
+| PDF export  | html2canvas + jsPDF          | Render slides at 1920x1080 → assemble PDF      |
+| i18n        | i18next + react-i18next      | UA/EN toggle                                   |
+| Font        | e-Ukraine (bundled .woff2)   | Official MinDigit typeface, Cyrillic-first     |
 
 ## Project structure
 
@@ -130,14 +130,14 @@ type SlideType = 'title' | 'chart' | 'divider' | 'text' | 'ending'
 interface Slide {
   id: string
   type: SlideType
-  data: SlideData        // discriminated union — narrow by data.type
-  tiles?: TileConfig[]   // only present on 'chart' slides
+  data: SlideData // discriminated union — narrow by data.type
+  tiles?: TileConfig[] // only present on 'chart' slides
 }
 
 interface TileConfig {
   id: string
   type: ChartType | 'text'
-  layout: GridLayout     // x, y, w, h for react-grid-layout
+  layout: GridLayout // x, y, w, h for react-grid-layout
   data: TileData
   options: ChartOptions
 }
@@ -146,7 +146,7 @@ type ChartType = 'bar-v' | 'bar-h' | 'donut' | 'line' | 'gantt' | 'choropleth' |
 
 // Undo/redo wrapper — selectedSlide/Tile are UI state, not part of undo history
 interface UndoableState {
-  past: Report[]             // capped at 50
+  past: Report[] // capped at 50
   present: Report
   future: Report[]
   selectedSlideId: string | null
@@ -198,6 +198,7 @@ Run this against every file touched. Not optional — fix violations before comm
 Fixes go in a separate `refactor:` commit, never bundled with feature changes.
 
 ### Correctness
+
 - [ ] No `any` types introduced
 - [ ] No `as X` casts without an explanatory comment
 - [ ] No `!` non-null assertions
@@ -206,6 +207,7 @@ Fixes go in a separate `refactor:` commit, never bundled with feature changes.
 - [ ] No silent `undefined` returns where the caller expects a value
 
 ### Design
+
 - [ ] No component exceeds 150 lines
 - [ ] No prop drilling deeper than 2 levels
 - [ ] No duplicate logic across 2+ files
@@ -214,12 +216,14 @@ Fixes go in a separate `refactor:` commit, never bundled with feature changes.
 - [ ] No inline object/array literals in JSX props
 
 ### Code hygiene
+
 - [ ] No dead code: unused imports, unreachable branches, commented-out blocks
 - [ ] No magic numbers or strings — all in `src/utils/constants.ts`
 - [ ] No `console.log` statements
 - [ ] File names match their default export
 
 ### Project constraints
+
 - [ ] No hardcoded UI strings — all through i18next
 - [ ] No `localStorage`, `sessionStorage`, or `IndexedDB`
 - [ ] No runtime CDN imports
@@ -227,6 +231,7 @@ Fixes go in a separate `refactor:` commit, never bundled with feature changes.
 - [ ] No `position: fixed` or CSS `calc()` in slide renderer components
 
 ### Accessibility
+
 - [ ] Form inputs have associated `<label>` elements
 - [ ] Interactive elements are keyboard-navigable
 - [ ] Custom controls have appropriate ARIA attributes
