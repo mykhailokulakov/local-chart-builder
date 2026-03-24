@@ -1,3 +1,5 @@
+import type { SlideType } from '../types/slide'
+
 /** Default width of the slide list sidebar in pixels */
 export const SLIDE_PANEL_DEFAULT_PX = 200
 /** Minimum width the slide list sidebar can be dragged to */
@@ -26,7 +28,7 @@ export const TOP_BAR_HEIGHT_PX = 56
 export const SHELL_HEADER_BG = '#001529'
 
 /** Thumbnail background colour for each slide type */
-export const SLIDE_TYPE_COLORS: Record<string, string> = {
+export const SLIDE_TYPE_COLORS: Record<SlideType, string> = {
   title: '#1677ff',
   chart: '#52c41a',
   divider: '#fa8c16',
