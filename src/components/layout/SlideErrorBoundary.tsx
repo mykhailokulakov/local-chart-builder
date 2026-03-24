@@ -37,12 +37,10 @@ export class SlideErrorBoundary extends Component<
     return { hasError: true }
   }
 
-  componentDidCatch(error: Error, info: ErrorInfo): void {
+  componentDidCatch(_error: Error, _info: ErrorInfo): void {
     // In production, forward to an error monitoring service here.
     // This app is offline-only, so there is no such service — the error is
     // swallowed intentionally rather than propagating and crashing the app.
-    void error
-    void info
   }
 
   render(): ReactNode {
