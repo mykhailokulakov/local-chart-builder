@@ -4,7 +4,7 @@ on:
     branches: [main]
   pull_request:
 # Suppress DEP0040: actions/setup-node post-run cleanup uses uri-js (via
-# ajv@6) which imports the deprecated built-in `punycode` on Node 22.
+# ajv@6) which imports the deprecated built-in `punycode` on Node 22+.
 # Remove once actions/setup-node drops the ajv@6 dependency.
 env:
   NODE_OPTIONS: --no-deprecation
@@ -37,7 +37,7 @@ jobs:
       # vulnerabilities that require an immediate update.
       - name: Fail on critical vulnerabilities
         run: npm audit --audit-level=critical
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: audit-report
@@ -102,7 +102,7 @@ jobs:
               fi
             fi
           } >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: outdated-deps-report
@@ -131,7 +131,7 @@ jobs:
       - uses: davelosert/vitest-coverage-report-action@v2
         if: always()
       # Upload the full HTML coverage report for browsable line-level detail.
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: coverage-report
@@ -148,7 +148,7 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npm run build
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: dist
           path: dist/
@@ -165,7 +165,7 @@ jobs:
       - run: npm ci
       # Download the dist artifact built in the build job so we test the exact
       # same output that gets released — not a fresh rebuild.
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v7
         with:
           name: dist
           path: dist/
@@ -173,7 +173,7 @@ jobs:
       - run: npm run test:e2e
       # Upload the HTML report on failure so the team can inspect screenshots
       # and traces without re-running locally.
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: playwright-report
