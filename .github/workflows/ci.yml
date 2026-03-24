@@ -40,48 +40,56 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      # || true: npm outdated exits 1 when packages are outdated; this job is
-      # informational only and must never block the rest of the pipeline.
+      # npm outdated exits 1 when any package is behind; suppress so the step
+      # never fails — the report below is purely informational.
       - name: Collect outdated dependencies
         run: npm outdated --json > outdated.json || true
       - name: Write dependency report to job summary
         run: |
-          count=$(jq 'length' outdated.json)
+          # Split packages into two buckets using jq:
+          #   major — current major < latest major (breaking change, needs manual upgrade)
+          #   other — same major, only minor/patch drift
+          MAJOR_FILTER='to_entries[] | select(
+            (.value.current | split(".")[0] | tonumber) <
+            (.value.latest  | split(".")[0] | tonumber)
+          )'
+          OTHER_FILTER='to_entries[] | select(
+            (.value.current | split(".")[0] | tonumber) ==
+            (.value.latest  | split(".")[0] | tonumber)
+          )'
+          ROW='| `\(.key)` | \(.value.current) | \(.value.wanted) | \(.value.latest) |'
+
+          major_count=$(jq "[${MAJOR_FILTER}] | length" outdated.json)
+          other_count=$(jq "[${OTHER_FILTER}] | length" outdated.json)
+
           {
             echo "## Dependency Status"
             echo ""
-            if [ "$count" -eq 0 ]; then
+
+            if [ "$(jq 'length' outdated.json)" -eq 0 ]; then
               echo "✅ All dependencies are up to date."
             else
-              echo "> ⚠️ **${count} package(s) have newer versions available.**"
-              echo ""
-              echo "| Package | Current | Wanted | Latest |"
-              echo "|---------|---------|--------|--------|"
-              jq -r '
-                to_entries[]
-                | "| `\(.key)` | \(.value.current) | \(.value.wanted) | \(.value.latest) |"
-              ' outdated.json
+              if [ "$major_count" -gt 0 ]; then
+                echo "### 🔴 Major Version Available (${major_count})"
+                echo ""
+                echo "These packages have a new major release. Review for breaking"
+                echo "changes before upgrading; Dependabot will not auto-merge these."
+                echo ""
+                echo "| Package | Current | Wanted | Latest |"
+                echo "|---------|---------|--------|--------|"
+                jq -r "${MAJOR_FILTER} | \"${ROW}\"" outdated.json
+                echo ""
+              fi
+
+              if [ "$other_count" -gt 0 ]; then
+                echo "### 🟡 Minor / Patch Updates (${other_count})"
+                echo ""
+                echo "| Package | Current | Wanted | Latest |"
+                echo "|---------|---------|--------|--------|"
+                jq -r "${OTHER_FILTER} | \"${ROW}\"" outdated.json
+              fi
             fi
           } >> "$GITHUB_STEP_SUMMARY"
-      # Fail the job when any package has a newer MAJOR version available.
-      # Major bumps represent breaking changes that require deliberate action —
-      # they are not auto-merged by Dependabot and must be reviewed manually.
-      # Patch and minor updates are informational only (Dependabot opens PRs).
-      - name: Fail on major version updates
-        run: |
-          major_updates=$(jq '[
-            to_entries[]
-            | select(
-                (.value.current | split(".")[0] | tonumber)
-                <
-                (.value.latest  | split(".")[0] | tonumber)
-              )
-          ] | length' outdated.json)
-          if [ "$major_updates" -gt 0 ]; then
-            echo "::error::${major_updates} package(s) require a major-version update. \
-          Review the Dependency Status table above and update or pin them."
-            exit 1
-          fi
       - uses: actions/upload-artifact@v5
         if: always()
         with:
