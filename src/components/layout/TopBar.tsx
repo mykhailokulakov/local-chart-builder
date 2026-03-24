@@ -7,6 +7,7 @@ import { useReport } from '../../hooks/useReport'
 import { useUndoRedo } from '../../hooks/useUndoRedo'
 import { setLanguage, setTheme } from '../../store/actions'
 import { ThemePreset } from '../../types/theme'
+import { EXPORT_BTN_MIN_WIDTH_PX } from '../../utils/constants'
 
 // ---------------------------------------------------------------------------
 // Module-level style constants — no inline objects in JSX
@@ -28,6 +29,8 @@ const TITLE_STYLE: CSSProperties = {
 }
 
 const THEME_SELECT_STYLE: CSSProperties = { width: 140 }
+
+const EXPORT_BTN_STYLE: CSSProperties = { minWidth: EXPORT_BTN_MIN_WIDTH_PX }
 
 const ICON_BTN_ACTIVE_STYLE: CSSProperties = { color: 'rgba(255, 255, 255, 0.85)' }
 const ICON_BTN_DISABLED_STYLE: CSSProperties = {
@@ -130,7 +133,9 @@ export function TopBar() {
         style={THEME_SELECT_STYLE}
       />
 
-      <Button type="primary">{t('export.exportPdf')}</Button>
+      <Button type="primary" style={EXPORT_BTN_STYLE}>
+        {t('export.exportPdf')}
+      </Button>
     </div>
   )
 }

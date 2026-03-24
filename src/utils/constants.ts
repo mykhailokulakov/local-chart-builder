@@ -7,6 +7,12 @@ export const PROPERTIES_PANEL_WIDTH_PX = 280
 /** Height of the application top bar in pixels */
 export const TOP_BAR_HEIGHT_PX = 56
 
+/** Background colour of the application top bar */
+export const TOPBAR_BG_COLOR = '#001529'
+
+/** Minimum width of the Export PDF button in pixels — wide enough for the longest translation */
+export const EXPORT_BTN_MIN_WIDTH_PX = 130
+
 /** Thumbnail background colour for each slide type */
 export const SLIDE_TYPE_COLORS: Record<string, string> = {
   title: '#1677ff',

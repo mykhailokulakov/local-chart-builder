@@ -2,7 +2,11 @@ import type { CSSProperties } from 'react'
 import { useEffect } from 'react'
 import { Layout } from 'antd'
 import { useUndoRedo } from '../../hooks/useUndoRedo'
-import { SLIDE_PANEL_WIDTH_PX, PROPERTIES_PANEL_WIDTH_PX } from '../../utils/constants'
+import {
+  SLIDE_PANEL_WIDTH_PX,
+  PROPERTIES_PANEL_WIDTH_PX,
+  TOPBAR_BG_COLOR,
+} from '../../utils/constants'
 import { Canvas } from './Canvas'
 import { PropertiesPanel } from './PropertiesPanel'
 import { SlidePanel } from './SlidePanel'
@@ -24,6 +28,7 @@ const HEADER_STYLE: CSSProperties = {
   alignItems: 'center',
   padding: '0 16px',
   flexShrink: 0,
+  background: TOPBAR_BG_COLOR,
 }
 
 const PANELS_STYLE: CSSProperties = {
