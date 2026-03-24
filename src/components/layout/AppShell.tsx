@@ -74,7 +74,22 @@ const PROPERTIES_PANEL_CONTENT_STYLE: CSSProperties = {
 // automatically receives correct light-on-dark colours — no per-component overrides needed.
 // React portals maintain context from the React tree (not the DOM tree), so overlay
 // elements such as Select dropdowns also inherit this dark algorithm correctly.
-const HEADER_THEME: ThemeConfig = { algorithm: antTheme.darkAlgorithm }
+//
+// Segmented component tokens are explicitly overridden here because the dark-algorithm
+// defaults (opaque colorBgLayout / colorBgElevated) render as a visible dark-gray box
+// on the navy header background. rgba values make the track and selected pill blend
+// naturally into the header while keeping both states clearly distinguishable.
+const HEADER_THEME: ThemeConfig = {
+  algorithm: antTheme.darkAlgorithm,
+  components: {
+    Segmented: {
+      trackBg: 'rgba(255,255,255,0.1)',
+      itemSelectedBg: 'rgba(255,255,255,0.22)',
+      itemColor: 'rgba(255,255,255,0.6)',
+      itemHoverBg: 'rgba(255,255,255,0.16)',
+    },
+  },
+}
 
 // ---------------------------------------------------------------------------
 // Helpers

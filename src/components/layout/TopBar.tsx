@@ -7,6 +7,7 @@ import { useReport } from '../../hooks/useReport'
 import { useUndoRedo } from '../../hooks/useUndoRedo'
 import { setLanguage, setTheme } from '../../store/actions'
 import { ThemePreset } from '../../types/theme'
+import { EXPORT_BTN_MIN_WIDTH_PX } from '../../utils/constants'
 
 // ---------------------------------------------------------------------------
 // Module-level style constants — no inline objects in JSX
@@ -33,6 +34,10 @@ const TITLE_STYLE: CSSProperties = {
 
 // Fixed width gives the Select a stable footprint regardless of option text length
 const THEME_SELECT_STYLE: CSSProperties = { width: 140 }
+
+// minWidth floors the button at the widest translated label ("Експортування…") so
+// the header layout does not shift when language is switched or export state changes.
+const EXPORT_BTN_STYLE: CSSProperties = { minWidth: EXPORT_BTN_MIN_WIDTH_PX }
 
 // ---------------------------------------------------------------------------
 // Component
@@ -127,7 +132,9 @@ export function TopBar() {
         style={THEME_SELECT_STYLE}
       />
 
-      <Button type="primary">{t('export.exportPdf')}</Button>
+      <Button type="primary" style={EXPORT_BTN_STYLE}>
+        {t('export.exportPdf')}
+      </Button>
     </div>
   )
 }

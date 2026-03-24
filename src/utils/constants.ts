@@ -42,6 +42,13 @@ export const SLIDE_ASPECT_RATIO = 16 / 9
 /** Padding around the slide frame inside the canvas area, in pixels */
 export const CANVAS_PADDING_PX = 32
 
+/**
+ * Minimum width of the Export PDF button in pixels.
+ * Prevents layout shift when switching languages: the widest label across all
+ * languages and export states ("Експортування…") determines this floor.
+ */
+export const EXPORT_BTN_MIN_WIDTH_PX = 130
+
 /** Height of the tile toolbar above the slide frame, in pixels */
 export const TILE_TOOLBAR_HEIGHT_PX = 44
 
