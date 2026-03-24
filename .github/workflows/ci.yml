@@ -25,7 +25,7 @@ jobs:
       # actively exploitable vulnerabilities that require an immediate update.
       - name: Fail on critical vulnerabilities
         run: npm audit --audit-level=critical
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: audit-report
@@ -54,9 +54,12 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npm run test:coverage
-      # Upload the HTML coverage report so the team can browse line-level
-      # coverage without running the suite locally.
-      - uses: actions/upload-artifact@v4
+      # Render a per-file coverage table directly in the job summary so it is
+      # visible on the Actions run page without downloading any artifact.
+      - uses: davelosert/vitest-coverage-report-action@v2
+        if: always()
+      # Upload the full HTML coverage report for browsable line-level detail.
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: coverage-report
@@ -73,7 +76,7 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npm run build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: dist
           path: dist/
@@ -90,7 +93,7 @@ jobs:
       - run: npm ci
       # Download the dist artifact built in the build job so we test the exact
       # same output that gets released — not a fresh rebuild.
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: dist
           path: dist/
@@ -98,7 +101,7 @@ jobs:
       - run: npm run test:e2e
       # Upload the HTML report on failure so the team can inspect screenshots
       # and traces without re-running locally.
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: playwright-report

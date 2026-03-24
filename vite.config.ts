@@ -56,7 +56,7 @@ export default defineConfig({
       // text: printed to the terminal after each run.
       // html: browsable report written to coverage/.
       // lcov: machine-readable format consumed by CI tools and editor plugins.
-      reporter: ['text', 'html', 'lcov'],
+      reporter: ['text', 'html', 'lcov', 'json-summary'],
       include: ['src/**'],
       exclude: [
         'src/main.tsx', // app entry point — no testable logic
