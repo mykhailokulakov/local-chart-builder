@@ -4,7 +4,7 @@ on:
     branches: [main]
   pull_request:
 # Suppress DEP0040: actions/setup-node post-run cleanup uses uri-js (via
-# ajv@6) which imports the deprecated built-in `punycode` on Node 22.
+# ajv@6) which imports the deprecated built-in `punycode` on Node 22+.
 # Remove once actions/setup-node drops the ajv@6 dependency.
 env:
   NODE_OPTIONS: --no-deprecation
@@ -21,16 +21,122 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
 
-  test:
+  audit:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 22
       - run: npm ci
-      - run: npm run test -- --run
+      # Produce a full JSON report regardless of outcome so it is always
+      # available as a downloadable artifact for triage.
+      - name: Generate vulnerability report
+        run: npm audit --json > audit-report.json || true
+      # Hard-fail on critical-severity findings — actively exploitable
+      # vulnerabilities that require an immediate update.
+      - name: Fail on critical vulnerabilities
+        run: npm audit --audit-level=critical
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: audit-report
+          path: audit-report.json
+          retention-days: 30
+
+  deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci
+      # npm outdated exits 1 when any package is behind; suppress so this step
+      # never fails — the report is purely informational.
+      - name: Collect outdated dependencies
+        run: npm outdated --json > outdated.json || true
+      - name: Write dependency report to job summary
+        run: |
+          # Split packages into two buckets using jq:
+          #   major — current major < latest major (breaking change, needs manual upgrade)
+          #   other — same major, only minor/patch drift
+          MAJOR_FILTER='to_entries[] | select(
+            (.value.current | split(".")[0] | tonumber) <
+            (.value.latest  | split(".")[0] | tonumber)
+          )'
+          OTHER_FILTER='to_entries[] | select(
+            (.value.current | split(".")[0] | tonumber) ==
+            (.value.latest  | split(".")[0] | tonumber)
+          )'
+          ROW='| `\(.key)` | \(.value.current) | \(.value.wanted) | \(.value.latest) |'
+
+          major_count=$(jq "[${MAJOR_FILTER}] | length" outdated.json)
+          other_count=$(jq "[${OTHER_FILTER}] | length" outdated.json)
+
+          {
+            echo "## Dependency Status"
+            echo ""
+
+            if [ "$(jq 'length' outdated.json)" -eq 0 ]; then
+              echo "✅ All dependencies are up to date."
+            else
+              if [ "$major_count" -gt 0 ]; then
+                echo "### 🔴 Major Version Available (${major_count})"
+                echo ""
+                echo "These packages have a new major release. Review for breaking"
+                echo "changes before upgrading; Dependabot will not auto-merge these."
+                echo ""
+                echo "| Package | Current | Wanted | Latest |"
+                echo "|---------|---------|--------|--------|"
+                jq -r "${MAJOR_FILTER} | \"${ROW}\"" outdated.json
+                echo ""
+              fi
+
+              if [ "$other_count" -gt 0 ]; then
+                echo "### 🟡 Minor / Patch Updates (${other_count})"
+                echo ""
+                echo "| Package | Current | Wanted | Latest |"
+                echo "|---------|---------|--------|--------|"
+                jq -r "${OTHER_FILTER} | \"${ROW}\"" outdated.json
+              fi
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: outdated-deps-report
+          path: outdated.json
+          retention-days: 7
+
+  test:
+    runs-on: ubuntu-latest
+    # Depend on all three first-stage jobs so they appear in the same column
+    # in the GitHub Actions UI and test only starts once all pass.
+    needs: [lint, audit, deps]
+    permissions:
+      # Required by davelosert/vitest-coverage-report-action to post a
+      # per-file coverage breakdown as a pull request review comment.
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run test:coverage
+      # Render a per-file coverage table directly in the job summary so it is
+      # visible on the Actions run page without downloading any artifact.
+      - uses: davelosert/vitest-coverage-report-action@v2
+        if: always()
+      # Upload the full HTML coverage report for browsable line-level detail.
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
 
   build:
     runs-on: ubuntu-latest
@@ -42,7 +148,7 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npm run build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: dist
           path: dist/
@@ -59,7 +165,7 @@ jobs:
       - run: npm ci
       # Download the dist artifact built in the build job so we test the exact
       # same output that gets released — not a fresh rebuild.
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: dist
           path: dist/
@@ -67,7 +173,7 @@ jobs:
       - run: npm run test:e2e
       # Upload the HTML report on failure so the team can inspect screenshots
       # and traces without re-running locally.
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: playwright-report

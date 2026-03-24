@@ -1,0 +1,24 @@
+version: 2
+updates:
+  # Keep npm dependencies current. Weekly PRs are batched to avoid noise;
+  # Dependabot groups patch and minor bumps into a single PR per week.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      # Batch all non-major updates into one PR so the review burden stays low.
+      patch-and-minor:
+        update-types:
+          - minor
+          - patch
+    open-pull-requests-limit: 5
+
+  # Keep GitHub Actions pinned to their latest Node.js-22-based runners.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
