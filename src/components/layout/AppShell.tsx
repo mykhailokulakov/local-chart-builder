@@ -72,8 +72,8 @@ const PROPERTIES_PANEL_CONTENT_STYLE: CSSProperties = {
 // Nested dark-algorithm scope for the header.
 // Every Ant Design component inside TopBar (Typography, Button, Segmented, Select)
 // automatically receives correct light-on-dark colours — no per-component overrides needed.
-// Note: Select dropdowns render via a portal at document root and therefore inherit
-// the outer light theme, which is the standard Ant Design behaviour for portalled overlays.
+// React portals maintain context from the React tree (not the DOM tree), so overlay
+// elements such as Select dropdowns also inherit this dark algorithm correctly.
 const HEADER_THEME: ThemeConfig = { algorithm: antTheme.darkAlgorithm }
 
 // ---------------------------------------------------------------------------

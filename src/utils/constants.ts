@@ -18,6 +18,13 @@ export const CANVAS_MIN_PX = 400
 /** Height of the application top bar in pixels */
 export const TOP_BAR_HEIGHT_PX = 56
 
+/**
+ * Background colour of the application shell header.
+ * Matches Ant Design's default dark-nav palette; referenced by the
+ * Layout.headerBg component token in App.tsx's ConfigProvider.
+ */
+export const SHELL_HEADER_BG = '#001529'
+
 /** Thumbnail background colour for each slide type */
 export const SLIDE_TYPE_COLORS: Record<string, string> = {
   title: '#1677ff',

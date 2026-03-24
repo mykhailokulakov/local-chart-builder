@@ -4,6 +4,7 @@ import { I18nextProvider } from 'react-i18next'
 import i18n from './i18n/config'
 import { ReportProvider } from './store/ReportContext'
 import { AppShell } from './components/layout/AppShell'
+import { SHELL_HEADER_BG } from './utils/constants'
 
 // ---------------------------------------------------------------------------
 // Ant Design shell theme — drives the editor UI chrome only.
@@ -19,10 +20,9 @@ import { AppShell } from './components/layout/AppShell'
 // background so no component needs an explicit background override.
 // colorBgLayout sets the canvas area; colorBgContainer sets editing panels.
 // Both are exposed as CSS custom properties (--ant-color-bg-layout, etc.) that
-// AppShell reads via var() — keeping panel styles token-driven, not hardcoded.
+// AppShell reads via var(). This relies on Ant Design v6 injecting CSS custom
+// properties by default — see the "Ant Design 6" note in CLAUDE.md tech stack.
 // ---------------------------------------------------------------------------
-
-const SHELL_HEADER_BG = '#001529'
 
 const ANT_SHELL_THEME: ThemeConfig = {
   token: {
