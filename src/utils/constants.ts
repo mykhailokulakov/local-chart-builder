@@ -39,6 +39,17 @@ export const SLIDE_TYPE_COLORS: Record<SlideType, string> = {
 /** Slide display aspect ratio (16:9) */
 export const SLIDE_ASPECT_RATIO = 16 / 9
 
+/**
+ * Font-size scale ratios for slide renderers.
+ * Each value is multiplied by the slide height in pixels to produce a font-size
+ * injected as a CSS custom property on the slide frame (--slide-fs-*).
+ * Values are calibrated for 1920×1080 (16:9) as the reference resolution.
+ */
+export const SLIDE_FONT_SCALE_TITLE = 0.055 // ~59 px at 1080 px height
+export const SLIDE_FONT_SCALE_HEADING = 0.038 // ~41 px at 1080 px height
+export const SLIDE_FONT_SCALE_BODY = 0.022 // ~24 px at 1080 px height
+export const SLIDE_FONT_SCALE_CAPTION = 0.016 // ~17 px at 1080 px height
+
 /** Padding around the slide frame inside the canvas area, in pixels */
 export const CANVAS_PADDING_PX = 32
 
