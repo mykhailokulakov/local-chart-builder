@@ -191,6 +191,7 @@ jobs:
 7. **D3 renders SVG, not canvas.** Test that the choropleth map exports correctly to PDF — html2canvas handles SVG differently from `<canvas>`.
 8. **Don't install `@types/react-grid-layout`.** react-grid-layout v2 is TypeScript-native; that package conflicts.
 9. **`ThemePreset` is an enum.** Use `ThemePreset.dark`, not the string `'dark'`.
+10. **Don't fight Ant Design's CSS variables with inline overrides.** Conflicts mean the `ConfigProvider` is missing or misconfigured. Fix the token configuration at the root — not each component in isolation. Use a nested `ConfigProvider` with `darkAlgorithm` for dark-surfaced regions (e.g. the header) so all child components inherit correct tokens automatically.
 
 ## Mandatory post-task code audit
 
