@@ -12,7 +12,7 @@
 | Layer       | Technology                   | Notes                                                                                                                                            |
 | ----------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Build       | Vite 6+                      | `npm run build` → static `dist/` folder                                                                                                          |
-| Framework   | React 18 + TypeScript        | Strict mode, functional components only                                                                                                          |
+| Framework   | React 19 + TypeScript        | Strict mode, functional components only; v19 is installed (19.2.4)                                                                               |
 | UI library  | Ant Design 6 (v6.3.3)        | Builder interface (not PDF output); v6 injects CSS custom properties (`--ant-*`) by default — this is relied upon in `AppShell.tsx` panel styles |
 | Styling     | Tailwind CSS 3               | Custom theming for PDF slide output                                                                                                              |
 | Charts      | Chart.js 4 + react-chartjs-2 | Bar, donut, line charts                                                                                                                          |
