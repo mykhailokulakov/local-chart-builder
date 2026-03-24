@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import { useEffect } from 'react'
-import { Layout, Splitter } from 'antd'
+import { ConfigProvider, Layout, Splitter, theme as antTheme } from 'antd'
+import type { ThemeConfig } from 'antd'
 import { useUndoRedo } from '../../hooks/useUndoRedo'
 import {
   SLIDE_PANEL_DEFAULT_PX,
@@ -11,7 +12,6 @@ import {
   PROPERTIES_PANEL_MAX_PX,
   CANVAS_MIN_PX,
   TOP_BAR_HEIGHT_PX,
-  TOPBAR_BG_COLOR,
 } from '../../utils/constants'
 import { Canvas } from './Canvas'
 import { PropertiesPanel } from './PropertiesPanel'
@@ -29,6 +29,8 @@ const ROOT_STYLE: CSSProperties = {
   flexDirection: 'column',
 }
 
+// Background is driven by the Layout.headerBg token set in App.tsx's ConfigProvider.
+// No explicit background here — the token is the single source of truth.
 const HEADER_STYLE: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
@@ -36,7 +38,6 @@ const HEADER_STYLE: CSSProperties = {
   height: TOP_BAR_HEIGHT_PX,
   lineHeight: `${TOP_BAR_HEIGHT_PX}px`,
   flexShrink: 0,
-  background: TOPBAR_BG_COLOR,
 }
 
 // Splitter fills all remaining vertical space below the header
@@ -45,24 +46,35 @@ const SPLITTER_STYLE: CSSProperties = {
   minHeight: 0,
 }
 
-// Panel content styles — each fills its Splitter.Panel fully
+// Panel backgrounds reference Ant Design CSS custom properties injected by
+// ConfigProvider. This means they stay token-driven: if the shell theme tokens
+// change, all panels update automatically without touching these constants.
+//   colorBgContainer → white — used for editing panels (SlidePanel, PropertiesPanel)
+//   colorBgLayout    → light grey — used for the canvas work area
 const SLIDE_PANEL_CONTENT_STYLE: CSSProperties = {
   height: '100%',
   overflowY: 'auto',
-  background: '#fff',
+  background: 'var(--ant-color-bg-container)',
 }
 
 const CANVAS_CONTENT_STYLE: CSSProperties = {
   height: '100%',
   overflow: 'auto',
-  background: '#f5f5f5',
+  background: 'var(--ant-color-bg-layout)',
 }
 
 const PROPERTIES_PANEL_CONTENT_STYLE: CSSProperties = {
   height: '100%',
   overflowY: 'auto',
-  background: '#fff',
+  background: 'var(--ant-color-bg-container)',
 }
+
+// Nested dark-algorithm scope for the header.
+// Every Ant Design component inside TopBar (Typography, Button, Segmented, Select)
+// automatically receives correct light-on-dark colours — no per-component overrides needed.
+// Note: Select dropdowns render via a portal at document root and therefore inherit
+// the outer light theme, which is the standard Ant Design behaviour for portalled overlays.
+const HEADER_THEME: ThemeConfig = { algorithm: antTheme.darkAlgorithm }
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -106,7 +118,9 @@ export function AppShell() {
   return (
     <Layout style={ROOT_STYLE}>
       <Layout.Header style={HEADER_STYLE}>
-        <TopBar />
+        <ConfigProvider theme={HEADER_THEME}>
+          <TopBar />
+        </ConfigProvider>
       </Layout.Header>
 
       <Splitter style={SPLITTER_STYLE}>

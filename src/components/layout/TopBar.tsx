@@ -7,10 +7,13 @@ import { useReport } from '../../hooks/useReport'
 import { useUndoRedo } from '../../hooks/useUndoRedo'
 import { setLanguage, setTheme } from '../../store/actions'
 import { ThemePreset } from '../../types/theme'
-import { EXPORT_BTN_MIN_WIDTH_PX } from '../../utils/constants'
 
 // ---------------------------------------------------------------------------
 // Module-level style constants — no inline objects in JSX
+//
+// Colour overrides are intentionally absent. TopBar renders inside a
+// ConfigProvider with darkAlgorithm (set in AppShell), so Typography, Button,
+// Segmented, and Select all inherit correct light-on-dark tokens automatically.
 // ---------------------------------------------------------------------------
 
 const CONTAINER_STYLE: CSSProperties = {
@@ -22,21 +25,14 @@ const CONTAINER_STYLE: CSSProperties = {
 
 const SPACER_STYLE: CSSProperties = { flex: 1 }
 
+// whiteSpace: nowrap prevents the title wrapping on narrow viewports
 const TITLE_STYLE: CSSProperties = {
   margin: 0,
-  color: 'rgba(255, 255, 255, 0.85)',
   whiteSpace: 'nowrap',
 }
 
+// Fixed width gives the Select a stable footprint regardless of option text length
 const THEME_SELECT_STYLE: CSSProperties = { width: 140 }
-
-const EXPORT_BTN_STYLE: CSSProperties = { minWidth: EXPORT_BTN_MIN_WIDTH_PX }
-
-const ICON_BTN_ACTIVE_STYLE: CSSProperties = { color: 'rgba(255, 255, 255, 0.85)' }
-const ICON_BTN_DISABLED_STYLE: CSSProperties = {
-  color: 'rgba(255, 255, 255, 0.3)',
-  cursor: 'not-allowed',
-}
 
 // ---------------------------------------------------------------------------
 // Component
@@ -102,7 +98,6 @@ export function TopBar() {
             disabled={!canUndo}
             onClick={handleUndo}
             aria-label={undoTitle}
-            style={canUndo ? ICON_BTN_ACTIVE_STYLE : ICON_BTN_DISABLED_STYLE}
           />
         </Tooltip>
         <Tooltip title={canRedo ? redoTitle : undefined}>
@@ -112,7 +107,6 @@ export function TopBar() {
             disabled={!canRedo}
             onClick={handleRedo}
             aria-label={redoTitle}
-            style={canRedo ? ICON_BTN_ACTIVE_STYLE : ICON_BTN_DISABLED_STYLE}
           />
         </Tooltip>
       </Space>
@@ -133,9 +127,7 @@ export function TopBar() {
         style={THEME_SELECT_STYLE}
       />
 
-      <Button type="primary" style={EXPORT_BTN_STYLE}>
-        {t('export.exportPdf')}
-      </Button>
+      <Button type="primary">{t('export.exportPdf')}</Button>
     </div>
   )
 }
