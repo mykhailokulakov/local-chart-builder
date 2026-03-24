@@ -32,6 +32,44 @@ jobs:
           path: audit-report.json
           retention-days: 30
 
+  deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci
+      # || true: npm outdated exits 1 when packages are outdated; this job is
+      # informational only and must never block the rest of the pipeline.
+      - name: Collect outdated dependencies
+        run: npm outdated --json > outdated.json || true
+      - name: Write dependency report to job summary
+        run: |
+          count=$(jq 'length' outdated.json)
+          {
+            echo "## Dependency Status"
+            echo ""
+            if [ "$count" -eq 0 ]; then
+              echo "✅ All dependencies are up to date."
+            else
+              echo "> ⚠️ **${count} package(s) have newer versions available.**"
+              echo ""
+              echo "| Package | Current | Wanted | Latest |"
+              echo "|---------|---------|--------|--------|"
+              jq -r '
+                to_entries[]
+                | "| `\(.key)` | \(.value.current) | \(.value.wanted) | \(.value.latest) |"
+              ' outdated.json
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: outdated-deps-report
+          path: outdated.json
+          retention-days: 7
+
   lint:
     runs-on: ubuntu-latest
     steps:
