@@ -21,9 +21,14 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
 
-      # -----------------------------------------------------------------------
-      # Security audit
-      # -----------------------------------------------------------------------
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci
       # Produce a full JSON report regardless of outcome so it is always
       # available as a downloadable artifact for triage.
       - name: Generate vulnerability report
@@ -39,9 +44,14 @@ jobs:
           path: audit-report.json
           retention-days: 30
 
-      # -----------------------------------------------------------------------
-      # Dependency freshness
-      # -----------------------------------------------------------------------
+  deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci
       # npm outdated exits 1 when any package is behind; suppress so this step
       # never fails — the report is purely informational.
       - name: Collect outdated dependencies
@@ -101,7 +111,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs: [lint]
+    # Depend on all three first-stage jobs so they appear in the same column
+    # in the GitHub Actions UI and test only starts once all pass.
+    needs: [lint, audit, deps]
     permissions:
       # Required by davelosert/vitest-coverage-report-action to post a
       # per-file coverage breakdown as a pull request review comment.
