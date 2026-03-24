@@ -22,8 +22,9 @@
     "done": "Готово"
   },
   "language": {
-    "ua": "УА",
-    "en": "EN"
+    "ua": "UA",
+    "en": "EN",
+    "selector": "Мова інтерфейсу"
   },
   "themes": {
     "dark": "Темна",

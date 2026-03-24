@@ -23,7 +23,8 @@
   },
   "language": {
     "ua": "UA",
-    "en": "EN"
+    "en": "EN",
+    "selector": "Interface language"
   },
   "themes": {
     "dark": "Dark",
