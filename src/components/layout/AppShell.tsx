@@ -1,8 +1,18 @@
 import type { CSSProperties } from 'react'
 import { useEffect } from 'react'
-import { Layout } from 'antd'
+import { ConfigProvider, Layout, Splitter, theme as antTheme } from 'antd'
+import type { ThemeConfig } from 'antd'
 import { useUndoRedo } from '../../hooks/useUndoRedo'
-import { SLIDE_PANEL_WIDTH_PX, PROPERTIES_PANEL_WIDTH_PX } from '../../utils/constants'
+import {
+  SLIDE_PANEL_DEFAULT_PX,
+  SLIDE_PANEL_MIN_PX,
+  SLIDE_PANEL_MAX_PX,
+  PROPERTIES_PANEL_DEFAULT_PX,
+  PROPERTIES_PANEL_MIN_PX,
+  PROPERTIES_PANEL_MAX_PX,
+  CANVAS_MIN_PX,
+  TOP_BAR_HEIGHT_PX,
+} from '../../utils/constants'
 import { Canvas } from './Canvas'
 import { PropertiesPanel } from './PropertiesPanel'
 import { SlidePanel } from './SlidePanel'
@@ -19,41 +29,52 @@ const ROOT_STYLE: CSSProperties = {
   flexDirection: 'column',
 }
 
+// Background is driven by the Layout.headerBg token set in App.tsx's ConfigProvider.
+// No explicit background here — the token is the single source of truth.
 const HEADER_STYLE: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   padding: '0 16px',
+  height: TOP_BAR_HEIGHT_PX,
+  lineHeight: `${TOP_BAR_HEIGHT_PX}px`,
   flexShrink: 0,
 }
 
-const PANELS_STYLE: CSSProperties = {
-  display: 'flex',
+// Splitter fills all remaining vertical space below the header
+const SPLITTER_STYLE: CSSProperties = {
   flex: 1,
   minHeight: 0,
-  overflow: 'hidden',
 }
 
-const SLIDE_PANEL_STYLE: CSSProperties = {
-  width: SLIDE_PANEL_WIDTH_PX,
-  flexShrink: 0,
+// Panel backgrounds reference Ant Design CSS custom properties injected by
+// ConfigProvider. This means they stay token-driven: if the shell theme tokens
+// change, all panels update automatically without touching these constants.
+//   colorBgContainer → white — used for editing panels (SlidePanel, PropertiesPanel)
+//   colorBgLayout    → light grey — used for the canvas work area
+const SLIDE_PANEL_CONTENT_STYLE: CSSProperties = {
+  height: '100%',
   overflowY: 'auto',
-  borderRight: '1px solid #f0f0f0',
-  background: '#fff',
+  background: 'var(--ant-color-bg-container)',
 }
 
-const CANVAS_STYLE: CSSProperties = {
-  flex: 1,
+const CANVAS_CONTENT_STYLE: CSSProperties = {
+  height: '100%',
   overflow: 'auto',
-  background: '#f5f5f5',
+  background: 'var(--ant-color-bg-layout)',
 }
 
-const PROPERTIES_PANEL_STYLE: CSSProperties = {
-  width: PROPERTIES_PANEL_WIDTH_PX,
-  flexShrink: 0,
+const PROPERTIES_PANEL_CONTENT_STYLE: CSSProperties = {
+  height: '100%',
   overflowY: 'auto',
-  borderLeft: '1px solid #f0f0f0',
-  background: '#fff',
+  background: 'var(--ant-color-bg-container)',
 }
+
+// Nested dark-algorithm scope for the header.
+// Every Ant Design component inside TopBar (Typography, Button, Segmented, Select)
+// automatically receives correct light-on-dark colours — no per-component overrides needed.
+// React portals maintain context from the React tree (not the DOM tree), so overlay
+// elements such as Select dropdowns also inherit this dark algorithm correctly.
+const HEADER_THEME: ThemeConfig = { algorithm: antTheme.darkAlgorithm }
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -97,19 +118,38 @@ export function AppShell() {
   return (
     <Layout style={ROOT_STYLE}>
       <Layout.Header style={HEADER_STYLE}>
-        <TopBar />
+        <ConfigProvider theme={HEADER_THEME}>
+          <TopBar />
+        </ConfigProvider>
       </Layout.Header>
-      <div style={PANELS_STYLE}>
-        <aside style={SLIDE_PANEL_STYLE}>
-          <SlidePanel />
-        </aside>
-        <main style={CANVAS_STYLE}>
-          <Canvas />
-        </main>
-        <aside style={PROPERTIES_PANEL_STYLE}>
-          <PropertiesPanel />
-        </aside>
-      </div>
+
+      <Splitter style={SPLITTER_STYLE}>
+        <Splitter.Panel
+          defaultSize={SLIDE_PANEL_DEFAULT_PX}
+          min={SLIDE_PANEL_MIN_PX}
+          max={SLIDE_PANEL_MAX_PX}
+        >
+          <aside style={SLIDE_PANEL_CONTENT_STYLE}>
+            <SlidePanel />
+          </aside>
+        </Splitter.Panel>
+
+        <Splitter.Panel min={CANVAS_MIN_PX}>
+          <main style={CANVAS_CONTENT_STYLE}>
+            <Canvas />
+          </main>
+        </Splitter.Panel>
+
+        <Splitter.Panel
+          defaultSize={PROPERTIES_PANEL_DEFAULT_PX}
+          min={PROPERTIES_PANEL_MIN_PX}
+          max={PROPERTIES_PANEL_MAX_PX}
+        >
+          <aside style={PROPERTIES_PANEL_CONTENT_STYLE}>
+            <PropertiesPanel />
+          </aside>
+        </Splitter.Panel>
+      </Splitter>
     </Layout>
   )
 }

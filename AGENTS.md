@@ -294,6 +294,31 @@ If any of these are found in files touched during a task, fix them in a separate
 | `console.log` in committed code                                   | Remove                                            |
 | Silent `undefined` return on error                                | Throw explicitly or return typed `null`           |
 | `any` or unsafe cast in a data path                               | Introduce a proper type guard                     |
+| CSS overrides fighting a UI framework's injected styles           | Configure the framework correctly at the root     |
+
+---
+
+## Framework integration — configure at the root, never suppress symptoms
+
+When a UI framework (Ant Design, MUI, etc.) injects CSS variables or default styles that
+conflict with your component, the conflict always indicates a **missing or incorrect root
+configuration** — not a component that needs more overrides.
+
+**Rule: fix at the origin, not at the observation point.**
+
+| Symptom                                                    | Wrong fix                                          | Right fix                                                                |
+| ---------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------ |
+| Wrong text colour inside a dark header                     | Add `color: 'white'` to every child component      | Wrap header with `<ConfigProvider theme={{ algorithm: darkAlgorithm }}>` |
+| Framework background overrides panel colour                | Repeated inline `background` props or `!important` | Set `colorBgContainer` / `colorBgLayout` tokens in root `ConfigProvider` |
+| Buttons, typography, selects misbehave in a themed context | Override each component's style prop individually  | Create the correct CSS-variable scope via a nested `ConfigProvider`      |
+
+A symptom-suppression fix creates maintenance debt: every new component added to that
+context needs the same manual override. A root-cause fix is zero-maintenance — all
+components automatically inherit the correct tokens.
+
+**Corollary:** a constant whose only purpose is to compensate for a missing framework
+configuration (e.g. `EXPORT_BTN_MIN_WIDTH_PX` to stabilise a button that should be stable
+by design) is itself a symptom. Remove the constant; fix the configuration.
 
 ---
 

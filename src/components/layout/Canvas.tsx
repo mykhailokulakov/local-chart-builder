@@ -8,6 +8,7 @@ import { useContainerSize } from '../../hooks/useContainerSize'
 import { TileToolbar } from '../toolbar/TileToolbar'
 import { ChartSlideCanvas } from './ChartSlideCanvas'
 import { SlidePreview } from './SlidePreview'
+import { SlideErrorBoundary } from './SlideErrorBoundary'
 import { SLIDE_ASPECT_RATIO, CANVAS_PADDING_PX, STATUS_BAR_HEIGHT_PX } from '../../utils/constants'
 
 // ---------------------------------------------------------------------------
@@ -30,6 +31,9 @@ const SLIDE_AREA_STYLE: CSSProperties = {
   padding: CANVAS_PADDING_PX,
 }
 
+// Colours reference Ant Design CSS custom properties so they respond to token
+// changes automatically. colorTextTertiary ≈ #8c8c8c; colorTextQuaternary ≈ #bfbfbf;
+// colorBorderSecondary ≈ #f0f0f0; colorBgLayout ≈ #f5f5f5 in the light shell theme.
 const STATUS_BAR_STYLE: CSSProperties = {
   height: STATUS_BAR_HEIGHT_PX,
   display: 'flex',
@@ -38,15 +42,34 @@ const STATUS_BAR_STYLE: CSSProperties = {
   padding: '0 16px',
   flexShrink: 0,
   fontSize: 12,
-  color: '#8c8c8c',
-  borderTop: '1px solid #f0f0f0',
-  background: '#fafafa',
+  color: 'var(--ant-color-text-tertiary)',
+  borderTop: '1px solid var(--ant-color-border-secondary)',
+  background: 'var(--ant-color-bg-layout)',
 }
 
 const NO_SLIDE_STYLE: CSSProperties = {
-  color: '#bfbfbf',
+  color: 'var(--ant-color-text-quaternary)',
   fontSize: 14,
   textAlign: 'center',
+}
+
+const SLIDE_ERROR_STYLE: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 8,
+  width: '100%',
+  height: '100%',
+  color: 'var(--ant-color-text-tertiary)',
+  fontSize: 14,
+  textAlign: 'center',
+  padding: 24,
+}
+
+const SLIDE_ERROR_HINT_STYLE: CSSProperties = {
+  fontSize: 12,
+  color: 'var(--ant-color-text-quaternary)',
 }
 
 const SLIDE_FRAME_SHADOW: CSSProperties = {
@@ -107,6 +130,16 @@ export function Canvas() {
     [slideW, slideH, theme],
   )
 
+  const slideErrorFallback = useMemo(
+    () => (
+      <div style={SLIDE_ERROR_STYLE}>
+        <span>{t('canvas.slideError')}</span>
+        <span style={SLIDE_ERROR_HINT_STYLE}>{t('canvas.slideErrorHint')}</span>
+      </div>
+    ),
+    [t],
+  )
+
   const slideIndex = slide ? state.present.slides.findIndex((s) => s.id === slide.id) + 1 : 0
   const totalSlides = state.present.slides.length
 
@@ -123,11 +156,13 @@ export function Canvas() {
           <div style={NO_SLIDE_STYLE}>{t('canvas.noSlide')}</div>
         ) : (
           <div style={slideFrameStyle}>
-            {slide.type === 'chart' ? (
-              <ChartSlideCanvas slide={slide} width={slideW} height={slideH} />
-            ) : (
-              <SlidePreview slide={slide} />
-            )}
+            <SlideErrorBoundary key={slide.id} fallback={slideErrorFallback}>
+              {slide.type === 'chart' ? (
+                <ChartSlideCanvas slide={slide} width={slideW} height={slideH} />
+              ) : (
+                <SlidePreview slide={slide} />
+              )}
+            </SlideErrorBoundary>
           </div>
         )}
       </div>

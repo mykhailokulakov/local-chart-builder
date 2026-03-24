@@ -9,19 +9,19 @@
 
 ## Tech stack
 
-| Layer       | Technology                   | Notes                                          |
-| ----------- | ---------------------------- | ---------------------------------------------- |
-| Build       | Vite 6+                      | `npm run build` → static `dist/` folder        |
-| Framework   | React 18 + TypeScript        | Strict mode, functional components only        |
-| UI library  | Ant Design 5                 | Builder interface (not PDF output)             |
-| Styling     | Tailwind CSS 3               | Custom theming for PDF slide output            |
-| Charts      | Chart.js 4 + react-chartjs-2 | Bar, donut, line charts                        |
-| Gantt       | Custom SVG renderer          | No library — matches specific design reference |
-| Choropleth  | D3.js + Ukraine GeoJSON      | Oblast-level map with data-driven fills        |
-| Grid layout | react-grid-layout v2         | Drag/resize tiles on slide canvas              |
-| PDF export  | html2canvas + jsPDF          | Render slides at 1920x1080 → assemble PDF      |
-| i18n        | i18next + react-i18next      | UA/EN toggle                                   |
-| Font        | e-Ukraine (bundled .woff2)   | Official MinDigit typeface, Cyrillic-first     |
+| Layer       | Technology                   | Notes                                                                                                                                            |
+| ----------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Build       | Vite 6+                      | `npm run build` → static `dist/` folder                                                                                                          |
+| Framework   | React 19 + TypeScript        | Strict mode, functional components only; v19 is installed (19.2.4)                                                                               |
+| UI library  | Ant Design 6 (v6.3.3)        | Builder interface (not PDF output); v6 injects CSS custom properties (`--ant-*`) by default — this is relied upon in `AppShell.tsx` panel styles |
+| Styling     | Tailwind CSS 3               | Custom theming for PDF slide output                                                                                                              |
+| Charts      | Chart.js 4 + react-chartjs-2 | Bar, donut, line charts                                                                                                                          |
+| Gantt       | Custom SVG renderer          | No library — matches specific design reference                                                                                                   |
+| Choropleth  | D3.js + Ukraine GeoJSON      | Oblast-level map with data-driven fills                                                                                                          |
+| Grid layout | react-grid-layout v2         | Drag/resize tiles on slide canvas                                                                                                                |
+| PDF export  | html2canvas + jsPDF          | Render slides at 1920x1080 → assemble PDF                                                                                                        |
+| i18n        | i18next + react-i18next      | UA/EN toggle                                                                                                                                     |
+| Font        | e-Ukraine (bundled .woff2)   | Official MinDigit typeface, Cyrillic-first                                                                                                       |
 
 ## Project structure
 
@@ -191,6 +191,7 @@ jobs:
 7. **D3 renders SVG, not canvas.** Test that the choropleth map exports correctly to PDF — html2canvas handles SVG differently from `<canvas>`.
 8. **Don't install `@types/react-grid-layout`.** react-grid-layout v2 is TypeScript-native; that package conflicts.
 9. **`ThemePreset` is an enum.** Use `ThemePreset.dark`, not the string `'dark'`.
+10. **Don't fight Ant Design's CSS variables with inline overrides.** Conflicts mean the `ConfigProvider` is missing or misconfigured. Fix the token configuration at the root — not each component in isolation. Use a nested `ConfigProvider` with `darkAlgorithm` for dark-surfaced regions (e.g. the header) so all child components inherit correct tokens automatically.
 
 ## Mandatory post-task code audit
 

@@ -53,7 +53,7 @@ const LABEL_ROW: CSSProperties = {
   padding: '2px 4px 2px 6px',
 }
 
-const NUMBER_STYLE: CSSProperties = { fontSize: 11, color: '#888' }
+const NUMBER_STYLE: CSSProperties = { fontSize: 11, color: 'var(--ant-color-text-tertiary)' }
 
 const MORE_BTN: CSSProperties = { padding: 0, height: 20, minWidth: 20 }
 
@@ -92,7 +92,7 @@ export function SlideCard({
   )
 
   const thumbnailStyle: CSSProperties = useMemo(
-    () => ({ ...THUMBNAIL_BASE, background: SLIDE_TYPE_COLORS[slide.type] ?? '#ccc' }),
+    () => ({ ...THUMBNAIL_BASE, background: SLIDE_TYPE_COLORS[slide.type] }),
     [slide.type],
   )
 

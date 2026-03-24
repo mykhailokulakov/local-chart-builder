@@ -10,6 +10,10 @@ import { ThemePreset } from '../../types/theme'
 
 // ---------------------------------------------------------------------------
 // Module-level style constants — no inline objects in JSX
+//
+// Colour overrides are intentionally absent. TopBar renders inside a
+// ConfigProvider with darkAlgorithm (set in AppShell), so Typography, Button,
+// Segmented, and Select all inherit correct light-on-dark tokens automatically.
 // ---------------------------------------------------------------------------
 
 const CONTAINER_STYLE: CSSProperties = {
@@ -21,8 +25,13 @@ const CONTAINER_STYLE: CSSProperties = {
 
 const SPACER_STYLE: CSSProperties = { flex: 1 }
 
-const TITLE_STYLE: CSSProperties = { margin: 0, color: 'inherit', whiteSpace: 'nowrap' }
+// whiteSpace: nowrap prevents the title wrapping on narrow viewports
+const TITLE_STYLE: CSSProperties = {
+  margin: 0,
+  whiteSpace: 'nowrap',
+}
 
+// Fixed width gives the Select a stable footprint regardless of option text length
 const THEME_SELECT_STYLE: CSSProperties = { width: 140 }
 
 // ---------------------------------------------------------------------------
@@ -39,10 +48,10 @@ export function TopBar() {
 
   const languageOptions = useMemo(
     () => [
-      { label: t('language.ua'), value: 'ua' as const },
-      { label: t('language.en'), value: 'en' as const },
+      { label: 'UA', value: 'ua' as const },
+      { label: 'EN', value: 'en' as const },
     ],
-    [t],
+    [],
   )
 
   const themeOptions = useMemo(
@@ -82,16 +91,18 @@ export function TopBar() {
       </Typography.Title>
 
       <Space size="small">
-        <Tooltip title={undoTitle}>
+        <Tooltip title={canUndo ? undoTitle : undefined}>
           <Button
+            type="text"
             icon={<UndoOutlined />}
             disabled={!canUndo}
             onClick={handleUndo}
             aria-label={undoTitle}
           />
         </Tooltip>
-        <Tooltip title={redoTitle}>
+        <Tooltip title={canRedo ? redoTitle : undefined}>
           <Button
+            type="text"
             icon={<RedoOutlined />}
             disabled={!canRedo}
             onClick={handleRedo}
@@ -106,7 +117,7 @@ export function TopBar() {
         options={languageOptions}
         value={language}
         onChange={handleLanguageChange}
-        aria-label={t('language.ua')}
+        aria-label={t('language.selector')}
       />
 
       <Select<ThemePreset>
