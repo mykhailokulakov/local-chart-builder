@@ -56,7 +56,11 @@ export default defineConfig({
       // text: printed to the terminal after each run.
       // html: browsable report written to coverage/.
       // lcov: machine-readable format consumed by CI tools and editor plugins.
-      reporter: ['text', 'html', 'lcov', 'json-summary'],
+      // json: writes coverage/coverage-final.json — required by
+      //   davelosert/vitest-coverage-report-action for line-level diff annotation.
+      // json-summary: writes coverage/coverage-summary.json — used for the
+      //   totals table in the Actions job summary.
+      reporter: ['text', 'html', 'lcov', 'json', 'json-summary'],
       include: ['src/**'],
       exclude: [
         'src/main.tsx', // app entry point — no testable logic
