@@ -1,8 +1,19 @@
-/** Width of the slide list sidebar in pixels */
-export const SLIDE_PANEL_WIDTH_PX = 200
+/** Default width of the slide list sidebar in pixels */
+export const SLIDE_PANEL_DEFAULT_PX = 200
+/** Minimum width the slide list sidebar can be dragged to */
+export const SLIDE_PANEL_MIN_PX = 160
+/** Maximum width the slide list sidebar can be dragged to */
+export const SLIDE_PANEL_MAX_PX = 320
 
-/** Width of the properties panel sidebar in pixels */
-export const PROPERTIES_PANEL_WIDTH_PX = 280
+/** Default width of the properties panel sidebar in pixels */
+export const PROPERTIES_PANEL_DEFAULT_PX = 280
+/** Minimum width the properties panel can be dragged to */
+export const PROPERTIES_PANEL_MIN_PX = 220
+/** Maximum width the properties panel can be dragged to */
+export const PROPERTIES_PANEL_MAX_PX = 420
+
+/** Minimum width of the canvas — ensures the slide preview stays usable */
+export const CANVAS_MIN_PX = 400
 
 /** Height of the application top bar in pixels */
 export const TOP_BAR_HEIGHT_PX = 56
@@ -10,7 +21,7 @@ export const TOP_BAR_HEIGHT_PX = 56
 /** Background colour of the application top bar */
 export const TOPBAR_BG_COLOR = '#001529'
 
-/** Minimum width of the Export PDF button in pixels — wide enough for the longest translation */
+/** Minimum width of the Export PDF button — wide enough for the longest translation */
 export const EXPORT_BTN_MIN_WIDTH_PX = 130
 
 /** Thumbnail background colour for each slide type */
