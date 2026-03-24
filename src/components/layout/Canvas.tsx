@@ -31,6 +31,9 @@ const SLIDE_AREA_STYLE: CSSProperties = {
   padding: CANVAS_PADDING_PX,
 }
 
+// Colours reference Ant Design CSS custom properties so they respond to token
+// changes automatically. colorTextTertiary ≈ #8c8c8c; colorTextQuaternary ≈ #bfbfbf;
+// colorBorderSecondary ≈ #f0f0f0; colorBgLayout ≈ #f5f5f5 in the light shell theme.
 const STATUS_BAR_STYLE: CSSProperties = {
   height: STATUS_BAR_HEIGHT_PX,
   display: 'flex',
@@ -39,13 +42,13 @@ const STATUS_BAR_STYLE: CSSProperties = {
   padding: '0 16px',
   flexShrink: 0,
   fontSize: 12,
-  color: '#8c8c8c',
-  borderTop: '1px solid #f0f0f0',
-  background: '#fafafa',
+  color: 'var(--ant-color-text-tertiary)',
+  borderTop: '1px solid var(--ant-color-border-secondary)',
+  background: 'var(--ant-color-bg-layout)',
 }
 
 const NO_SLIDE_STYLE: CSSProperties = {
-  color: '#bfbfbf',
+  color: 'var(--ant-color-text-quaternary)',
   fontSize: 14,
   textAlign: 'center',
 }
@@ -58,7 +61,7 @@ const SLIDE_ERROR_STYLE: CSSProperties = {
   gap: 8,
   width: '100%',
   height: '100%',
-  color: '#8c8c8c',
+  color: 'var(--ant-color-text-tertiary)',
   fontSize: 14,
   textAlign: 'center',
   padding: 24,
@@ -66,7 +69,7 @@ const SLIDE_ERROR_STYLE: CSSProperties = {
 
 const SLIDE_ERROR_HINT_STYLE: CSSProperties = {
   fontSize: 12,
-  color: '#bfbfbf',
+  color: 'var(--ant-color-text-quaternary)',
 }
 
 const SLIDE_FRAME_SHADOW: CSSProperties = {
