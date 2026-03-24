@@ -9,7 +9,7 @@ on:
 env:
   NODE_OPTIONS: --no-deprecation
 jobs:
-  audit:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -17,12 +17,19 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+
+      # -----------------------------------------------------------------------
+      # Security audit
+      # -----------------------------------------------------------------------
       # Produce a full JSON report regardless of outcome so it is always
       # available as a downloadable artifact for triage.
       - name: Generate vulnerability report
         run: npm audit --json > audit-report.json || true
-      # Hard-fail the job only on critical-severity findings — these represent
-      # actively exploitable vulnerabilities that require an immediate update.
+      # Hard-fail on critical-severity findings — actively exploitable
+      # vulnerabilities that require an immediate update.
       - name: Fail on critical vulnerabilities
         run: npm audit --audit-level=critical
       - uses: actions/upload-artifact@v5
@@ -32,16 +39,11 @@ jobs:
           path: audit-report.json
           retention-days: 30
 
-  deps:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-      - run: npm ci
-      # npm outdated exits 1 when any package is behind; suppress so the step
-      # never fails — the report below is purely informational.
+      # -----------------------------------------------------------------------
+      # Dependency freshness
+      # -----------------------------------------------------------------------
+      # npm outdated exits 1 when any package is behind; suppress so this step
+      # never fails — the report is purely informational.
       - name: Collect outdated dependencies
         run: npm outdated --json > outdated.json || true
       - name: Write dependency report to job summary
@@ -96,18 +98,6 @@ jobs:
           name: outdated-deps-report
           path: outdated.json
           retention-days: 7
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-      - run: npm ci
-      - run: npm run format:check
-      - run: npm run lint
-      - run: npm run typecheck
 
   test:
     runs-on: ubuntu-latest
