@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -25,7 +25,7 @@ interface TileToolbarProps {
 
 interface TileButtonConfig {
   type: ChartType | 'text'
-  icon: React.ReactNode
+  icon: ReactNode
 }
 
 // ---------------------------------------------------------------------------
@@ -36,8 +36,8 @@ const TOOLBAR_STYLE: CSSProperties = {
   display: 'flex',
   gap: 6,
   padding: '6px 16px',
-  borderBottom: '1px solid #f0f0f0',
-  background: '#fafafa',
+  borderBottom: '1px solid var(--ant-color-border-secondary)',
+  background: 'var(--ant-color-bg-layout)',
   flexWrap: 'wrap',
   flexShrink: 0,
 }
@@ -48,8 +48,8 @@ const PILL_BASE_STYLE: CSSProperties = {
   gap: 4,
   padding: '3px 10px',
   borderRadius: 20,
-  border: '1px solid #d9d9d9',
-  background: '#fff',
+  border: '1px solid var(--ant-color-border)',
+  background: 'var(--ant-color-bg-container)',
   cursor: 'pointer',
   fontSize: 12,
   lineHeight: '20px',
