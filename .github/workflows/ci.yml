@@ -165,7 +165,7 @@ jobs:
       - run: npm ci
       # Download the dist artifact built in the build job so we test the exact
       # same output that gets released — not a fresh rebuild.
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist/
