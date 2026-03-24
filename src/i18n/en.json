@@ -98,6 +98,8 @@
   "canvas": {
     "noSlide": "Select a slide to preview",
     "slideOf": "Slide {{current}} of {{total}}",
+    "slideError": "This slide failed to render",
+    "slideErrorHint": "Select a different slide or undo the last change",
     "hint": {
       "chart": "Drag to move · Resize from corners",
       "title": "Edit properties in the right panel",
