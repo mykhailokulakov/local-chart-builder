@@ -51,5 +51,17 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     // Playwright e2e specs are not run by Vitest — they use their own runner.
     exclude: ['**/node_modules/**', '**/dist/**', 'tests/e2e/**'],
+    coverage: {
+      provider: 'v8',
+      // text: printed to the terminal after each run.
+      // html: browsable report written to coverage/.
+      // lcov: machine-readable format consumed by CI tools and editor plugins.
+      reporter: ['text', 'html', 'lcov'],
+      include: ['src/**'],
+      exclude: [
+        'src/main.tsx', // app entry point — no testable logic
+        'src/vite-env.d.ts', // type declarations only
+      ],
+    },
   },
 })

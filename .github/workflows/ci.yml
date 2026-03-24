@@ -9,6 +9,29 @@ on:
 env:
   NODE_OPTIONS: --no-deprecation
 jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci
+      # Produce a full JSON report regardless of outcome so it is always
+      # available as a downloadable artifact for triage.
+      - name: Generate vulnerability report
+        run: npm audit --json > audit-report.json || true
+      # Hard-fail the job only on critical-severity findings — these represent
+      # actively exploitable vulnerabilities that require an immediate update.
+      - name: Fail on critical vulnerabilities
+        run: npm audit --audit-level=critical
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: audit-report
+          path: audit-report.json
+          retention-days: 30
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -30,7 +53,15 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      - run: npm run test -- --run
+      - run: npm run test:coverage
+      # Upload the HTML coverage report so the team can browse line-level
+      # coverage without running the suite locally.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
 
   build:
     runs-on: ubuntu-latest
