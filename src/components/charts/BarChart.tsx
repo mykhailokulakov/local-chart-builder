@@ -72,11 +72,12 @@ function makeValueLabelPlugin(
           ctx.textAlign = 'center'
           ctx.textBaseline = orientation === 'horizontal' ? 'middle' : 'bottom'
 
-          const { x, y } = bar.tooltipPosition(false)
+          const pos = bar.tooltipPosition(false)
+          if (pos.x === null || pos.y === null) return
           const offsetX = orientation === 'horizontal' ? DATALABEL_PADDING_PX : 0
           const offsetY = orientation === 'horizontal' ? 0 : -DATALABEL_PADDING_PX
 
-          ctx.fillText(label, x + offsetX, y + offsetY)
+          ctx.fillText(label, pos.x + offsetX, pos.y + offsetY)
           ctx.restore()
         })
       })
@@ -88,7 +89,7 @@ function makeValueLabelPlugin(
 // Component
 // ---------------------------------------------------------------------------
 
-export function BarChart({ data, orientation, options, theme }: BarChartProps): JSX.Element {
+export function BarChart({ data, orientation, options, theme }: BarChartProps) {
   const { t } = useTranslation()
   const isHorizontal = orientation === 'horizontal'
 
