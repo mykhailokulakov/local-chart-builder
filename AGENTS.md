@@ -41,17 +41,19 @@ Only after all three answers are clear should you write implementation. Write th
 
 ## Commands
 
-| Purpose              | Command                                 |
-| -------------------- | --------------------------------------- |
-| Install dependencies | `npm ci`                                |
-| Start dev server     | `npm run dev`                           |
-| Production build     | `npm run build`                         |
-| Type-check (no emit) | `npm run typecheck`                     |
-| Lint (zero warnings) | `npm run lint`                          |
-| Format (write)       | `npm run format`                        |
-| Format (check only)  | `npm run format:check`                  |
-| Run all tests        | `npm run test -- --run`                 |
-| Run single test file | `npx vitest run tests/unit/foo.test.ts` |
+| Purpose              | Command                                     |
+| -------------------- | ------------------------------------------- |
+| Install dependencies | `npm ci`                                    |
+| Start dev server     | `npm run dev`                               |
+| Production build     | `npm run build`                             |
+| Type-check (no emit) | `npm run typecheck`                         |
+| Lint (zero warnings) | `npm run lint`                              |
+| Format (write)       | `npm run format`                            |
+| Format (check only)  | `npm run format:check`                      |
+| Run all tests        | `npm run test -- --run`                     |
+| Run single test file | `npx vitest run tests/unit/foo.test.ts`     |
+| Run e2e tests        | `npm run test:e2e`                          |
+| Run single e2e file  | `npx playwright test tests/e2e/foo.spec.ts` |
 
 **Before every commit, run in order:**
 
@@ -324,6 +326,8 @@ by design) is itself a symptom. Remove the constant; fix the configuration.
 
 ## Testing requirements
 
+### Unit and component tests (Vitest + @testing-library/react)
+
 - **Framework:** Vitest + @testing-library/react
 - **Coverage target:** 80%+ on `store/`, `services/`, `utils/`
 - **Every new function** in `store/` or `services/` requires unit tests.
@@ -332,13 +336,23 @@ by design) is itself a symptom. Remove the constant; fix the configuration.
 - Mocks are scoped to the test file using `vi.mock()` or `vi.spyOn()`. No global mocks.
 - Do not test Ant Design internals or react-grid-layout drag mechanics.
 
+### E2e tests (Playwright)
+
+- **Framework:** Playwright (`npm run test:e2e`). Config is in `playwright.config.ts`.
+- **Scope:** user-visible flows only — interactions a real user performs in the browser (clicks, keyboard, navigation). Do not use e2e tests to cover component rendering logic; that belongs in `tests/components/`.
+- **When to add an e2e test:** a new user flow is reachable end-to-end in the built app (e.g. adding a tile, exporting PDF, toggling a setting). A component that is not yet wired into any user flow does **not** require an e2e test.
+- **Language:** the app defaults to Ukrainian (`lng: 'ua'`). E2e tests use Ukrainian strings unless a semantic role selector (`getByRole`, `getByLabel`) is available. Add a comment mapping each hardcoded UA string to its i18n key.
+- **Selectors:** prefer `getByRole` and `getByLabel` over text or CSS selectors. Use Ukrainian text only as a last resort.
+- **Do not** run `npm run test:e2e` in the pre-commit step — e2e tests require a running dev/preview server and are slow. They are run separately in CI.
+
 ### Test file placement
 
-| Source file              | Test file                       |
-| ------------------------ | ------------------------------- |
-| `src/store/foo.ts`       | `tests/unit/foo.test.ts`        |
-| `src/services/bar.ts`    | `tests/unit/bar.test.ts`        |
-| `src/components/Baz.tsx` | `tests/components/Baz.test.tsx` |
+| Source file                   | Test file                       |
+| ----------------------------- | ------------------------------- |
+| `src/store/foo.ts`            | `tests/unit/foo.test.ts`        |
+| `src/services/bar.ts`         | `tests/unit/bar.test.ts`        |
+| `src/components/Baz.tsx`      | `tests/components/Baz.test.tsx` |
+| New user-visible flow or page | `tests/e2e/<feature>.spec.ts`   |
 
 ---
 
@@ -447,7 +461,7 @@ Ruled out: **`localStorage` autosave** — migration story starts immediately; 5
 ```
 1.  Read AGENTS.md (this file) completely — it is self-contained
 2.  Read every file you plan to touch
-3.  Run: npm run test -- --run   (confirm baseline passes)
+3.  Run: npm run test -- --run   (confirm unit/component baseline passes)
 4.  Answer the design-first ritual (3 questions) before writing any code
 5.  Write the test structure (describe + test names) before implementation
 6.  Implement
