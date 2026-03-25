@@ -41,6 +41,11 @@ const DISPLAY_TOGGLES_BY_TYPE = {
   line: ['showValues', 'showLegend', 'showAxis'],
 } as const
 type ToggleKey = 'showValues' | 'showLegend' | 'showAxis'
+type EditableChartType = keyof typeof DISPLAY_TOGGLES_BY_TYPE
+
+function isEditableChartType(type: ChartType | 'text'): type is EditableChartType {
+  return type === 'bar-v' || type === 'bar-h' || type === 'donut' || type === 'line'
+}
 
 const TYPE_GRID_STYLE: CSSProperties = {
   display: 'grid',
@@ -75,8 +80,9 @@ export function ChartTileEditor({ tile }: ChartTileEditorProps) {
   // tile types to ChartTileEditor, so tile.data is guaranteed to be ChartData.
   const chartData = tile.data as ChartData
   const points = chartData.points ?? []
-  const availableToggles = DISPLAY_TOGGLES_BY_TYPE[tile.type]
-  const canEditLegendLabel = tile.type === 'bar-v' || tile.type === 'bar-h' || tile.type === 'line'
+  const chartType: EditableChartType = isEditableChartType(tile.type) ? tile.type : 'bar-v'
+  const availableToggles = DISPLAY_TOGGLES_BY_TYPE[chartType]
+  const canEditLegendLabel = chartType === 'bar-v' || chartType === 'bar-h' || chartType === 'line'
 
   const updateData = useCallback(
     (patch: Partial<ChartData>) => {

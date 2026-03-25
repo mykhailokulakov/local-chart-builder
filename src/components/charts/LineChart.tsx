@@ -126,6 +126,7 @@ function makeValueLabelPlugin(foreground: string, fontFamily: string): Plugin<'l
           const rawValue = chart.data.datasets[datasetIndex].data[index]
           if (typeof rawValue !== 'number') return
           const { x, y } = point.tooltipPosition(false)
+          if (x === null || y === null) return
           ctx.save()
           ctx.font = `11px ${fontFamily}`
           ctx.fillStyle = foreground
