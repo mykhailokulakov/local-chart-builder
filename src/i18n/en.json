@@ -133,6 +133,21 @@
   "charts": {
     "noData": "No data to display"
   },
+  "dataTable": {
+    "ariaLabel": "Data table",
+    "columns": "Columns",
+    "addColumn": "Add Column",
+    "removeColumn": "Remove column",
+    "columnHeader": "Column header",
+    "columnHeaderPlaceholder": "Header…",
+    "rows": "Rows",
+    "addRow": "Add Row",
+    "removeRow": "Remove row",
+    "csvHint": "First row = headers, subsequent rows = data",
+    "showHeader": "Show Header",
+    "striped": "Striped Rows",
+    "bordered": "Bordered"
+  },
   "map": {
     "ariaLabel": "Ukraine choropleth map",
     "crimeaIsUkraine": "Crimea is Ukraine"

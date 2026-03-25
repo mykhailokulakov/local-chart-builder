@@ -115,4 +115,10 @@ export interface ChartOptions {
   showLegend?: boolean
   /** Render axis lines and tick labels */
   showAxis?: boolean
+  /** Render the header row in data tables */
+  showHeader?: boolean
+  /** Apply alternating row background colours in data tables */
+  striped?: boolean
+  /** Render cell and table borders in data tables */
+  bordered?: boolean
 }
