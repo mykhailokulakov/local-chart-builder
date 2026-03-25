@@ -90,6 +90,12 @@
       "editTile": "Edit",
       "noTiles": "No tiles on this slide."
     },
+    "mapEditor": {
+      "legendLabel": "Legend Label",
+      "legendLabelPlaceholder": "e.g. Coverage, %",
+      "oblasts": "Oblasts",
+      "csvHint": "region,value — one per line"
+    },
     "tileType": {
       "bar-v": "Vertical Bar",
       "bar-h": "Horizontal Bar",
@@ -126,6 +132,10 @@
   },
   "charts": {
     "noData": "No data to display"
+  },
+  "map": {
+    "ariaLabel": "Ukraine choropleth map",
+    "crimeaIsUkraine": "Crimea is Ukraine"
   },
   "gantt": {
     "ariaLabel": "Gantt chart",

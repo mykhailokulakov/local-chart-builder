@@ -7,6 +7,16 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
     react(),
+    // Treat .geojson files as JSON modules so they can be statically imported.
+    // Vite v8 uses Rolldown which only recognises *.json; .geojson needs explicit wrapping.
+    {
+      name: 'geojson-loader',
+      transform(code: string, id: string) {
+        if (id.endsWith('.geojson') && !id.includes('?')) {
+          return { code: `export default ${code}` }
+        }
+      },
+    },
     // Vite v8 injects `<script type="module" crossorigin>` regardless of the
     // rollup output format. Strip both attributes and add `defer` so the app
     // loads correctly from file://:
