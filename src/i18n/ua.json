@@ -44,6 +44,8 @@
     "slideProperties": "Властивості слайду",
     "tileEditor": "Редактор елементу",
     "chartTitle": "Назва діаграми",
+    "legendLabel": "Підпис легенди",
+    "legendLabelPlaceholder": "наприклад, Охоплення",
     "dataInput": "Введення даних",
     "manual": "Вручну",
     "csv": "CSV",
