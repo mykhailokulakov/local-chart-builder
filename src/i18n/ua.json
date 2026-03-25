@@ -133,6 +133,21 @@
   "charts": {
     "noData": "Немає даних для відображення"
   },
+  "dataTable": {
+    "ariaLabel": "Таблиця даних",
+    "columns": "Стовпці",
+    "addColumn": "Додати стовпець",
+    "removeColumn": "Видалити стовпець",
+    "columnHeader": "Заголовок стовпця",
+    "columnHeaderPlaceholder": "Заголовок…",
+    "rows": "Рядки",
+    "addRow": "Додати рядок",
+    "removeRow": "Видалити рядок",
+    "csvHint": "Перший рядок = заголовки, наступні рядки = дані",
+    "showHeader": "Показати заголовок",
+    "striped": "Смугасті рядки",
+    "bordered": "З рамками"
+  },
   "map": {
     "ariaLabel": "Карта України по областях",
     "crimeaIsUkraine": "Крим — це Україна"
