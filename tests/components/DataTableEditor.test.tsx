@@ -27,7 +27,7 @@ function makeTile(overrides: Partial<TileConfig> = {}): TileConfig {
     id: TILE_ID,
     type: 'data-table',
     layout: { x: 0, y: 0, w: 6, h: 4 },
-    data: { columns: [], rows: [] },
+    data: { columns: [], rows: [], rowIds: [] },
     options: { showHeader: true, striped: false, bordered: false },
     ...overrides,
   }
@@ -118,6 +118,7 @@ describe('DataTableEditor', () => {
           { key: 'col_1', header: 'Value' },
         ],
         rows: [],
+        rowIds: [],
       },
     })
     renderEditor(tile)
@@ -132,6 +133,7 @@ describe('DataTableEditor', () => {
       data: {
         columns: [{ key: 'col_0', header: 'City' }],
         rows: [{ col_0: 'Kyiv' }, { col_0: 'Lviv' }],
+        rowIds: ['row-key-1', 'row-key-2'],
       },
     })
     renderEditor(tile)

@@ -100,10 +100,11 @@ describe('createTile', () => {
     expect(tile.data).toHaveProperty('regions')
   })
 
-  it('data-table tile has columns and rows arrays', () => {
+  it('data-table tile has columns, rows, and rowIds arrays', () => {
     const tile = createTile('data-table')
     expect(tile.data).toHaveProperty('columns')
     expect(tile.data).toHaveProperty('rows')
+    expect(tile.data).toHaveProperty('rowIds')
   })
 
   it('text tile has body, alignment, and fontSize fields', () => {

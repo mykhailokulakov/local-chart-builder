@@ -23,7 +23,7 @@ export function createTile(type: ChartType | 'text'): TileConfig {
     case 'choropleth':
       return { id, type, layout, data: { regions: [] }, options }
     case 'data-table':
-      return { id, type, layout, data: { columns: [], rows: [] }, options }
+      return { id, type, layout, data: { columns: [], rows: [], rowIds: [] }, options }
     case 'text':
       return {
         id,

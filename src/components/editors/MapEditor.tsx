@@ -8,6 +8,7 @@ import type { TileConfig } from '../../types/layout'
 import { useReport } from '../../hooks/useReport'
 import { updateTileData, removeTile } from '../../store/actions'
 import { UKRAINE_REGIONS } from '../charts/ChoroplethMap'
+import { parseMapCsv } from '../../services/mapDataParser'
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -22,27 +23,6 @@ const ROW_STYLE: CSSProperties = {
 }
 const REGION_TEXT_STYLE: CSSProperties = { fontSize: 11, flex: 1, minWidth: 0 }
 const HINT_STYLE: CSSProperties = { fontSize: 11 }
-
-// ---------------------------------------------------------------------------
-// Pure CSV parser
-// ---------------------------------------------------------------------------
-
-function parseMapCSV(text: string): Map<string, number> {
-  const result = new Map<string, number>()
-  text
-    .trim()
-    .split('\n')
-    .forEach((line) => {
-      const trimmed = line.trim()
-      if (!trimmed) return
-      const idx = trimmed.indexOf(',')
-      if (idx === -1) return
-      const regionId = trimmed.slice(0, idx).trim()
-      const value = parseFloat(trimmed.slice(idx + 1).trim())
-      if (!isNaN(value)) result.set(regionId, value)
-    })
-  return result
-}
 
 // ---------------------------------------------------------------------------
 // OblastRow sub-component
@@ -142,7 +122,7 @@ export function MapEditor({ tile }: MapEditorProps) {
 
   const handleApplyCSV = useCallback(() => {
     if (!selectedSlideId) return
-    const parsed = parseMapCSV(csvText)
+    const parsed = parseMapCsv(csvText)
     const regions: ChoroplethRegionData[] = []
     parsed.forEach((value, regionId) => {
       if (UKRAINE_REGIONS.includes(regionId)) {
