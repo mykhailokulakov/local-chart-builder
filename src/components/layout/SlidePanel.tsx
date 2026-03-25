@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { Button, Dropdown } from 'antd'
 import type { MenuProps } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
@@ -25,6 +25,7 @@ const PANEL_STYLE: CSSProperties = {
   flexDirection: 'column',
   height: '100%',
   padding: 8,
+  gap: 8,
 }
 
 const LIST_STYLE: CSSProperties = {
@@ -34,7 +35,7 @@ const LIST_STYLE: CSSProperties = {
 
 const ADD_BTN_STYLE: CSSProperties = {
   width: '100%',
-  marginTop: 8,
+  flexShrink: 0,
 }
 
 // ---------------------------------------------------------------------------
@@ -47,6 +48,7 @@ export function SlidePanel() {
   const slides = state.present.slides
   const selectedSlideId = state.selectedSlideId
   const dragFromIndex = useRef<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
 
   const handleSelect = useCallback((id: string) => dispatch(selectSlide(id)), [dispatch])
 
@@ -80,8 +82,17 @@ export function SlidePanel() {
     dragFromIndex.current = index
   }, [])
 
+  const handleDragEnter = useCallback((index: number) => {
+    setDragOverIndex(index)
+  }, [])
+
+  const handleDragEnd = useCallback(() => {
+    setDragOverIndex(null)
+  }, [])
+
   const handleDrop = useCallback(
     (toIndex: number) => {
+      setDragOverIndex(null)
       const from = dragFromIndex.current
       if (from === null || from === toIndex) return
       dispatch(reorderSlide(from, toIndex))
@@ -102,6 +113,11 @@ export function SlidePanel() {
 
   return (
     <div style={PANEL_STYLE}>
+      <Dropdown menu={{ items: addMenuItems }} trigger={['click']}>
+        <Button type="primary" icon={<PlusOutlined />} style={ADD_BTN_STYLE}>
+          {t('slides.addSlide')}
+        </Button>
+      </Dropdown>
       <div style={LIST_STYLE}>
         {slides.map((slide, index) => (
           <SlideCard
@@ -111,21 +127,19 @@ export function SlidePanel() {
             isSelected={slide.id === selectedSlideId}
             isFirst={index === 0}
             isLast={index === slides.length - 1}
+            isDragTarget={dragOverIndex === index}
             onSelect={handleSelect}
             onDuplicate={handleDuplicate}
             onDelete={handleDelete}
             onMoveUp={handleMoveUp}
             onMoveDown={handleMoveDown}
             onDragStart={handleDragStart}
+            onDragEnter={handleDragEnter}
+            onDragEnd={handleDragEnd}
             onDrop={handleDrop}
           />
         ))}
       </div>
-      <Dropdown menu={{ items: addMenuItems }} trigger={['click']}>
-        <Button type="dashed" icon={<PlusOutlined />} style={ADD_BTN_STYLE}>
-          {t('slides.addSlide')}
-        </Button>
-      </Dropdown>
     </div>
   )
 }

@@ -42,18 +42,32 @@ export interface SlideCardProps {
   isSelected: boolean
   isFirst: boolean
   isLast: boolean
+  isDragTarget: boolean
   onSelect: (id: string) => void
   onDuplicate: (id: string) => void
   onDelete: (id: string) => void
   onMoveUp: (index: number) => void
   onMoveDown: (index: number) => void
   onDragStart: (index: number) => void
+  onDragEnter: (index: number) => void
+  onDragEnd: () => void
   onDrop: (toIndex: number) => void
 }
 
 // ---------------------------------------------------------------------------
 // Style constants
 // ---------------------------------------------------------------------------
+
+const OUTER_WRAPPER: CSSProperties = {
+  position: 'relative',
+}
+
+const DROP_INDICATOR: CSSProperties = {
+  height: 3,
+  background: '#1677ff',
+  borderRadius: 2,
+  marginBottom: 4,
+}
 
 const THUMBNAIL_BASE: CSSProperties = {
   width: '100%',
@@ -92,12 +106,15 @@ export function SlideCard({
   isSelected,
   isFirst,
   isLast,
+  isDragTarget,
   onSelect,
   onDuplicate,
   onDelete,
   onMoveUp,
   onMoveDown,
   onDragStart,
+  onDragEnter,
+  onDragEnd,
   onDrop,
 }: SlideCardProps) {
   const { t } = useTranslation()
@@ -105,15 +122,22 @@ export function SlideCard({
 
   const cardStyle: CSSProperties = useMemo(
     () => ({
-      border: `2px solid ${isSelected ? token.colorPrimary : 'transparent'}`,
+      border: `2px solid ${isSelected ? token.colorPrimary : token.colorBorderSecondary}`,
       borderRadius: 6,
       overflow: 'hidden',
       marginBottom: 8,
       cursor: 'pointer',
       background: token.colorBgContainer,
-      transition: 'border-color 0.15s',
+      boxShadow: isSelected ? `0 0 0 2px ${token.colorPrimaryBg}` : '0 1px 3px rgba(0,0,0,0.08)',
+      transition: 'border-color 0.15s, box-shadow 0.15s',
     }),
-    [isSelected, token.colorPrimary, token.colorBgContainer],
+    [
+      isSelected,
+      token.colorPrimary,
+      token.colorBorderSecondary,
+      token.colorBgContainer,
+      token.colorPrimaryBg,
+    ],
   )
 
   const thumbnailStyle: CSSProperties = useMemo(
@@ -150,44 +174,57 @@ export function SlideCard({
     [onSelect, slide.id],
   )
   const handleDragStart = useCallback(() => onDragStart(index), [onDragStart, index])
-  const handleDrop = useCallback(() => onDrop(index), [onDrop, index])
+  const handleDragEnter = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      onDragEnter(index)
+    },
+    [onDragEnter, index],
+  )
   const handleDragOver = useCallback((e: React.DragEvent) => e.preventDefault(), [])
+  const handleDragEnd = useCallback(() => onDragEnd(), [onDragEnd])
+  const handleDrop = useCallback(() => onDrop(index), [onDrop, index])
   const handleMoreClick = useCallback((e: React.MouseEvent) => e.stopPropagation(), [])
 
   return (
-    <Dropdown menu={{ items: menuItems }} trigger={['contextMenu']}>
-      <div
-        style={cardStyle}
-        role="button"
-        tabIndex={0}
-        aria-label={`${t(`slides.type.${slide.type}`)} ${index + 1}`}
-        aria-pressed={isSelected}
-        draggable
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-      >
-        <div style={thumbnailStyle}>
-          <span style={THUMBNAIL_LABEL}>
-            {resolveSlideLabel(slide) || t(`slides.type.${slide.type}`)}
-          </span>
+    <div style={OUTER_WRAPPER}>
+      {isDragTarget ? <div style={DROP_INDICATOR} /> : null}
+      <Dropdown menu={{ items: menuItems }} trigger={['contextMenu']}>
+        <div
+          style={cardStyle}
+          role="button"
+          tabIndex={0}
+          aria-label={`${t(`slides.type.${slide.type}`)} ${index + 1}`}
+          aria-pressed={isSelected}
+          draggable
+          onClick={handleClick}
+          onKeyDown={handleKeyDown}
+          onDragStart={handleDragStart}
+          onDragEnter={handleDragEnter}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+          onDrop={handleDrop}
+        >
+          <div style={thumbnailStyle}>
+            <span style={THUMBNAIL_LABEL}>
+              {resolveSlideLabel(slide) || t(`slides.type.${slide.type}`)}
+            </span>
+          </div>
+          <div style={LABEL_ROW}>
+            <span style={NUMBER_STYLE}>{index + 1}</span>
+            <Dropdown menu={{ items: menuItems }} trigger={['click']}>
+              <Button
+                type="text"
+                size="small"
+                icon={<MoreOutlined />}
+                style={MORE_BTN}
+                aria-label={t('slides.moreOptions')}
+                onClick={handleMoreClick}
+              />
+            </Dropdown>
+          </div>
         </div>
-        <div style={LABEL_ROW}>
-          <span style={NUMBER_STYLE}>{index + 1}</span>
-          <Dropdown menu={{ items: menuItems }} trigger={['click']}>
-            <Button
-              type="text"
-              size="small"
-              icon={<MoreOutlined />}
-              style={MORE_BTN}
-              aria-label={t('slides.moreOptions')}
-              onClick={handleMoreClick}
-            />
-          </Dropdown>
-        </div>
-      </div>
-    </Dropdown>
+      </Dropdown>
+    </div>
   )
 }
