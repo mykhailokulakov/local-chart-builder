@@ -90,11 +90,9 @@ describe('createTile', () => {
     }
   })
 
-  it('gantt tile has tasks array and timeline dates', () => {
+  it('gantt tile has tasks array', () => {
     const tile = createTile('gantt')
     expect(tile.data).toHaveProperty('tasks')
-    expect(tile.data).toHaveProperty('timelineStart')
-    expect(tile.data).toHaveProperty('timelineEnd')
   })
 
   it('choropleth tile has regions array', () => {

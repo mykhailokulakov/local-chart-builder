@@ -52,10 +52,6 @@ export interface TextData {
 
 export interface GanttData {
   tasks: GanttTask[]
-  /** ISO 8601 date string marking the start of the visible timeline */
-  timelineStart: string
-  /** ISO 8601 date string marking the end of the visible timeline */
-  timelineEnd: string
 }
 
 // ---------------------------------------------------------------------------

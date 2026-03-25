@@ -127,6 +127,36 @@
   "charts": {
     "noData": "Немає даних для відображення"
   },
+  "gantt": {
+    "ariaLabel": "Діаграма Ганта",
+    "tasks": "Задачі",
+    "taskName": "Назва задачі",
+    "taskNamePlaceholder": "Задача…",
+    "start": "Початок",
+    "end": "Кінець",
+    "statusColumn": "Статус",
+    "addTask": "Додати задачу",
+    "removeTask": "Видалити задачу",
+    "status": {
+      "done": "Виконано",
+      "inProgress": "В процесі",
+      "planned": "Заплановано"
+    },
+    "months": {
+      "jan": "Січ",
+      "feb": "Лют",
+      "mar": "Бер",
+      "apr": "Квіт",
+      "may": "Трав",
+      "jun": "Черв",
+      "jul": "Лип",
+      "aug": "Серп",
+      "sep": "Вер",
+      "oct": "Жовт",
+      "nov": "Лист",
+      "dec": "Груд"
+    }
+  },
   "slides": {
     "addSlide": "Додати слайд",
     "duplicate": "Дублювати",

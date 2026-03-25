@@ -17,6 +17,7 @@ export type {
   ChartSeries,
   ChartData,
   GanttTask,
+  GanttTaskStatus,
   ChoroplethRegionData,
   DataTableRow,
   DataTableColumn,
