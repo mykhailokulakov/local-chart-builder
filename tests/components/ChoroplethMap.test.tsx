@@ -59,6 +59,12 @@ describe('ChoroplethMap', () => {
     expect(svg).not.toBeNull()
   })
 
+  it('renders oblast path geometry when data is provided', () => {
+    render(<ChoroplethMap data={makeRegionData()} theme={THEME} valueRange={VALUE_RANGE} />)
+    const paths = document.querySelectorAll('path')
+    expect(paths.length).toBeGreaterThan(20)
+  })
+
   it('SVG has correct viewBox', () => {
     render(<ChoroplethMap data={makeRegionData()} theme={THEME} valueRange={VALUE_RANGE} />)
     const svg = document.querySelector('svg')

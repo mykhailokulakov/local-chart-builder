@@ -59,7 +59,16 @@ export function TileRenderer({ tile, theme }: TileRendererProps) {
         showLegend: tile.options.showLegend ?? false,
         showAxis: tile.options.showAxis ?? true,
       }
-      return <BarChart data={data} orientation={orientation} options={options} theme={theme} />
+      return (
+        <BarChart
+          data={data}
+          orientation={orientation}
+          title={cd.title}
+          legendLabel={cd.legendLabel}
+          options={options}
+          theme={theme}
+        />
+      )
     }
 
     case 'donut': {
@@ -74,7 +83,7 @@ export function TileRenderer({ tile, theme }: TileRendererProps) {
         showValues: tile.options.showValues ?? false,
         showLegend: tile.options.showLegend ?? true,
       }
-      return <DonutChart data={data} options={options} theme={theme} />
+      return <DonutChart data={data} title={cd.title} options={options} theme={theme} />
     }
 
     case 'line': {
@@ -86,7 +95,15 @@ export function TileRenderer({ tile, theme }: TileRendererProps) {
         showLegend: tile.options.showLegend ?? false,
         showAxis: tile.options.showAxis ?? true,
       }
-      return <LineChart data={data} options={options} theme={theme} />
+      return (
+        <LineChart
+          data={data}
+          title={cd.title}
+          legendLabel={cd.legendLabel}
+          options={options}
+          theme={theme}
+        />
+      )
     }
 
     case 'gantt': {

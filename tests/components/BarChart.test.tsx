@@ -17,6 +17,10 @@ vi.mock('react-chartjs-2', () => ({
       data-testid="bar-canvas"
       data-labels={JSON.stringify((data as { labels: unknown }).labels)}
       data-index-axis={(options as { indexAxis: string }).indexAxis}
+      data-title={String((options as { plugins: { title: { text: string } } }).plugins.title.text)}
+      data-legend={String(
+        (options as { plugins: { legend: { display: boolean } } }).plugins.legend.display,
+      )}
     />
   )),
 }))
@@ -132,6 +136,34 @@ describe('BarChart', () => {
       )
       const canvas = screen.getByTestId('bar-canvas')
       expect(canvas.getAttribute('data-index-axis')).toBe('x')
+    })
+  })
+
+  describe('title and legend settings', () => {
+    it('passes title text when provided', () => {
+      render(
+        <BarChart
+          data={SAMPLE_DATA}
+          orientation="vertical"
+          title="Revenue"
+          legendLabel="2026"
+          options={{ ...DISPLAY_OPTIONS, showLegend: true }}
+          theme={THEME}
+        />,
+      )
+      expect(screen.getByTestId('bar-canvas').getAttribute('data-title')).toBe('Revenue')
+    })
+
+    it('hides legend when legend label is empty', () => {
+      render(
+        <BarChart
+          data={SAMPLE_DATA}
+          orientation="vertical"
+          options={{ ...DISPLAY_OPTIONS, showLegend: true }}
+          theme={THEME}
+        />,
+      )
+      expect(screen.getByTestId('bar-canvas').getAttribute('data-legend')).toBe('false')
     })
   })
 })

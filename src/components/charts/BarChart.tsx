@@ -42,6 +42,8 @@ interface BarDisplayOptions {
 export interface BarChartProps {
   data: BarDataPoint[]
   orientation: 'vertical' | 'horizontal'
+  title?: string
+  legendLabel?: string
   options: BarDisplayOptions
   theme: ThemeColors
 }
@@ -89,7 +91,7 @@ function makeValueLabelPlugin(
 // Component
 // ---------------------------------------------------------------------------
 
-export function BarChart({ data, orientation, options, theme }: BarChartProps) {
+export function BarChart({ data, orientation, title, legendLabel, options, theme }: BarChartProps) {
   const { t } = useTranslation()
   const isHorizontal = orientation === 'horizontal'
 
@@ -122,6 +124,7 @@ export function BarChart({ data, orientation, options, theme }: BarChartProps) {
     datasets: [
       {
         data: values,
+        label: legendLabel ?? '',
         backgroundColor: barColor,
         borderRadius: BAR_BORDER_RADIUS,
         borderWidth: BAR_BORDER_WIDTH,
@@ -142,7 +145,16 @@ export function BarChart({ data, orientation, options, theme }: BarChartProps) {
     maintainAspectRatio: false,
     animation: false,
     plugins: {
-      legend: { display: options.showLegend, labels: { color: theme.foreground } },
+      title: {
+        display: Boolean(title && title.trim().length > 0),
+        text: title ?? '',
+        color: theme.foreground,
+        font: { family: theme.fontFamily },
+      },
+      legend: {
+        display: options.showLegend && Boolean(legendLabel && legendLabel.trim().length > 0),
+        labels: { color: theme.foreground, font: { family: theme.fontFamily } },
+      },
       tooltip: { enabled: true },
     },
     scales: {

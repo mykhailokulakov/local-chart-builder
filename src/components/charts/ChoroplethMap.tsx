@@ -339,7 +339,7 @@ export function ChoroplethMap({ data, theme, valueRange, legendLabel }: Chorople
           dataMap={dataMap}
           colorScale={getColorScale}
           surfaceColor={theme.surface}
-          strokeColor={theme.surface}
+          strokeColor={theme.muted}
         />
         <OblastLabels
           features={COMPUTED_FEATURES}

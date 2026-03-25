@@ -16,9 +16,11 @@ vi.mock('react-chartjs-2', () => ({
     ({
       data,
       options,
+      plugins,
     }: {
       data: { labels: string[]; datasets: { label: string; data: number[] }[] }
-      options: { plugins: { legend: { display: boolean } } }
+      options: { plugins: { legend: { display: boolean }; title: { text: string } } }
+      plugins: unknown[]
     }) => (
       <canvas
         data-testid="line-canvas"
@@ -26,6 +28,8 @@ vi.mock('react-chartjs-2', () => ({
         data-dataset-count={String(data.datasets.length)}
         data-first-series-label={data.datasets[0]?.label ?? ''}
         data-legend={String(options.plugins.legend.display)}
+        data-title={String(options.plugins.title.text)}
+        data-plugin-count={String(plugins.length)}
       />
     ),
   ),
@@ -153,6 +157,7 @@ describe('LineChart', () => {
       render(
         <LineChart
           data={SAMPLE_POINTS}
+          legendLabel="Revenue"
           options={{ ...DISPLAY_OPTIONS, showLegend: true }}
           theme={THEME}
         />,
@@ -169,6 +174,26 @@ describe('LineChart', () => {
         />,
       )
       expect(screen.getByTestId('line-canvas').getAttribute('data-legend')).toBe('false')
+    })
+  })
+
+  describe('title and values options', () => {
+    it('passes title text when provided', () => {
+      render(
+        <LineChart data={SAMPLE_POINTS} title="Trend" options={DISPLAY_OPTIONS} theme={THEME} />,
+      )
+      expect(screen.getByTestId('line-canvas').getAttribute('data-title')).toBe('Trend')
+    })
+
+    it('adds a value-label plugin when showValues is enabled', () => {
+      render(
+        <LineChart
+          data={SAMPLE_POINTS}
+          options={{ ...DISPLAY_OPTIONS, showValues: true }}
+          theme={THEME}
+        />,
+      )
+      expect(screen.getByTestId('line-canvas').getAttribute('data-plugin-count')).toBe('1')
     })
   })
 })

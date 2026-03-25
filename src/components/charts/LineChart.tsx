@@ -11,6 +11,7 @@ import {
   type ChartOptions as ChartJsOptions,
   type ChartData as ChartJsData,
   type ChartDataset,
+  type Plugin,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
@@ -51,6 +52,8 @@ interface LineDisplayOptions {
 
 export interface LineChartProps {
   data: ChartDataPoint[] | ChartSeries[]
+  title?: string
+  legendLabel?: string
   options: LineDisplayOptions
   theme: ThemeColors
 }
@@ -67,6 +70,7 @@ function buildDatasets(
   data: ChartDataPoint[] | ChartSeries[],
   chartColors: string[],
   accent: string,
+  legendLabel?: string,
 ): ChartJsData<'line'> {
   if (isSeries(data)) {
     const labels = data[0]?.points.map((p) => p.label) ?? []
@@ -91,7 +95,7 @@ function buildDatasets(
   const color = chartColors[0] ?? accent
   const datasets: ChartDataset<'line'>[] = [
     {
-      label: '',
+      label: legendLabel ?? '',
       data: points.map((p) => p.value),
       borderColor: color,
       backgroundColor: color + FILL_OPACITY_SUFFIX,
@@ -111,11 +115,35 @@ function isEmpty(data: ChartDataPoint[] | ChartSeries[]): boolean {
   return false
 }
 
+function makeValueLabelPlugin(foreground: string, fontFamily: string): Plugin<'line'> {
+  return {
+    id: 'lineValueLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart
+      chart.data.datasets.forEach((_dataset, datasetIndex) => {
+        const meta = chart.getDatasetMeta(datasetIndex)
+        meta.data.forEach((point, index) => {
+          const rawValue = chart.data.datasets[datasetIndex].data[index]
+          if (typeof rawValue !== 'number') return
+          const { x, y } = point.tooltipPosition(false)
+          ctx.save()
+          ctx.font = `11px ${fontFamily}`
+          ctx.fillStyle = foreground
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'bottom'
+          ctx.fillText(String(rawValue), x, y - 6)
+          ctx.restore()
+        })
+      })
+    },
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function LineChart({ data, options, theme }: LineChartProps) {
+export function LineChart({ data, title, legendLabel, options, theme }: LineChartProps) {
   const { t } = useTranslation()
 
   if (isEmpty(data)) {
@@ -138,7 +166,7 @@ export function LineChart({ data, options, theme }: LineChartProps) {
     )
   }
 
-  const { labels, datasets } = buildDatasets(data, theme.chartColors, theme.accent)
+  const { labels, datasets } = buildDatasets(data, theme.chartColors, theme.accent, legendLabel)
 
   const chartData = { labels, datasets }
 
@@ -155,8 +183,16 @@ export function LineChart({ data, options, theme }: LineChartProps) {
     animation: false,
     plugins: {
       legend: {
-        display: options.showLegend,
+        display:
+          options.showLegend &&
+          (isSeries(data) || Boolean(legendLabel && legendLabel.trim().length > 0)),
         labels: { color: theme.foreground, font: { family: theme.fontFamily } },
+      },
+      title: {
+        display: Boolean(title && title.trim().length > 0),
+        text: title ?? '',
+        color: theme.foreground,
+        font: { family: theme.fontFamily },
       },
       tooltip: { enabled: true },
     },
@@ -168,7 +204,13 @@ export function LineChart({ data, options, theme }: LineChartProps) {
 
   return (
     <div style={{ width: '100%', height: '100%', background: theme.background }}>
-      <Line data={chartData} options={chartOptions} />
+      <Line
+        data={chartData}
+        options={chartOptions}
+        plugins={
+          options.showValues ? [makeValueLabelPlugin(theme.foreground, theme.fontFamily)] : []
+        }
+      />
     </div>
   )
 }

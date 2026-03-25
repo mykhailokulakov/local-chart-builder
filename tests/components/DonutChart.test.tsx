@@ -16,9 +16,11 @@ vi.mock('react-chartjs-2', () => ({
     ({
       data,
       options,
+      plugins,
     }: {
       data: { labels: string[]; datasets: { data: number[] }[] }
       options: { cutout: string; plugins: { legend: { display: boolean } } }
+      plugins: unknown[]
     }) => (
       <canvas
         data-testid="donut-canvas"
@@ -26,6 +28,7 @@ vi.mock('react-chartjs-2', () => ({
         data-values={JSON.stringify(data.datasets[0].data)}
         data-cutout={options.cutout}
         data-legend={String(options.plugins.legend.display)}
+        data-plugin-count={String(plugins.length)}
       />
     ),
   ),
@@ -132,6 +135,30 @@ describe('DonutChart', () => {
       )
       const canvas = screen.getByTestId('donut-canvas')
       expect(canvas.getAttribute('data-legend')).toBe('true')
+    })
+  })
+
+  describe('value labels', () => {
+    it('does not include value-label plugin when showValues is false', () => {
+      render(
+        <DonutChart
+          data={SAMPLE_DATA}
+          options={{ showValues: false, showLegend: false }}
+          theme={THEME}
+        />,
+      )
+      expect(screen.getByTestId('donut-canvas').getAttribute('data-plugin-count')).toBe('0')
+    })
+
+    it('includes value-label plugin when showValues is true', () => {
+      render(
+        <DonutChart
+          data={SAMPLE_DATA}
+          options={{ showValues: true, showLegend: false }}
+          theme={THEME}
+        />,
+      )
+      expect(screen.getByTestId('donut-canvas').getAttribute('data-plugin-count')).toBe('1')
     })
   })
 

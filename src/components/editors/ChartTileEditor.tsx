@@ -34,12 +34,17 @@ const CHART_TYPE_CONFIG = [
   { type: 'data-table' as const, Icon: TableOutlined, labelKey: 'editors.tileType.data-table' },
 ]
 
-const DISPLAY_TOGGLES = ['showValues', 'showLegend', 'showAxis'] as const
-type ToggleKey = (typeof DISPLAY_TOGGLES)[number]
+const DISPLAY_TOGGLES_BY_TYPE = {
+  'bar-v': ['showValues', 'showLegend', 'showAxis'],
+  'bar-h': ['showValues', 'showLegend', 'showAxis'],
+  donut: ['showValues', 'showLegend'],
+  line: ['showValues', 'showLegend', 'showAxis'],
+} as const
+type ToggleKey = 'showValues' | 'showLegend' | 'showAxis'
 
 const TYPE_GRID_STYLE: CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(4, 1fr)',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
   gap: 4,
 }
 
@@ -70,6 +75,8 @@ export function ChartTileEditor({ tile }: ChartTileEditorProps) {
   // tile types to ChartTileEditor, so tile.data is guaranteed to be ChartData.
   const chartData = tile.data as ChartData
   const points = chartData.points ?? []
+  const availableToggles = DISPLAY_TOGGLES_BY_TYPE[tile.type]
+  const canEditLegendLabel = tile.type === 'bar-v' || tile.type === 'bar-h' || tile.type === 'line'
 
   const updateData = useCallback(
     (patch: Partial<ChartData>) => {
@@ -139,6 +146,16 @@ export function ChartTileEditor({ tile }: ChartTileEditorProps) {
         value={chartData.title ?? ''}
         onChange={(e) => updateData({ title: e.target.value })}
       />
+      {canEditLegendLabel && (
+        <>
+          <label htmlFor="chart-legend-label">{t('editors.legendLabel')}</label>
+          <Input
+            id="chart-legend-label"
+            value={chartData.legendLabel ?? ''}
+            onChange={(e) => updateData({ legendLabel: e.target.value })}
+          />
+        </>
+      )}
 
       <Typography.Text strong>{t('editors.dataInput')}</Typography.Text>
       <ChartDataInput
@@ -148,7 +165,7 @@ export function ChartTileEditor({ tile }: ChartTileEditorProps) {
       />
 
       <Typography.Text strong>{t('editors.display')}</Typography.Text>
-      {DISPLAY_TOGGLES.map((key) => (
+      {availableToggles.map((key) => (
         <div key={key} style={TOGGLE_ROW_STYLE}>
           <label>{t(`editors.${key}`)}</label>
           <Switch

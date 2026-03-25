@@ -147,6 +147,17 @@ describe('ChartTileEditor', () => {
     expect(screen.getByText('Show Axis')).toBeInTheDocument()
   })
 
+  it('renders legend label input for bar charts', () => {
+    renderEditor(makeTile({ type: 'bar-v' }))
+    expect(screen.getByLabelText('Legend Label')).toBeInTheDocument()
+  })
+
+  it('hides axis and legend-label controls for donut charts', () => {
+    renderEditor(makeTile({ type: 'donut' }))
+    expect(screen.queryByText('Show Axis')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Legend Label')).not.toBeInTheDocument()
+  })
+
   it('renders the Delete Tile button', () => {
     renderEditor()
     expect(screen.getByText('Delete Tile')).toBeInTheDocument()

@@ -17,7 +17,6 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 // ---------------------------------------------------------------------------
 
 const DONUT_CUTOUT = '60%'
-const DONUT_CENTER_FONT_SIZE = 20
 const DONUT_VALUE_FONT_SIZE = 11
 
 // ---------------------------------------------------------------------------
@@ -37,6 +36,7 @@ interface DonutDisplayOptions {
 
 export interface DonutChartProps {
   data: DonutDataPoint[]
+  title?: string
   options: DonutDisplayOptions
   theme: ThemeColors
 }
@@ -44,28 +44,6 @@ export interface DonutChartProps {
 // ---------------------------------------------------------------------------
 // Plugins
 // ---------------------------------------------------------------------------
-
-function makeCenterLabelPlugin(
-  total: number,
-  foreground: string,
-  fontFamily: string,
-): Plugin<'doughnut'> {
-  return {
-    id: 'donutCenterLabel',
-    afterDatasetsDraw(chart) {
-      const { ctx, chartArea } = chart
-      const centerX = (chartArea.left + chartArea.right) / 2
-      const centerY = (chartArea.top + chartArea.bottom) / 2
-      ctx.save()
-      ctx.font = `bold ${DONUT_CENTER_FONT_SIZE}px ${fontFamily}`
-      ctx.fillStyle = foreground
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillText(String(total), centerX, centerY)
-      ctx.restore()
-    },
-  }
-}
 
 function makeValueLabelPlugin(foreground: string, fontFamily: string): Plugin<'doughnut'> {
   return {
@@ -100,7 +78,7 @@ function makeValueLabelPlugin(foreground: string, fontFamily: string): Plugin<'d
 // Component
 // ---------------------------------------------------------------------------
 
-export function DonutChart({ data, options, theme }: DonutChartProps) {
+export function DonutChart({ data, title, options, theme }: DonutChartProps) {
   const { t } = useTranslation()
 
   if (data.length === 0) {
@@ -125,7 +103,6 @@ export function DonutChart({ data, options, theme }: DonutChartProps) {
 
   const labels = data.map((d) => d.label)
   const values = data.map((d) => d.value)
-  const total = values.reduce((sum, v) => sum + v, 0)
   const backgroundColors = data.map(
     (d, i) => d.color ?? theme.chartColors[i % theme.chartColors.length] ?? theme.accent,
   )
@@ -155,13 +132,17 @@ export function DonutChart({ data, options, theme }: DonutChartProps) {
           font: { family: theme.fontFamily },
         },
       },
+      title: {
+        display: Boolean(title && title.trim().length > 0),
+        text: title ?? '',
+        color: theme.foreground,
+        font: { family: theme.fontFamily },
+      },
       tooltip: { enabled: true },
     },
   }
 
-  const plugins: Plugin<'doughnut'>[] = [
-    makeCenterLabelPlugin(total, theme.foreground, theme.fontFamily),
-  ]
+  const plugins: Plugin<'doughnut'>[] = []
   if (options.showValues) {
     plugins.push(makeValueLabelPlugin(theme.foreground, theme.fontFamily))
   }
