@@ -25,132 +25,166 @@ const OUTER_STYLE: CSSProperties = {
   background: 'var(--slide-bg)',
   fontFamily: 'var(--slide-font)',
   overflow: 'hidden',
-  position: 'relative',
 }
 
-// ---- Title slide -----------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Title slide
+// Layout: structural top stripe → content zone → footer zone
+// No decorative elements placed arbitrarily — every element has a structural role.
+// ---------------------------------------------------------------------------
 
-const TITLE_LAYOUT: CSSProperties = {
+const TITLE_SHELL: CSSProperties = {
   width: '100%',
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
-  boxSizing: 'border-box',
 }
 
+/** Full-width accent stripe that anchors the top of the slide */
+const TITLE_TOP_STRIPE: CSSProperties = {
+  height: 8,
+  background: 'var(--slide-accent)',
+  flexShrink: 0,
+}
+
+/** Main content zone — all copy, left-aligned, vertically centred */
 const TITLE_BODY: CSSProperties = {
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  padding: '48px 72px',
-  gap: 16,
+  padding: '52px 80px',
+  gap: 0,
 }
 
-const TITLE_ACCENT_BAR: CSSProperties = {
-  width: 56,
-  height: 4,
-  background: 'var(--slide-accent)',
-  borderRadius: 2,
-  marginBottom: 8,
-}
-
+/**
+ * Heading gets a left accent border — gives the slide a clear spine and
+ * removes any need for floating accent shapes.
+ */
 const TITLE_HEADING: CSSProperties = {
   color: 'var(--slide-fg)',
-  fontSize: 52,
+  fontSize: 58,
   fontWeight: 700,
-  lineHeight: 1.15,
-  margin: 0,
+  lineHeight: 1.12,
+  borderLeft: '6px solid var(--slide-accent)',
+  paddingLeft: 24,
 }
 
 const TITLE_SUBHEADING: CSSProperties = {
   color: 'var(--slide-muted)',
   fontSize: 22,
   fontWeight: 400,
-  lineHeight: 1.45,
-  marginTop: 4,
+  lineHeight: 1.5,
+  marginTop: 20,
+  paddingLeft: 30,
 }
 
+/** Footer zone — visually separated, dedicated space for meta information */
 const TITLE_FOOTER: CSSProperties = {
-  borderTop: '1px solid var(--slide-surface)',
-  padding: '16px 72px',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
+  height: 60,
   flexShrink: 0,
+  background: 'var(--slide-surface)',
+  padding: '0 80px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  borderTop: '3px solid var(--slide-accent)',
 }
 
-const TITLE_META: CSSProperties = {
+const TITLE_META_LEFT: CSSProperties = {
   color: 'var(--slide-muted)',
   fontSize: 13,
   display: 'flex',
   gap: 32,
+  letterSpacing: '0.02em',
 }
 
-const TITLE_FOOTER_ACCENT: CSSProperties = {
-  width: 32,
-  height: 3,
+const TITLE_META_RIGHT: CSSProperties = {
+  width: 24,
+  height: 24,
   background: 'var(--slide-accent)',
-  borderRadius: 2,
-  opacity: 0.6,
+  borderRadius: 4,
+  opacity: 0.7,
+  flexShrink: 0,
 }
 
-// ---- Ending slide ----------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Ending slide
+// Layout: left accent column (structural, full height) + two-zone content area
+// Message occupies the upper zone; contact/footnote the lower zone.
+// Nothing is centred — content anchors to the top-left of the content area.
+// ---------------------------------------------------------------------------
 
-const ENDING_LAYOUT: CSSProperties = {
+const ENDING_SHELL: CSSProperties = {
   width: '100%',
   height: '100%',
   display: 'flex',
+  flexDirection: 'row',
+}
+
+/** Accent column — the visual spine of the ending slide */
+const ENDING_ACCENT_COL: CSSProperties = {
+  width: 10,
+  background: 'var(--slide-accent)',
+  flexShrink: 0,
+}
+
+/** Content area to the right of the accent column */
+const ENDING_CONTENT: CSSProperties = {
+  flex: 1,
+  display: 'flex',
   flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '48px 72px',
-  gap: 20,
-  boxSizing: 'border-box',
-  position: 'relative',
 }
 
-const ENDING_ACCENT_TOP: CSSProperties = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  height: 5,
-  background: 'var(--slide-accent)',
-}
-
-const ENDING_ACCENT_BOTTOM: CSSProperties = {
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  right: 0,
-  height: 5,
-  background: 'var(--slide-accent)',
+/** Upper zone: holds the closing message */
+const ENDING_MESSAGE_ZONE: CSSProperties = {
+  flex: '0 0 55%',
+  display: 'flex',
+  alignItems: 'flex-end',
+  padding: '0 72px 32px 72px',
 }
 
 const ENDING_MESSAGE: CSSProperties = {
   color: 'var(--slide-accent)',
-  fontSize: 56,
+  fontSize: 64,
   fontWeight: 700,
-  textAlign: 'center',
-  lineHeight: 1.15,
+  lineHeight: 1.1,
+}
+
+/** Divider between the two content zones */
+const ENDING_DIVIDER: CSSProperties = {
+  height: 1,
+  background: 'var(--slide-surface)',
+  margin: '0 72px',
+  flexShrink: 0,
+}
+
+/** Lower zone: contact info and footnote */
+const ENDING_META_ZONE: CSSProperties = {
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  padding: '24px 72px 40px 72px',
+  gap: 8,
 }
 
 const ENDING_CONTACT: CSSProperties = {
-  color: 'var(--slide-muted)',
+  color: 'var(--slide-fg)',
   fontSize: 18,
-  textAlign: 'center',
   lineHeight: 1.5,
 }
 
 const ENDING_FOOTNOTE: CSSProperties = {
   color: 'var(--slide-muted)',
   fontSize: 12,
-  textAlign: 'center',
-  opacity: 0.6,
+  opacity: 0.7,
+  lineHeight: 1.6,
 }
 
-// ---- Text slide ------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Text slide
+// ---------------------------------------------------------------------------
 
 const TEXT_LAYOUT: CSSProperties = {
   width: '100%',
@@ -162,19 +196,6 @@ const TEXT_LAYOUT: CSSProperties = {
   boxSizing: 'border-box',
 }
 
-const TEXT_HEADING_WRAPPER: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 12,
-}
-
-const TEXT_HEADING_RULE: CSSProperties = {
-  width: '100%',
-  height: 1,
-  background: 'var(--slide-surface)',
-  borderRadius: 1,
-}
-
 const TEXT_HEADING: CSSProperties = {
   color: 'var(--slide-fg)',
   fontSize: 32,
@@ -182,6 +203,13 @@ const TEXT_HEADING: CSSProperties = {
   lineHeight: 1.25,
   paddingLeft: 16,
   borderLeft: '4px solid var(--slide-accent)',
+  flexShrink: 0,
+}
+
+const TEXT_HEADING_RULE: CSSProperties = {
+  height: 1,
+  background: 'var(--slide-surface)',
+  flexShrink: 0,
 }
 
 const TEXT_BODY: CSSProperties = {
@@ -191,7 +219,9 @@ const TEXT_BODY: CSSProperties = {
   flex: 1,
 }
 
-// ---- Divider slide ---------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Divider slide
+// ---------------------------------------------------------------------------
 
 const DIVIDER_LAYOUT: CSSProperties = {
   width: '100%',
@@ -227,19 +257,19 @@ const DIVIDER_DESCRIPTION: CSSProperties = {
 function TitleContent({ data }: { data: TitleSlideData }) {
   const hasFooter = data.author !== undefined || data.date !== undefined
   return (
-    <div style={TITLE_LAYOUT}>
+    <div style={TITLE_SHELL}>
+      <div style={TITLE_TOP_STRIPE} />
       <div style={TITLE_BODY}>
-        <div style={TITLE_ACCENT_BAR} />
         <div style={TITLE_HEADING}>{data.heading || '…'}</div>
         {data.subheading ? <div style={TITLE_SUBHEADING}>{data.subheading}</div> : null}
       </div>
       {hasFooter ? (
         <div style={TITLE_FOOTER}>
-          <div style={TITLE_META}>
+          <div style={TITLE_META_LEFT}>
             {data.author ? <span>{data.author}</span> : null}
             {data.date ? <span>{data.date}</span> : null}
           </div>
-          <div style={TITLE_FOOTER_ACCENT} />
+          <div style={TITLE_META_RIGHT} />
         </div>
       ) : null}
     </div>
@@ -247,13 +277,24 @@ function TitleContent({ data }: { data: TitleSlideData }) {
 }
 
 function EndingContent({ data }: { data: EndingSlideData }) {
+  const hasLower = data.contact !== undefined || data.footnote !== undefined
   return (
-    <div style={ENDING_LAYOUT}>
-      <div style={ENDING_ACCENT_TOP} />
-      <div style={ENDING_MESSAGE}>{data.message || '…'}</div>
-      {data.contact ? <div style={ENDING_CONTACT}>{data.contact}</div> : null}
-      {data.footnote ? <div style={ENDING_FOOTNOTE}>{data.footnote}</div> : null}
-      <div style={ENDING_ACCENT_BOTTOM} />
+    <div style={ENDING_SHELL}>
+      <div style={ENDING_ACCENT_COL} />
+      <div style={ENDING_CONTENT}>
+        <div style={ENDING_MESSAGE_ZONE}>
+          <div style={ENDING_MESSAGE}>{data.message || '…'}</div>
+        </div>
+        {hasLower ? (
+          <>
+            <div style={ENDING_DIVIDER} />
+            <div style={ENDING_META_ZONE}>
+              {data.contact ? <div style={ENDING_CONTACT}>{data.contact}</div> : null}
+              {data.footnote ? <div style={ENDING_FOOTNOTE}>{data.footnote}</div> : null}
+            </div>
+          </>
+        ) : null}
+      </div>
     </div>
   )
 }
@@ -261,10 +302,8 @@ function EndingContent({ data }: { data: EndingSlideData }) {
 function TextContent({ data }: { data: TextSlideData }) {
   return (
     <div style={TEXT_LAYOUT}>
-      <div style={TEXT_HEADING_WRAPPER}>
-        <div style={TEXT_HEADING}>{data.heading || '…'}</div>
-        <div style={TEXT_HEADING_RULE} />
-      </div>
+      <div style={TEXT_HEADING}>{data.heading || '…'}</div>
+      <div style={TEXT_HEADING_RULE} />
       {data.body ? <div style={TEXT_BODY}>{data.body}</div> : null}
     </div>
   )
