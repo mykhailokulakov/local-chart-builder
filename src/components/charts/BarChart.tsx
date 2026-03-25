@@ -81,10 +81,10 @@ function makeValueLabelPlugin(
 
           const pos = bar.tooltipPosition(false)
           if (pos.x === null || pos.y === null) return
-          const offsetX = orientation === 'horizontal' ? DATALABEL_PADDING_PX : 0
-          const offsetY = orientation === 'horizontal' ? 0 : -DATALABEL_PADDING_PX
+          const labelX = orientation === 'horizontal' ? pos.x + DATALABEL_PADDING_PX * 2 : pos.x
+          const labelY = orientation === 'horizontal' ? pos.y : pos.y + DATALABEL_PADDING_PX * 4
 
-          ctx.fillText(label, pos.x + offsetX, pos.y + offsetY)
+          ctx.fillText(label, labelX, labelY)
           ctx.restore()
         })
       })

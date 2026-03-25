@@ -3,31 +3,37 @@ import { render, screen } from '@testing-library/react'
 import { BarChart } from '../../src/components/charts/BarChart'
 import type { ThemeColors } from '../../src/types/theme'
 import i18n from '../../src/i18n/config'
+import type { Plugin } from 'chart.js'
 
 // ---------------------------------------------------------------------------
 // Mocks
 // ---------------------------------------------------------------------------
+
+let latestPlugins: Plugin<'bar'>[] = []
 
 // react-chartjs-2 requires a canvas context unavailable in jsdom.
 // Mock the Bar component to a plain canvas stub so we can test BarChart's
 // own rendering logic (empty-state, orientation prop forwarding, etc.).
 vi.mock('react-chartjs-2', () => ({
   Bar: vi.fn(
-    ({ data, options, plugins }: { data: unknown; options: unknown; plugins: unknown[] }) => (
-      <canvas
-        data-testid="bar-canvas"
-        data-labels={JSON.stringify((data as { labels: unknown }).labels)}
-        data-index-axis={(options as { indexAxis: string }).indexAxis}
-        data-title={String(
-          (options as { plugins: { title: { text: string } } }).plugins.title.text,
-        )}
-        data-legend={String(
-          (options as { plugins: { legend: { display: boolean } } }).plugins.legend.display,
-        )}
-        data-plugin-count={String(plugins.length)}
-        data-padding={String((options as { layout: { padding: number } }).layout.padding)}
-      />
-    ),
+    ({ data, options, plugins }: { data: unknown; options: unknown; plugins: Plugin<'bar'>[] }) => {
+      latestPlugins = plugins
+      return (
+        <canvas
+          data-testid="bar-canvas"
+          data-labels={JSON.stringify((data as { labels: unknown }).labels)}
+          data-index-axis={(options as { indexAxis: string }).indexAxis}
+          data-title={String(
+            (options as { plugins: { title: { text: string } } }).plugins.title.text,
+          )}
+          data-legend={String(
+            (options as { plugins: { legend: { display: boolean } } }).plugins.legend.display,
+          )}
+          data-plugin-count={String(plugins.length)}
+          data-padding={String((options as { layout: { padding: number } }).layout.padding)}
+        />
+      )
+    },
   ),
 }))
 
@@ -53,6 +59,29 @@ const SAMPLE_DATA = [
   { label: 'Beta', value: 25 },
   { label: 'Gamma', value: 15 },
 ]
+
+function runBarValuePlugin(): number {
+  const plugin = latestPlugins[0]
+  const fillText = vi.fn()
+  plugin?.afterDatasetsDraw?.({
+    ctx: {
+      save: vi.fn(),
+      restore: vi.fn(),
+      fillText,
+      font: '',
+      fillStyle: '',
+      textAlign: 'center',
+      textBaseline: 'bottom',
+    },
+    data: {
+      datasets: [{ data: [4] }],
+    },
+    getDatasetMeta: () => ({
+      data: [{ tooltipPosition: () => ({ x: 20, y: 12 }) }],
+    }),
+  } as never)
+  return fillText.mock.calls.length
+}
 
 // ---------------------------------------------------------------------------
 // Setup
@@ -207,6 +236,30 @@ describe('BarChart', () => {
       )
       const withValuesPadding = screen.getByTestId('bar-canvas').getAttribute('data-padding')
       expect(noValuesPadding).toBe(withValuesPadding)
+    })
+
+    it('does not draw value labels when showValues is false', () => {
+      render(
+        <BarChart
+          data={SAMPLE_DATA}
+          orientation="vertical"
+          options={{ ...DISPLAY_OPTIONS, showValues: false }}
+          theme={THEME}
+        />,
+      )
+      expect(runBarValuePlugin()).toBe(0)
+    })
+
+    it('draws value labels when showValues is true', () => {
+      render(
+        <BarChart
+          data={SAMPLE_DATA}
+          orientation="vertical"
+          options={{ ...DISPLAY_OPTIONS, showValues: true }}
+          theme={THEME}
+        />,
+      )
+      expect(runBarValuePlugin()).toBe(1)
     })
   })
 })
