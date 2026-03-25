@@ -63,7 +63,8 @@ const SAMPLE_DATA = [
 function runBarValuePlugin(): number {
   const plugin = latestPlugins[0]
   const fillText = vi.fn()
-  plugin?.afterDatasetsDraw?.({
+  const afterDatasetsDraw = plugin?.afterDatasetsDraw as ((...args: unknown[]) => void) | undefined
+  afterDatasetsDraw?.({
     ctx: {
       save: vi.fn(),
       restore: vi.fn(),
@@ -79,7 +80,7 @@ function runBarValuePlugin(): number {
     getDatasetMeta: () => ({
       data: [{ tooltipPosition: () => ({ x: 20, y: 12 }) }],
     }),
-  } as never)
+  })
   return fillText.mock.calls.length
 }
 
