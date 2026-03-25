@@ -37,7 +37,7 @@ jobs:
       # vulnerabilities that require an immediate update.
       - name: Fail on critical vulnerabilities
         run: npm audit --audit-level=critical
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: audit-report
@@ -102,7 +102,7 @@ jobs:
               fi
             fi
           } >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: outdated-deps-report
@@ -131,7 +131,7 @@ jobs:
       - uses: davelosert/vitest-coverage-report-action@v2
         if: always()
       # Upload the full HTML coverage report for browsable line-level detail.
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage-report
@@ -148,7 +148,7 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npm run build
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/
@@ -173,7 +173,7 @@ jobs:
       - run: npm run test:e2e
       # Upload the HTML report on failure so the team can inspect screenshots
       # and traces without re-running locally.
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
