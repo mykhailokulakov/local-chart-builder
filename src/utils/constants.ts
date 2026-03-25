@@ -66,3 +66,9 @@ export const DEFAULT_TILE_W = 6
 
 /** Default tile height in grid rows when a new tile is added */
 export const DEFAULT_TILE_H = 4
+
+/** Height of the slide title bar on chart slides, in pixels */
+export const CHART_SLIDE_TITLE_HEIGHT_PX = 44
+
+/** Selection outline colour for the active tile (Ant Design primary blue) */
+export const TILE_SELECTION_COLOR = '#1677ff'

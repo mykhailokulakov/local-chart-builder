@@ -5,11 +5,19 @@ import { GridLayout } from 'react-grid-layout'
 import type { LayoutItem, Layout } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
-import type { Slide } from '../../types/slide'
+import type { Slide, ChartSlideData } from '../../types/slide'
 import type { TileConfig, GridLayout as TileGridLayout } from '../../types/layout'
 import { useReport } from '../../hooks/useReport'
+import { useTheme } from '../../hooks/useTheme'
 import { updateTileLayout, selectTile } from '../../store/actions'
-import { GRID_COLS, GRID_ROWS } from '../../utils/constants'
+import { TileErrorBoundary } from './TileErrorBoundary'
+import { TileRenderer } from '../charts/TileRenderer'
+import {
+  GRID_COLS,
+  GRID_ROWS,
+  CHART_SLIDE_TITLE_HEIGHT_PX,
+  TILE_SELECTION_COLOR,
+} from '../../utils/constants'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -27,42 +35,64 @@ interface ChartSlideCanvasProps {
 
 const GRID_MARGIN: readonly [number, number] = [8, 8]
 
+const SLIDE_CONTAINER_STYLE: CSSProperties = {
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  background: 'var(--slide-bg)',
+}
+
+const CHART_SLIDE_TITLE_STYLE: CSSProperties = {
+  height: CHART_SLIDE_TITLE_HEIGHT_PX,
+  display: 'flex',
+  alignItems: 'center',
+  paddingLeft: 16,
+  paddingRight: 16,
+  flexShrink: 0,
+  fontWeight: 600,
+  fontSize: 18,
+  color: 'var(--slide-fg)',
+  fontFamily: 'var(--slide-font)',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+}
+
 const TILE_BASE_STYLE: CSSProperties = {
   background: 'var(--slide-surface)',
   borderRadius: 4,
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: 6,
-  color: 'var(--slide-fg)',
-  fontSize: 13,
-  fontWeight: 500,
-  cursor: 'pointer',
   overflow: 'hidden',
+  cursor: 'pointer',
   userSelect: 'none',
 }
 
 const TILE_SELECTED_STYLE: CSSProperties = {
-  ...TILE_BASE_STYLE,
-  outline: '2px solid var(--slide-accent)',
+  background: 'var(--slide-surface)',
+  borderRadius: 4,
+  overflow: 'hidden',
+  cursor: 'pointer',
+  userSelect: 'none',
+  outline: `2px solid ${TILE_SELECTION_COLOR}`,
   outlineOffset: -2,
 }
 
-const TILE_TYPE_LABEL_STYLE: CSSProperties = {
-  fontSize: 11,
-  opacity: 0.8,
-  textTransform: 'uppercase',
-  letterSpacing: 0.5,
-}
-
-const EMPTY_STYLE: CSSProperties = {
-  width: '100%',
-  height: '100%',
+const TILE_ERROR_STYLE: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  color: '#aaa',
+  width: '100%',
+  height: '100%',
+  fontSize: 11,
+  color: 'var(--slide-muted)',
+}
+
+const EMPTY_STYLE: CSSProperties = {
+  flex: 1,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: 'var(--slide-muted)',
   fontSize: 13,
 }
 
@@ -85,20 +115,30 @@ function layoutChanged(prev: TileGridLayout, next: LayoutItem): boolean {
 export function ChartSlideCanvas({ slide, width, height }: ChartSlideCanvasProps) {
   const { t } = useTranslation()
   const { state, dispatch } = useReport()
+  const theme = useTheme()
   const { selectedTileId } = state
   const tiles = useMemo(() => slide.tiles ?? [], [slide.tiles])
 
+  // Safety: ChartSlideCanvas is only rendered when slide.type === 'chart'
+  const slideTitle = (slide.data as ChartSlideData).title ?? null
+  const titleH = slideTitle !== null ? CHART_SLIDE_TITLE_HEIGHT_PX : 0
+
   const rowHeight = useMemo(
-    () => Math.max(1, Math.floor((height - GRID_MARGIN[1] * (GRID_ROWS + 1)) / GRID_ROWS)),
-    [height],
+    () => Math.max(1, Math.floor((height - titleH - GRID_MARGIN[1] * (GRID_ROWS + 1)) / GRID_ROWS)),
+    [height, titleH],
   )
 
   const layout = useMemo<Layout>(() => tiles.map(toLayoutItem), [tiles])
 
+  const tileErrorFallback = useMemo(
+    () => <div style={TILE_ERROR_STYLE}>{t('canvas.tileError')}</div>,
+    [t],
+  )
+
   const handleLayoutChange = useCallback(
     (nextLayout: Layout) => {
       nextLayout.forEach((item) => {
-        const tile = tiles.find((t) => t.id === item.i)
+        const tile = tiles.find((tl) => tl.id === item.i)
         if (!tile) return
         if (layoutChanged(tile.layout, item)) {
           dispatch(
@@ -117,30 +157,35 @@ export function ChartSlideCanvas({ slide, width, height }: ChartSlideCanvasProps
     [dispatch],
   )
 
-  if (tiles.length === 0) {
-    return <div style={EMPTY_STYLE}>{t('editors.chartSlide.noTiles')}</div>
-  }
-
   return (
-    <GridLayout
-      layout={layout}
-      width={width}
-      gridConfig={{ cols: GRID_COLS, rowHeight, margin: GRID_MARGIN }}
-      onLayoutChange={handleLayoutChange}
-      style={{ width: '100%', height: '100%', background: 'var(--slide-bg)' }}
-    >
-      {tiles.map((tile) => {
-        const isSelected = tile.id === selectedTileId
-        return (
-          <div
-            key={tile.id}
-            style={isSelected ? TILE_SELECTED_STYLE : TILE_BASE_STYLE}
-            onClick={() => handleTileClick(tile.id)}
-          >
-            <div style={TILE_TYPE_LABEL_STYLE}>{t(`editors.tileType.${tile.type}`)}</div>
-          </div>
-        )
-      })}
-    </GridLayout>
+    <div style={SLIDE_CONTAINER_STYLE}>
+      {slideTitle !== null && <div style={CHART_SLIDE_TITLE_STYLE}>{slideTitle}</div>}
+      {tiles.length === 0 ? (
+        <div style={EMPTY_STYLE}>{t('editors.chartSlide.noTiles')}</div>
+      ) : (
+        <GridLayout
+          layout={layout}
+          width={width}
+          gridConfig={{ cols: GRID_COLS, rowHeight, margin: GRID_MARGIN }}
+          onLayoutChange={handleLayoutChange}
+          style={{ width: '100%' }}
+        >
+          {tiles.map((tile) => {
+            const isSelected = tile.id === selectedTileId
+            return (
+              <div
+                key={tile.id}
+                style={isSelected ? TILE_SELECTED_STYLE : TILE_BASE_STYLE}
+                onClick={() => handleTileClick(tile.id)}
+              >
+                <TileErrorBoundary fallback={tileErrorFallback}>
+                  <TileRenderer tile={tile} theme={theme} />
+                </TileErrorBoundary>
+              </div>
+            )
+          })}
+        </GridLayout>
+      )}
+    </div>
   )
 }
