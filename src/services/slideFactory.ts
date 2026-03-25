@@ -18,16 +18,8 @@ export function createTile(type: ChartType | 'text'): TileConfig {
     case 'donut':
     case 'line':
       return { id, type, layout, data: { points: [] }, options }
-    case 'gantt': {
-      const today = new Date().toISOString().slice(0, 10)
-      return {
-        id,
-        type,
-        layout,
-        data: { tasks: [], timelineStart: today, timelineEnd: today },
-        options,
-      }
-    }
+    case 'gantt':
+      return { id, type, layout, data: { tasks: [] }, options }
     case 'choropleth':
       return { id, type, layout, data: { regions: [] }, options }
     case 'data-table':

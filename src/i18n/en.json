@@ -127,6 +127,36 @@
   "charts": {
     "noData": "No data to display"
   },
+  "gantt": {
+    "ariaLabel": "Gantt chart",
+    "tasks": "Tasks",
+    "taskName": "Task name",
+    "taskNamePlaceholder": "Task…",
+    "start": "Start",
+    "end": "End",
+    "statusColumn": "Status",
+    "addTask": "Add Task",
+    "removeTask": "Remove task",
+    "status": {
+      "done": "Done",
+      "inProgress": "In progress",
+      "planned": "Planned"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
+    }
+  },
   "slides": {
     "addSlide": "Add Slide",
     "duplicate": "Duplicate",

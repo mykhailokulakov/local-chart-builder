@@ -49,25 +49,21 @@ export interface ChartData {
 // Gantt-specific types
 // ---------------------------------------------------------------------------
 
+/** Execution status of a Gantt task */
+export type GanttTaskStatus = 'done' | 'in-progress' | 'planned'
+
 /** A single row in a Gantt chart */
 export interface GanttTask {
   /** Unique identifier for the task */
   id: string
-  /** Human-readable task name */
-  label: string
-  /** ISO 8601 date string: task start (e.g. "2024-01-15") */
-  startDate: string
-  /** ISO 8601 date string: task end (inclusive) */
-  endDate: string
-  /** Optional progress percentage 0–100 */
-  progress?: number
-  /**
-   * Optional reference to another task's `id` that must finish before
-   * this task can begin (finish-to-start dependency).
-   */
-  dependsOn?: string
-  /** Optional hex colour override for this task bar */
-  color?: string
+  /** Human-readable task name shown on the Y-axis */
+  name: string
+  /** Start month 1–12 (January = 1) */
+  startMonth: number
+  /** End month 1–12, inclusive */
+  endMonth: number
+  /** Execution status drives bar colour and label */
+  status: GanttTaskStatus
 }
 
 // ---------------------------------------------------------------------------
