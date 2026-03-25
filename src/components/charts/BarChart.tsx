@@ -56,10 +56,12 @@ function makeValueLabelPlugin(
   orientation: 'vertical' | 'horizontal',
   foreground: string,
   fontFamily: string,
+  enabled: boolean,
 ): Plugin<'bar'> {
   return {
     id: 'barValueLabels',
     afterDatasetsDraw(chart) {
+      if (!enabled) return
       const { ctx } = chart
       chart.data.datasets.forEach((_dataset, datasetIndex) => {
         const meta = chart.getDatasetMeta(datasetIndex)
@@ -67,7 +69,10 @@ function makeValueLabelPlugin(
           const rawValue = chart.data.datasets[datasetIndex].data[index]
           if (typeof rawValue !== 'number') return
 
-          const label = String(rawValue)
+          const label =
+            Number.isInteger(rawValue) || Math.abs(rawValue) >= 100
+              ? String(rawValue)
+              : rawValue.toFixed(2)
           ctx.save()
           ctx.font = `${DATALABEL_FONT_SIZE}px ${fontFamily}`
           ctx.fillStyle = foreground
@@ -161,12 +166,12 @@ export function BarChart({ data, orientation, title, legendLabel, options, theme
       x: axisDefaults,
       y: axisDefaults,
     },
-    layout: { padding: options.showValues ? DATALABEL_PADDING_PX * 3 : 0 },
+    layout: { padding: DATALABEL_PADDING_PX * 3 },
   }
 
-  const plugins = options.showValues
-    ? [makeValueLabelPlugin(orientation, theme.foreground, theme.fontFamily)]
-    : []
+  const plugins = [
+    makeValueLabelPlugin(orientation, theme.foreground, theme.fontFamily, options.showValues),
+  ]
 
   return (
     <div style={{ width: '100%', height: '100%', background: theme.background }}>

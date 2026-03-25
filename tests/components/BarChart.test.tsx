@@ -12,17 +12,23 @@ import i18n from '../../src/i18n/config'
 // Mock the Bar component to a plain canvas stub so we can test BarChart's
 // own rendering logic (empty-state, orientation prop forwarding, etc.).
 vi.mock('react-chartjs-2', () => ({
-  Bar: vi.fn(({ data, options }: { data: unknown; options: unknown }) => (
-    <canvas
-      data-testid="bar-canvas"
-      data-labels={JSON.stringify((data as { labels: unknown }).labels)}
-      data-index-axis={(options as { indexAxis: string }).indexAxis}
-      data-title={String((options as { plugins: { title: { text: string } } }).plugins.title.text)}
-      data-legend={String(
-        (options as { plugins: { legend: { display: boolean } } }).plugins.legend.display,
-      )}
-    />
-  )),
+  Bar: vi.fn(
+    ({ data, options, plugins }: { data: unknown; options: unknown; plugins: unknown[] }) => (
+      <canvas
+        data-testid="bar-canvas"
+        data-labels={JSON.stringify((data as { labels: unknown }).labels)}
+        data-index-axis={(options as { indexAxis: string }).indexAxis}
+        data-title={String(
+          (options as { plugins: { title: { text: string } } }).plugins.title.text,
+        )}
+        data-legend={String(
+          (options as { plugins: { legend: { display: boolean } } }).plugins.legend.display,
+        )}
+        data-plugin-count={String(plugins.length)}
+        data-padding={String((options as { layout: { padding: number } }).layout.padding)}
+      />
+    ),
+  ),
 }))
 
 // ---------------------------------------------------------------------------
@@ -164,6 +170,43 @@ describe('BarChart', () => {
         />,
       )
       expect(screen.getByTestId('bar-canvas').getAttribute('data-legend')).toBe('false')
+    })
+  })
+
+  describe('showValues behavior', () => {
+    it('always wires the bar value-label plugin and controls rendering via options', () => {
+      render(
+        <BarChart
+          data={SAMPLE_DATA}
+          orientation="vertical"
+          options={{ ...DISPLAY_OPTIONS, showValues: false }}
+          theme={THEME}
+        />,
+      )
+      expect(screen.getByTestId('bar-canvas').getAttribute('data-plugin-count')).toBe('1')
+    })
+
+    it('uses stable layout padding regardless of showValues toggle state', () => {
+      const { rerender } = render(
+        <BarChart
+          data={SAMPLE_DATA}
+          orientation="vertical"
+          options={{ ...DISPLAY_OPTIONS, showValues: false }}
+          theme={THEME}
+        />,
+      )
+      const noValuesPadding = screen.getByTestId('bar-canvas').getAttribute('data-padding')
+
+      rerender(
+        <BarChart
+          data={SAMPLE_DATA}
+          orientation="vertical"
+          options={{ ...DISPLAY_OPTIONS, showValues: true }}
+          theme={THEME}
+        />,
+      )
+      const withValuesPadding = screen.getByTestId('bar-canvas').getAttribute('data-padding')
+      expect(noValuesPadding).toBe(withValuesPadding)
     })
   })
 })
