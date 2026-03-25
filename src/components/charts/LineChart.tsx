@@ -9,6 +9,8 @@ import {
   Legend,
   Filler,
   type ChartOptions as ChartJsOptions,
+  type ChartData as ChartJsData,
+  type ChartDataset,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
@@ -65,10 +67,10 @@ function buildDatasets(
   data: ChartDataPoint[] | ChartSeries[],
   chartColors: string[],
   accent: string,
-): { labels: string[]; datasets: ChartJS['data']['datasets'] } {
+): ChartJsData<'line'> {
   if (isSeries(data)) {
     const labels = data[0]?.points.map((p) => p.label) ?? []
-    const datasets = data.map((series, i) => {
+    const datasets: ChartDataset<'line'>[] = data.map((series, i) => {
       const color = chartColors[i % chartColors.length] ?? accent
       return {
         label: series.name,
@@ -87,22 +89,20 @@ function buildDatasets(
 
   const points = data as ChartDataPoint[]
   const color = chartColors[0] ?? accent
-  return {
-    labels: points.map((p) => p.label),
-    datasets: [
-      {
-        label: '',
-        data: points.map((p) => p.value),
-        borderColor: color,
-        backgroundColor: color + FILL_OPACITY_SUFFIX,
-        tension: LINE_TENSION,
-        fill: true,
-        pointRadius: POINT_RADIUS,
-        pointHoverRadius: POINT_HOVER_RADIUS,
-        borderWidth: LINE_BORDER_WIDTH,
-      },
-    ],
-  }
+  const datasets: ChartDataset<'line'>[] = [
+    {
+      label: '',
+      data: points.map((p) => p.value),
+      borderColor: color,
+      backgroundColor: color + FILL_OPACITY_SUFFIX,
+      tension: LINE_TENSION,
+      fill: true,
+      pointRadius: POINT_RADIUS,
+      pointHoverRadius: POINT_HOVER_RADIUS,
+      borderWidth: LINE_BORDER_WIDTH,
+    },
+  ]
+  return { labels: points.map((p) => p.label), datasets }
 }
 
 function isEmpty(data: ChartDataPoint[] | ChartSeries[]): boolean {
