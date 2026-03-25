@@ -39,6 +39,40 @@ const CENTERED_LAYOUT: CSSProperties = {
   boxSizing: 'border-box',
 }
 
+const TITLE_LAYOUT: CSSProperties = {
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  padding: '56px 72px 48px',
+  boxSizing: 'border-box',
+}
+
+const ENDING_LAYOUT: CSSProperties = {
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  padding: '72px 72px 52px',
+  boxSizing: 'border-box',
+}
+
+const TITLE_GROUP: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+  maxWidth: '78%',
+}
+
+const ENDING_GROUP: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 20,
+  maxWidth: '72%',
+}
+
 const TEXT_LAYOUT: CSSProperties = {
   width: '100%',
   height: '100%',
@@ -51,18 +85,18 @@ const TEXT_LAYOUT: CSSProperties = {
 
 const ACCENT_HEADING: CSSProperties = {
   color: 'var(--slide-accent)',
-  fontSize: 36,
+  fontSize: 52,
   fontWeight: 700,
-  textAlign: 'center',
-  lineHeight: 1.2,
+  textAlign: 'left',
+  lineHeight: 1.12,
 }
 
 const ACCENT_HEADING_LARGE: CSSProperties = {
   color: 'var(--slide-accent)',
-  fontSize: 48,
+  fontSize: 64,
   fontWeight: 700,
-  textAlign: 'center',
-  lineHeight: 1.15,
+  textAlign: 'left',
+  lineHeight: 1.06,
 }
 
 const FG_HEADING: CSSProperties = {
@@ -74,9 +108,9 @@ const FG_HEADING: CSSProperties = {
 
 const MUTED_TEXT: CSSProperties = {
   color: 'var(--slide-muted)',
-  fontSize: 16,
-  textAlign: 'center',
-  lineHeight: 1.5,
+  fontSize: 22,
+  textAlign: 'left',
+  lineHeight: 1.35,
 }
 
 const MUTED_TEXT_LEFT: CSSProperties = {
@@ -88,15 +122,17 @@ const MUTED_TEXT_LEFT: CSSProperties = {
 
 const SMALL_META: CSSProperties = {
   color: 'var(--slide-muted)',
-  fontSize: 13,
+  fontSize: 14,
   display: 'flex',
-  gap: 24,
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 }
 
 const FOOTNOTE_TEXT: CSSProperties = {
   color: 'var(--slide-muted)',
-  fontSize: 12,
-  textAlign: 'center',
+  fontSize: 13,
+  textAlign: 'left',
   opacity: 0.7,
 }
 
@@ -115,9 +151,11 @@ const DIVIDER_BAR: CSSProperties = {
 function TitleContent({ data }: { data: TitleSlideData }) {
   const hasMetaRow = data.author !== undefined || data.date !== undefined
   return (
-    <div style={CENTERED_LAYOUT}>
-      <div style={ACCENT_HEADING}>{data.heading || '…'}</div>
-      {data.subheading ? <div style={MUTED_TEXT}>{data.subheading}</div> : null}
+    <div style={TITLE_LAYOUT}>
+      <div style={TITLE_GROUP}>
+        <div style={ACCENT_HEADING}>{data.heading || '…'}</div>
+        {data.subheading ? <div style={MUTED_TEXT}>{data.subheading}</div> : null}
+      </div>
       {hasMetaRow ? (
         <div style={SMALL_META}>
           {data.author ? <span>{data.author}</span> : null}
@@ -130,9 +168,11 @@ function TitleContent({ data }: { data: TitleSlideData }) {
 
 function EndingContent({ data }: { data: EndingSlideData }) {
   return (
-    <div style={CENTERED_LAYOUT}>
-      <div style={ACCENT_HEADING_LARGE}>{data.message || '…'}</div>
-      {data.contact ? <div style={MUTED_TEXT}>{data.contact}</div> : null}
+    <div style={ENDING_LAYOUT}>
+      <div style={ENDING_GROUP}>
+        <div style={ACCENT_HEADING_LARGE}>{data.message || '…'}</div>
+        {data.contact ? <div style={MUTED_TEXT}>{data.contact}</div> : null}
+      </div>
       {data.footnote ? <div style={FOOTNOTE_TEXT}>{data.footnote}</div> : null}
     </div>
   )
