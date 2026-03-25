@@ -1,5 +1,6 @@
 import type { Slide, SlideData } from '../types/slide'
 import type { TileConfig, TileData, GridLayout } from '../types/layout'
+import type { ChartOptions, ChartType } from '../types/chart'
 import type { ThemePreset } from '../types/theme'
 
 // ---------------------------------------------------------------------------
@@ -18,6 +19,8 @@ export const UPDATE_TILE_DATA = 'UPDATE_TILE_DATA' as const
 export const UPDATE_TILE_LAYOUT = 'UPDATE_TILE_LAYOUT' as const
 export const SET_THEME = 'SET_THEME' as const
 export const SET_LANGUAGE = 'SET_LANGUAGE' as const
+export const UPDATE_TILE_OPTIONS = 'UPDATE_TILE_OPTIONS' as const
+export const UPDATE_TILE_TYPE = 'UPDATE_TILE_TYPE' as const
 export const UNDO = 'UNDO' as const
 export const REDO = 'REDO' as const
 
@@ -85,6 +88,16 @@ export interface SetLanguageAction {
   payload: { language: 'ua' | 'en' }
 }
 
+export interface UpdateTileOptionsAction {
+  type: typeof UPDATE_TILE_OPTIONS
+  payload: { slideId: string; tileId: string; options: ChartOptions }
+}
+
+export interface UpdateTileTypeAction {
+  type: typeof UPDATE_TILE_TYPE
+  payload: { slideId: string; tileId: string; tileType: ChartType | 'text'; data: TileData }
+}
+
 export interface UndoAction {
   type: typeof UNDO
 }
@@ -108,6 +121,8 @@ export type ReportAction =
   | RemoveTileAction
   | UpdateTileDataAction
   | UpdateTileLayoutAction
+  | UpdateTileOptionsAction
+  | UpdateTileTypeAction
   | SetThemeAction
   | SetLanguageAction
   | UndoAction
@@ -183,6 +198,25 @@ export const setTheme = (theme: ThemePreset): SetThemeAction => ({
 export const setLanguage = (language: 'ua' | 'en'): SetLanguageAction => ({
   type: SET_LANGUAGE,
   payload: { language },
+})
+
+export const updateTileOptions = (
+  slideId: string,
+  tileId: string,
+  options: ChartOptions,
+): UpdateTileOptionsAction => ({
+  type: UPDATE_TILE_OPTIONS,
+  payload: { slideId, tileId, options },
+})
+
+export const updateTileType = (
+  slideId: string,
+  tileId: string,
+  tileType: ChartType | 'text',
+  data: TileData,
+): UpdateTileTypeAction => ({
+  type: UPDATE_TILE_TYPE,
+  payload: { slideId, tileId, tileType, data },
 })
 
 export const undo = (): UndoAction => ({ type: UNDO })

@@ -52,6 +52,12 @@
     "showValues": "Show Values",
     "showLegend": "Show Legend",
     "showAxis": "Show Axis",
+    "chartType": "Chart Type",
+    "parseApply": "Parse & Apply",
+    "label": "Label",
+    "value": "Value",
+    "csvPlaceholder": "Paste CSV or TSV data…",
+    "csvParseError": "CSV Parse Error",
     "deleteSlide": "Delete Slide",
     "deleteTile": "Delete Tile",
     "title": {

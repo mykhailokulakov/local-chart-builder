@@ -7,6 +7,11 @@ export type ChartType = 'bar-v' | 'bar-h' | 'donut' | 'line' | 'gantt' | 'chorop
 
 /** A single data point used by bar, donut, and line charts */
 export interface ChartDataPoint {
+  /**
+   * Stable client-side identifier used by the editor for React list keys.
+   * Assigned when a point is created or imported; not required by chart renderers.
+   */
+  id?: string
   /** Category label shown on the axis or in the legend */
   label: string
   /** Numeric measurement */
@@ -32,6 +37,8 @@ export interface ChartSeries {
  * Exactly one of the two should be present.
  */
 export interface ChartData {
+  /** Optional title displayed above the chart in the tile */
+  title?: string
   /** Single-series data (bar-v, bar-h, donut, line) */
   points?: ChartDataPoint[]
   /** Multi-series data (grouped / stacked bar, multi-line) */

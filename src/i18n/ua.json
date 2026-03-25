@@ -52,6 +52,12 @@
     "showValues": "Показати значення",
     "showLegend": "Показати легенду",
     "showAxis": "Показати вісі",
+    "chartType": "Тип діаграми",
+    "parseApply": "Розібрати та застосувати",
+    "label": "Мітка",
+    "value": "Значення",
+    "csvPlaceholder": "Вставте CSV або TSV дані…",
+    "csvParseError": "Помилка розбору CSV",
     "deleteSlide": "Видалити слайд",
     "deleteTile": "Видалити елемент",
     "title": {

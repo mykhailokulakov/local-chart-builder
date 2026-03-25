@@ -270,6 +270,8 @@ export function createUndoReducer(
       case 'REORDER_SLIDE':
       case 'ADD_TILE':
       case 'UPDATE_TILE_LAYOUT':
+      case 'UPDATE_TILE_OPTIONS':
+      case 'UPDATE_TILE_TYPE':
       case 'SET_THEME': {
         lastDebounce = null
         const newPresent = baseReducer(state.present, action)

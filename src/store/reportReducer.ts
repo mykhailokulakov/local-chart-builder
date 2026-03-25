@@ -9,6 +9,8 @@ import type {
   RemoveTileAction,
   UpdateTileDataAction,
   UpdateTileLayoutAction,
+  UpdateTileOptionsAction,
+  UpdateTileTypeAction,
   SetThemeAction,
   SetLanguageAction,
 } from './actions'
@@ -135,6 +137,44 @@ function handleUpdateTileLayout(report: Report, action: UpdateTileLayoutAction):
   return { ...report, slides: updated }
 }
 
+function handleUpdateTileOptions(report: Report, action: UpdateTileOptionsAction): Report {
+  const { slideId, tileId, options } = action.payload
+  const slideIndex = report.slides.findIndex((s) => s.id === slideId)
+  if (slideIndex === -1) return report
+
+  const slide = report.slides[slideIndex]
+  const tiles = slide.tiles ?? []
+  const tileIndex = tiles.findIndex((t) => t.id === tileId)
+  if (tileIndex === -1) return report
+
+  const updatedTiles = [...tiles]
+  updatedTiles[tileIndex] = { ...updatedTiles[tileIndex], options }
+
+  const updated = [...report.slides]
+  updated[slideIndex] = { ...slide, tiles: updatedTiles }
+
+  return { ...report, slides: updated }
+}
+
+function handleUpdateTileType(report: Report, action: UpdateTileTypeAction): Report {
+  const { slideId, tileId, tileType, data } = action.payload
+  const slideIndex = report.slides.findIndex((s) => s.id === slideId)
+  if (slideIndex === -1) return report
+
+  const slide = report.slides[slideIndex]
+  const tiles = slide.tiles ?? []
+  const tileIndex = tiles.findIndex((t) => t.id === tileId)
+  if (tileIndex === -1) return report
+
+  const updatedTiles = [...tiles]
+  updatedTiles[tileIndex] = { ...updatedTiles[tileIndex], type: tileType, data }
+
+  const updated = [...report.slides]
+  updated[slideIndex] = { ...slide, tiles: updatedTiles }
+
+  return { ...report, slides: updated }
+}
+
 function handleSetTheme(report: Report, action: SetThemeAction): Report {
   return { ...report, theme: action.payload.theme }
 }
@@ -165,6 +205,10 @@ export function reportReducer(report: Report, action: ReportAction): Report {
       return handleUpdateTileData(report, action)
     case 'UPDATE_TILE_LAYOUT':
       return handleUpdateTileLayout(report, action)
+    case 'UPDATE_TILE_OPTIONS':
+      return handleUpdateTileOptions(report, action)
+    case 'UPDATE_TILE_TYPE':
+      return handleUpdateTileType(report, action)
     case 'SET_THEME':
       return handleSetTheme(report, action)
     case 'SET_LANGUAGE':
