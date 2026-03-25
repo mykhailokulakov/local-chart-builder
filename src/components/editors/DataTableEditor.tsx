@@ -3,10 +3,11 @@ import { useState, useCallback, useMemo } from 'react'
 import { Button, Input, Switch, Typography } from 'antd'
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import type { DataTableColumn, DataTableRow, ChartOptions } from '../../types/chart'
+import type { DataTableRow, ChartOptions } from '../../types/chart'
 import type { DataTableData, TileConfig } from '../../types/layout'
 import { useReport } from '../../hooks/useReport'
 import { updateTileData, updateTileOptions, removeTile } from '../../store/actions'
+import { parseTableCsv } from '../../services/tableDataParser'
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -30,40 +31,6 @@ const DISPLAY_TOGGLES = ['showHeader', 'striped', 'bordered'] as const
 type TableToggleKey = (typeof DISPLAY_TOGGLES)[number]
 
 // ---------------------------------------------------------------------------
-// Pure CSV parser for table data
-// ---------------------------------------------------------------------------
-
-function parseTableCsv(text: string): { columns: DataTableColumn[]; rows: DataTableRow[] } {
-  const lines = text
-    .trim()
-    .split(/\r?\n/)
-    .filter((l) => l.trim().length > 0)
-
-  if (lines.length === 0) return { columns: [], rows: [] }
-
-  const separator = lines[0].includes('\t') ? '\t' : ','
-  const allCells = lines.map((line) => line.split(separator).map((c) => c.trim()))
-
-  const headers = allCells[0]
-  const columns: DataTableColumn[] = headers.map((h, i) => ({
-    key: `col_${String(i)}`,
-    header: h || `col_${String(i)}`,
-  }))
-
-  const rows: DataTableRow[] = allCells.slice(1).map((cells) => {
-    const row: DataTableRow = {}
-    columns.forEach((col, i) => {
-      const raw = cells[i] ?? ''
-      const num = Number(raw)
-      row[col.key] = raw !== '' && !isNaN(num) ? num : raw
-    })
-    return row
-  })
-
-  return { columns, rows }
-}
-
-// ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
 
@@ -85,7 +52,7 @@ export function DataTableEditor({ tile }: DataTableEditorProps) {
   // Intentional cast: PropertiesPanel routes data-table tiles to DataTableEditor,
   // so tile.data is guaranteed to be DataTableData.
   const tableData = tile.data as DataTableData
-  const { columns, rows } = tableData
+  const { columns, rows, rowIds } = tableData
 
   const updateData = useCallback(
     (patch: Partial<DataTableData>) => {
@@ -134,14 +101,17 @@ export function DataTableEditor({ tile }: DataTableEditorProps) {
     columns.forEach((c) => {
       row[c.key] = ''
     })
-    updateData({ rows: [...rows, row] })
-  }, [columns, rows, updateData])
+    updateData({ rows: [...rows, row], rowIds: [...rowIds, crypto.randomUUID()] })
+  }, [columns, rows, rowIds, updateData])
 
   const handleRemoveRow = useCallback(
     (rowIndex: number) => {
-      updateData({ rows: rows.filter((_, i) => i !== rowIndex) })
+      updateData({
+        rows: rows.filter((_, i) => i !== rowIndex),
+        rowIds: rowIds.filter((_, i) => i !== rowIndex),
+      })
     },
-    [rows, updateData],
+    [rows, rowIds, updateData],
   )
 
   const handleCellChange = useCallback(
@@ -242,7 +212,7 @@ export function DataTableEditor({ tile }: DataTableEditorProps) {
           <Typography.Text strong>{t('dataTable.rows')}</Typography.Text>
           {rows.map((row, rowIndex) => (
             <div
-              key={rowIndex}
+              key={rowIds[rowIndex]}
               style={{ display: 'grid', gridTemplateColumns: rowGridTemplate, gap: 4 }}
             >
               {columns.map((col) => (

@@ -41,6 +41,8 @@ const ROWS = [
   { name: 'Lviv', count: 17 },
 ]
 
+const ROW_KEYS = ['row-key-1', 'row-key-2']
+
 const DEFAULT_OPTIONS: DataTableDisplayOptions = {
   showHeader: true,
   striped: false,
@@ -53,17 +55,35 @@ const DEFAULT_OPTIONS: DataTableDisplayOptions = {
 
 describe('DataTable', () => {
   it('renders without crashing with valid data', () => {
-    render(<DataTable columns={COLUMNS} rows={ROWS} theme={THEME} options={DEFAULT_OPTIONS} />)
+    render(
+      <DataTable
+        columns={COLUMNS}
+        rows={ROWS}
+        rowKeys={ROW_KEYS}
+        theme={THEME}
+        options={DEFAULT_OPTIONS}
+      />,
+    )
     expect(screen.getByRole('table')).toBeInTheDocument()
   })
 
   it('shows no-data message when columns array is empty', () => {
-    render(<DataTable columns={[]} rows={[]} theme={THEME} options={DEFAULT_OPTIONS} />)
+    render(
+      <DataTable columns={[]} rows={[]} rowKeys={[]} theme={THEME} options={DEFAULT_OPTIONS} />,
+    )
     expect(screen.getByText('No data to display')).toBeInTheDocument()
   })
 
   it('renders header row when showHeader is true', () => {
-    render(<DataTable columns={COLUMNS} rows={ROWS} theme={THEME} options={DEFAULT_OPTIONS} />)
+    render(
+      <DataTable
+        columns={COLUMNS}
+        rows={ROWS}
+        rowKeys={ROW_KEYS}
+        theme={THEME}
+        options={DEFAULT_OPTIONS}
+      />,
+    )
     expect(screen.getByText('Name')).toBeInTheDocument()
     expect(screen.getByText('Count')).toBeInTheDocument()
   })
@@ -73,6 +93,7 @@ describe('DataTable', () => {
       <DataTable
         columns={COLUMNS}
         rows={ROWS}
+        rowKeys={ROW_KEYS}
         theme={THEME}
         options={{ ...DEFAULT_OPTIONS, showHeader: false }}
       />,
@@ -81,7 +102,15 @@ describe('DataTable', () => {
   })
 
   it('renders all row data cells', () => {
-    render(<DataTable columns={COLUMNS} rows={ROWS} theme={THEME} options={DEFAULT_OPTIONS} />)
+    render(
+      <DataTable
+        columns={COLUMNS}
+        rows={ROWS}
+        rowKeys={ROW_KEYS}
+        theme={THEME}
+        options={DEFAULT_OPTIONS}
+      />,
+    )
     expect(screen.getByText('Kyiv')).toBeInTheDocument()
     expect(screen.getByText('Lviv')).toBeInTheDocument()
     expect(screen.getByText('42')).toBeInTheDocument()
@@ -89,7 +118,15 @@ describe('DataTable', () => {
   })
 
   it('right-aligns numeric cells and left-aligns text cells', () => {
-    render(<DataTable columns={COLUMNS} rows={ROWS} theme={THEME} options={DEFAULT_OPTIONS} />)
+    render(
+      <DataTable
+        columns={COLUMNS}
+        rows={ROWS}
+        rowKeys={ROW_KEYS}
+        theme={THEME}
+        options={DEFAULT_OPTIONS}
+      />,
+    )
     const cells = screen.getAllByRole('cell')
     // Row 0: name=Kyiv (left), count=42 (right)
     const kyivCell = cells.find((c) => c.textContent === 'Kyiv')
@@ -99,13 +136,29 @@ describe('DataTable', () => {
   })
 
   it('renders an empty table when rows array is empty', () => {
-    render(<DataTable columns={COLUMNS} rows={[]} theme={THEME} options={DEFAULT_OPTIONS} />)
+    render(
+      <DataTable
+        columns={COLUMNS}
+        rows={[]}
+        rowKeys={[]}
+        theme={THEME}
+        options={DEFAULT_OPTIONS}
+      />,
+    )
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.queryByRole('cell')).toBeNull()
   })
 
   it('renders correct number of rows', () => {
-    render(<DataTable columns={COLUMNS} rows={ROWS} theme={THEME} options={DEFAULT_OPTIONS} />)
+    render(
+      <DataTable
+        columns={COLUMNS}
+        rows={ROWS}
+        rowKeys={ROW_KEYS}
+        theme={THEME}
+        options={DEFAULT_OPTIONS}
+      />,
+    )
     const rows = screen.getAllByRole('row')
     // 1 header row + 2 data rows
     expect(rows).toHaveLength(3)
@@ -116,6 +169,7 @@ describe('DataTable', () => {
       <DataTable
         columns={COLUMNS}
         rows={ROWS}
+        rowKeys={ROW_KEYS}
         theme={THEME}
         options={{ ...DEFAULT_OPTIONS, showHeader: false }}
       />,
@@ -129,6 +183,7 @@ describe('DataTable', () => {
       <DataTable
         columns={COLUMNS}
         rows={ROWS}
+        rowKeys={ROW_KEYS}
         theme={THEME}
         options={{ ...DEFAULT_OPTIONS, bordered: true }}
       />,
@@ -141,7 +196,13 @@ describe('DataTable', () => {
   it('renders cells with empty string for missing keys', () => {
     const incompleteRows = [{ name: 'Kyiv' }]
     render(
-      <DataTable columns={COLUMNS} rows={incompleteRows} theme={THEME} options={DEFAULT_OPTIONS} />,
+      <DataTable
+        columns={COLUMNS}
+        rows={incompleteRows}
+        rowKeys={['row-key-1']}
+        theme={THEME}
+        options={DEFAULT_OPTIONS}
+      />,
     )
     const cells = screen.getAllByRole('cell')
     // Second cell should be empty (count key missing)

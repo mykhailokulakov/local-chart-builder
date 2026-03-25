@@ -194,7 +194,7 @@ function GanttGrid({ taskCount, totalHeight, theme, monthLabels }: GanttGridProp
         const x = monthX(i, gridWidth)
         return (
           <line
-            key={i}
+            key={`month-sep-${i}`}
             x1={x}
             y1={HEADER_ROW_HEIGHT}
             x2={x}
@@ -210,7 +210,7 @@ function GanttGrid({ taskCount, totalHeight, theme, monthLabels }: GanttGridProp
         const y = HEADER_ROW_HEIGHT + i * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT + ROW_GAP / 2
         return (
           <line
-            key={i}
+            key={`row-sep-${i}`}
             x1={LABEL_COL_WIDTH}
             y1={y}
             x2={800}

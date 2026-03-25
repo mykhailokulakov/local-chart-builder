@@ -118,7 +118,15 @@ export function TileRenderer({ tile, theme }: TileRendererProps) {
         striped: tile.options.striped ?? false,
         bordered: tile.options.bordered ?? false,
       }
-      return <DataTable columns={columns} rows={td.rows} theme={theme} options={options} />
+      return (
+        <DataTable
+          columns={columns}
+          rows={td.rows}
+          rowKeys={td.rowIds}
+          theme={theme}
+          options={options}
+        />
+      )
     }
 
     case 'text': {

@@ -29,6 +29,7 @@ export interface DataTableDisplayOptions {
 export interface DataTableProps {
   columns: DataTableColumnDef[]
   rows: DataTableRow[]
+  rowKeys: string[]
   theme: ThemeColors
   options: DataTableDisplayOptions
 }
@@ -108,7 +109,7 @@ function makeRowBackground(theme: ThemeColors, rowIndex: number, striped: boolea
 // Component
 // ---------------------------------------------------------------------------
 
-export function DataTable({ columns, rows, theme, options }: DataTableProps) {
+export function DataTable({ columns, rows, rowKeys, theme, options }: DataTableProps) {
   const { t } = useTranslation()
 
   if (columns.length === 0) {
@@ -152,7 +153,7 @@ export function DataTable({ columns, rows, theme, options }: DataTableProps) {
           {rows.map((row, rowIndex) => {
             const rowBg = makeRowBackground(theme, rowIndex, options.striped)
             return (
-              <tr key={rowIndex} style={{ background: rowBg }}>
+              <tr key={rowKeys[rowIndex]} style={{ background: rowBg }}>
                 {columns.map((col, colIndex) => {
                   const value = row[col.key]
                   const align = cellAlign(value)

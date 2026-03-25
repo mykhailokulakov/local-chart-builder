@@ -71,6 +71,8 @@ export interface ChoroplethData {
 export interface DataTableData {
   columns: DataTableColumn[]
   rows: DataTableRow[]
+  /** Stable UUID per row — parallel to `rows`, used as React key. */
+  rowIds: string[]
 }
 
 // ---------------------------------------------------------------------------
