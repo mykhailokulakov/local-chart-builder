@@ -39,6 +39,8 @@ export interface ChartSeries {
 export interface ChartData {
   /** Optional title displayed above the chart in the tile */
   title?: string
+  /** Optional legend / series label shown in the chart legend box */
+  legendLabel?: string
   /** Single-series data (bar-v, bar-h, donut, line) */
   points?: ChartDataPoint[]
   /** Multi-series data (grouped / stacked bar, multi-line) */

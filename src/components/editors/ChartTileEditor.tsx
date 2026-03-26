@@ -34,12 +34,19 @@ const CHART_TYPE_CONFIG = [
   { type: 'data-table' as const, Icon: TableOutlined, labelKey: 'editors.tileType.data-table' },
 ]
 
-const DISPLAY_TOGGLES = ['showValues', 'showLegend', 'showAxis'] as const
-type ToggleKey = (typeof DISPLAY_TOGGLES)[number]
+/** Display toggles applicable to each chart type handled by this editor */
+const TYPE_TOGGLES: Record<'bar-v' | 'bar-h' | 'donut' | 'line', readonly ToggleKey[]> = {
+  'bar-v': ['showValues', 'showLegend', 'showAxis'],
+  'bar-h': ['showValues', 'showLegend', 'showAxis'],
+  donut: ['showValues', 'showLegend'],
+  line: ['showValues', 'showLegend', 'showAxis'],
+}
+
+type ToggleKey = 'showValues' | 'showLegend' | 'showAxis'
 
 const TYPE_GRID_STYLE: CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(4, 1fr)',
+  gridTemplateColumns: 'repeat(7, 1fr)',
   gap: 4,
 }
 
@@ -114,11 +121,16 @@ export function ChartTileEditor({ tile }: ChartTileEditorProps) {
 
   if (selectedSlideId === null) return null
 
+  // Narrow to chart types handled by this editor for toggle list lookup
+  const activeType = tile.type as 'bar-v' | 'bar-h' | 'donut' | 'line'
+  const toggleKeys: readonly ToggleKey[] = TYPE_TOGGLES[activeType] ?? []
+
   return (
     <div className="flex flex-col gap-4">
       <Typography.Title level={5}>{t('editors.tileEditor')}</Typography.Title>
 
       <label>{t('editors.chartType')}</label>
+      {/* Icon-only buttons prevent label overflow when switching languages */}
       <div style={TYPE_GRID_STYLE}>
         {CHART_TYPE_CONFIG.map(({ type, Icon, labelKey }) => (
           <Button
@@ -126,10 +138,10 @@ export function ChartTileEditor({ tile }: ChartTileEditorProps) {
             size="small"
             type={tile.type === type ? 'primary' : 'default'}
             icon={<Icon />}
+            aria-label={t(labelKey)}
+            title={t(labelKey)}
             onClick={() => handleTypeChange(type)}
-          >
-            {t(labelKey)}
-          </Button>
+          />
         ))}
       </div>
 
@@ -140,6 +152,14 @@ export function ChartTileEditor({ tile }: ChartTileEditorProps) {
         onChange={(e) => updateData({ title: e.target.value })}
       />
 
+      <label htmlFor="chart-legend-label">{t('editors.legendLabel')}</label>
+      <Input
+        id="chart-legend-label"
+        value={chartData.legendLabel ?? ''}
+        placeholder={t('editors.legendLabelPlaceholder')}
+        onChange={(e) => updateData({ legendLabel: e.target.value })}
+      />
+
       <Typography.Text strong>{t('editors.dataInput')}</Typography.Text>
       <ChartDataInput
         points={points}
@@ -148,7 +168,7 @@ export function ChartTileEditor({ tile }: ChartTileEditorProps) {
       />
 
       <Typography.Text strong>{t('editors.display')}</Typography.Text>
-      {DISPLAY_TOGGLES.map((key) => (
+      {toggleKeys.map((key) => (
         <div key={key} style={TOGGLE_ROW_STYLE}>
           <label>{t(`editors.${key}`)}</label>
           <Switch

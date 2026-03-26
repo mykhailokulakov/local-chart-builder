@@ -301,25 +301,9 @@ export function ChoroplethMap({ data, theme, valueRange, legendLabel }: Chorople
 
   const getColorScale = useCallback((v: number) => colorScale(v), [colorScale])
 
-  if (data.length === 0) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-          height: '100%',
-          background: theme.background,
-          color: theme.muted,
-          fontFamily: theme.fontFamily,
-          fontSize: '14px',
-        }}
-      >
-        {t('charts.noData')}
-      </div>
-    )
-  }
+  // Always render the SVG map so the user can see the Ukraine outline.
+  // When no data is provided, oblasts render in the surface colour.
+  // A hint label is overlaid on the SVG when the data array is empty.
 
   return (
     <div style={{ width: '100%', height: '100%', background: theme.background }}>
@@ -348,14 +332,28 @@ export function ChoroplethMap({ data, theme, valueRange, legendLabel }: Chorople
           foregroundColor={theme.foreground}
         />
         <CrimeaNote note={t('map.crimeaIsUkraine')} theme={theme} />
-        <MapLegend
-          legendLabel={legendLabel}
-          valueRange={valueRange}
-          gradientId={GRADIENT_DEF_ID}
-          lightColor={theme.background}
-          darkColor={theme.accent}
-          theme={theme}
-        />
+        {data.length > 0 ? (
+          <MapLegend
+            legendLabel={legendLabel}
+            valueRange={valueRange}
+            gradientId={GRADIENT_DEF_ID}
+            lightColor={theme.background}
+            darkColor={theme.accent}
+            theme={theme}
+          />
+        ) : (
+          <text
+            x={MAP_WIDTH / 2}
+            y={MAP_AREA_H / 2}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontSize={LEGEND_FONT_SIZE * 1.5}
+            fill={theme.muted}
+            fontFamily={theme.fontFamily}
+          >
+            {t('charts.noData')}
+          </text>
+        )}
       </svg>
     </div>
   )

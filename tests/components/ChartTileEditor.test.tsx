@@ -77,22 +77,29 @@ describe('ChartTileEditor', () => {
     expect(screen.getByText('Chart Type')).toBeInTheDocument()
   })
 
-  it('renders all 7 chart type buttons', () => {
+  it('renders all 7 chart type buttons as icon-only with aria-labels', () => {
     renderEditor()
-    expect(screen.getByText('Vertical Bar')).toBeInTheDocument()
-    expect(screen.getByText('Horizontal Bar')).toBeInTheDocument()
-    expect(screen.getByText('Donut')).toBeInTheDocument()
-    expect(screen.getByText('Line')).toBeInTheDocument()
-    expect(screen.getByText('Gantt')).toBeInTheDocument()
-    expect(screen.getByText('Map')).toBeInTheDocument()
-    expect(screen.getByText('Table')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Vertical Bar' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Horizontal Bar' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Donut' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Line' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Gantt' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Map' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Table' })).toBeInTheDocument()
   })
 
-  it('highlights the current tile type as primary button', () => {
+  it('type button labels are not rendered as visible text (icon-only)', () => {
+    renderEditor()
+    // Text content should not appear as separate nodes — buttons are icon-only
+    expect(screen.queryByText('Vertical Bar')).not.toBeInTheDocument()
+    expect(screen.queryByText('Horizontal Bar')).not.toBeInTheDocument()
+  })
+
+  it('highlights the current tile type button as primary', () => {
     const tile = makeTile({ type: 'donut' })
     renderEditor(tile)
-    // The "Donut" button should be rendered (active state tested via DOM attribute)
-    expect(screen.getByText('Donut')).toBeInTheDocument()
+    const donutBtn = screen.getByRole('button', { name: 'Donut' })
+    expect(donutBtn).toBeInTheDocument()
   })
 
   it('renders the chart title input with associated label', () => {
@@ -105,6 +112,18 @@ describe('ChartTileEditor', () => {
     renderEditor(tile)
     const input = screen.getByLabelText('Chart Title') as HTMLInputElement
     expect(input.value).toBe('My Chart')
+  })
+
+  it('renders the legend label input', () => {
+    renderEditor()
+    expect(screen.getByLabelText('Legend Label')).toBeInTheDocument()
+  })
+
+  it('renders legend label input with existing value', () => {
+    const tile = makeTile({ data: { points: [], legendLabel: 'Population' } })
+    renderEditor(tile)
+    const input = screen.getByLabelText('Legend Label') as HTMLInputElement
+    expect(input.value).toBe('Population')
   })
 
   it('renders the Data Input section heading', () => {
@@ -139,9 +158,34 @@ describe('ChartTileEditor', () => {
     expect(inputs[1].value).toBe('Lviv')
   })
 
-  it('renders the Display section with all three toggles', () => {
+  it('renders the Display section heading', () => {
     renderEditor()
     expect(screen.getByText('Display')).toBeInTheDocument()
+  })
+
+  it('bar-v tile shows Show Values, Show Legend, Show Axis toggles', () => {
+    renderEditor(makeTile({ type: 'bar-v' }))
+    expect(screen.getByText('Show Values')).toBeInTheDocument()
+    expect(screen.getByText('Show Legend')).toBeInTheDocument()
+    expect(screen.getByText('Show Axis')).toBeInTheDocument()
+  })
+
+  it('bar-h tile shows Show Values, Show Legend, Show Axis toggles', () => {
+    renderEditor(makeTile({ type: 'bar-h' }))
+    expect(screen.getByText('Show Values')).toBeInTheDocument()
+    expect(screen.getByText('Show Legend')).toBeInTheDocument()
+    expect(screen.getByText('Show Axis')).toBeInTheDocument()
+  })
+
+  it('donut tile shows Show Values and Show Legend but NOT Show Axis', () => {
+    renderEditor(makeTile({ type: 'donut' }))
+    expect(screen.getByText('Show Values')).toBeInTheDocument()
+    expect(screen.getByText('Show Legend')).toBeInTheDocument()
+    expect(screen.queryByText('Show Axis')).not.toBeInTheDocument()
+  })
+
+  it('line tile shows Show Values, Show Legend, Show Axis toggles', () => {
+    renderEditor(makeTile({ type: 'line' }))
     expect(screen.getByText('Show Values')).toBeInTheDocument()
     expect(screen.getByText('Show Legend')).toBeInTheDocument()
     expect(screen.getByText('Show Axis')).toBeInTheDocument()

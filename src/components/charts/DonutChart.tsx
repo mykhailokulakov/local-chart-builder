@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+import type { CSSProperties } from 'react'
 import {
   Chart as ChartJS,
   ArcElement,
@@ -20,6 +22,12 @@ const DONUT_CUTOUT = '60%'
 const DONUT_CENTER_FONT_SIZE = 20
 const DONUT_VALUE_FONT_SIZE = 11
 
+const CHART_WRAPPER_STYLE: CSSProperties = {
+  flex: 1,
+  minHeight: 0,
+  position: 'relative',
+}
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -36,6 +44,8 @@ interface DonutDisplayOptions {
 }
 
 export interface DonutChartProps {
+  /** Title shown above the donut and also rendered in the centre hole */
+  title?: string
   data: DonutDataPoint[]
   options: DonutDisplayOptions
   theme: ThemeColors
@@ -46,13 +56,14 @@ export interface DonutChartProps {
 // ---------------------------------------------------------------------------
 
 function makeCenterLabelPlugin(
-  total: number,
+  centerText: string,
   foreground: string,
   fontFamily: string,
 ): Plugin<'doughnut'> {
   return {
     id: 'donutCenterLabel',
     afterDatasetsDraw(chart) {
+      if (!centerText) return
       const { ctx, chartArea } = chart
       const centerX = (chartArea.left + chartArea.right) / 2
       const centerY = (chartArea.top + chartArea.bottom) / 2
@@ -61,16 +72,21 @@ function makeCenterLabelPlugin(
       ctx.fillStyle = foreground
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.fillText(String(total), centerX, centerY)
+      ctx.fillText(centerText, centerX, centerY)
       ctx.restore()
     },
   }
 }
 
-function makeValueLabelPlugin(foreground: string, fontFamily: string): Plugin<'doughnut'> {
+function makeValueLabelPlugin(
+  show: boolean,
+  foreground: string,
+  fontFamily: string,
+): Plugin<'doughnut'> {
   return {
     id: 'donutValueLabels',
     afterDatasetsDraw(chart) {
+      if (!show) return
       const { ctx } = chart
       const meta = chart.getDatasetMeta(0)
       meta.data.forEach((element, index) => {
@@ -100,32 +116,56 @@ function makeValueLabelPlugin(foreground: string, fontFamily: string): Plugin<'d
 // Component
 // ---------------------------------------------------------------------------
 
-export function DonutChart({ data, options, theme }: DonutChartProps) {
+export function DonutChart({ title, data, options, theme }: DonutChartProps) {
   const { t } = useTranslation()
 
+  const containerStyle = useMemo<CSSProperties>(
+    () => ({
+      width: '100%',
+      height: '100%',
+      background: theme.background,
+      display: 'flex',
+      flexDirection: 'column',
+    }),
+    [theme.background],
+  )
+
+  const titleStyle = useMemo<CSSProperties>(
+    () => ({
+      color: theme.foreground,
+      fontFamily: theme.fontFamily,
+      fontSize: 13,
+      fontWeight: 600,
+      padding: '8px 12px 0',
+      flexShrink: 0,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    }),
+    [theme.foreground, theme.fontFamily],
+  )
+
+  const emptyStyle = useMemo<CSSProperties>(
+    () => ({
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+      height: '100%',
+      background: theme.surface,
+      color: theme.muted,
+      fontFamily: theme.fontFamily,
+      fontSize: '14px',
+    }),
+    [theme.surface, theme.muted, theme.fontFamily],
+  )
+
   if (data.length === 0) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-          height: '100%',
-          background: theme.surface,
-          color: theme.muted,
-          fontFamily: theme.fontFamily,
-          fontSize: '14px',
-        }}
-      >
-        {t('charts.noData')}
-      </div>
-    )
+    return <div style={emptyStyle}>{t('charts.noData')}</div>
   }
 
   const labels = data.map((d) => d.label)
   const values = data.map((d) => d.value)
-  const total = values.reduce((sum, v) => sum + v, 0)
   const backgroundColors = data.map(
     (d, i) => d.color ?? theme.chartColors[i % theme.chartColors.length] ?? theme.accent,
   )
@@ -159,16 +199,25 @@ export function DonutChart({ data, options, theme }: DonutChartProps) {
     },
   }
 
+  // Center text: use chart title if set; show nothing otherwise.
+  // This lets the user control the center label via the Chart Title field.
+  const centerText = title ?? ''
   const plugins: Plugin<'doughnut'>[] = [
-    makeCenterLabelPlugin(total, theme.foreground, theme.fontFamily),
+    makeCenterLabelPlugin(centerText, theme.foreground, theme.fontFamily),
+    makeValueLabelPlugin(options.showValues, theme.foreground, theme.fontFamily),
   ]
-  if (options.showValues) {
-    plugins.push(makeValueLabelPlugin(theme.foreground, theme.fontFamily))
-  }
 
   return (
-    <div style={{ width: '100%', height: '100%', background: theme.background }}>
-      <Doughnut data={chartData} options={chartOptions} plugins={plugins} />
+    <div style={containerStyle}>
+      {title ? <div style={titleStyle}>{title}</div> : null}
+      <div style={CHART_WRAPPER_STYLE}>
+        <Doughnut
+          key={String(options.showValues)}
+          data={chartData}
+          options={chartOptions}
+          plugins={plugins}
+        />
+      </div>
     </div>
   )
 }

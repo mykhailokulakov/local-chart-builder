@@ -44,6 +44,8 @@
     "slideProperties": "Slide Properties",
     "tileEditor": "Tile Editor",
     "chartTitle": "Chart Title",
+    "legendLabel": "Legend Label",
+    "legendLabelPlaceholder": "e.g. Coverage",
     "dataInput": "Data Input",
     "manual": "Manual",
     "csv": "CSV",
