@@ -20,8 +20,9 @@ const light: ThemeColors = {
 
   // Statement slides (title, ending) — solid periwinkle background
   backgroundStatement: '#7B6EF6',
-  foregroundStatement: '#1A1A2E',
+  foregroundStatement: '#FFFFFF',
   accentStatement: '#1A1A2E',
+  titleLine1Color: '#1A1A2E',
   titleLine2Color: '#FFFFFF',
 
   chartColors: [

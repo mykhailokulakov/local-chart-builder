@@ -14,6 +14,7 @@ const mindigit: ThemeColors = {
   backgroundStatement: '#0a2e1f',
   foregroundStatement: '#f5f0e8',
   accentStatement: '#c5a24d',
+  titleLine1Color: '#f5f0e8',
   titleLine2Color: '#c5a24d',
   chartColors: [
     '#c5a24d',

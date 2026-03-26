@@ -135,11 +135,11 @@ const TITLE_ORG_ROW: CSSProperties = {
 }
 
 const TITLE_ORG_LABEL: CSSProperties = {
-  color: 'var(--slide-fg-statement)',
+  color: 'var(--slide-title-line1)',
   fontSize: 13,
   fontWeight: 400,
   letterSpacing: '0.3px',
-  opacity: 0.85,
+  opacity: 0.6,
 }
 
 const TITLE_HEADER_RULE: CSSProperties = {
@@ -161,7 +161,7 @@ const TITLE_CONTENT_ZONE: CSSProperties = {
 }
 
 const TITLE_LINE_1: CSSProperties = {
-  color: 'var(--slide-fg-statement)',
+  color: 'var(--slide-title-line1)',
   fontSize: 54,
   fontWeight: 700,
   lineHeight: 1.1,
@@ -196,7 +196,7 @@ const FOOTER_TEXT: CSSProperties = {
   color: 'var(--slide-fg-tertiary)',
   fontSize: 11,
   fontWeight: 400,
-  letterSpacing: '1px',
+  letterSpacing: '1.5px',
   textTransform: 'uppercase',
 }
 
@@ -323,7 +323,7 @@ function EndingContent({ data }: { data: EndingSlideData }) {
       <div style={ENDING_WATERMARK}>
         <TridentMark
           width={144}
-          strokeColor="var(--slide-fg-statement)"
+          strokeColor="var(--slide-title-line1)"
           opacity={0.11}
           strokeWidth={2}
         />

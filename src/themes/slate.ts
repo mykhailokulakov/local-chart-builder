@@ -14,6 +14,7 @@ const slate: ThemeColors = {
   backgroundStatement: '#1e1e2e',
   foregroundStatement: '#cdd6f4',
   accentStatement: '#89b4fa',
+  titleLine1Color: '#cdd6f4',
   titleLine2Color: '#89b4fa',
   chartColors: [
     '#89b4fa',

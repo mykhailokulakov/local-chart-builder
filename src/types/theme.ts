@@ -39,6 +39,8 @@ export interface ThemeColors {
   foregroundStatement: string
   /** Left-edge bar and accent marks on statement slide backgrounds */
   accentStatement: string
+  /** First line of the two-tone title (primary text colour on statement bg) */
+  titleLine1Color: string
   /** Second line of the two-tone title (accent/contrast colour) */
   titleLine2Color: string
 

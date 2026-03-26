@@ -131,6 +131,7 @@ export function Canvas() {
         '--slide-bg-statement': theme.backgroundStatement,
         '--slide-fg-statement': theme.foregroundStatement,
         '--slide-accent-statement': theme.accentStatement,
+        '--slide-title-line1': theme.titleLine1Color,
         '--slide-title-line2': theme.titleLine2Color,
         // Shared
         '--slide-font': theme.fontFamily,

@@ -47,6 +47,7 @@ const THEME: ThemeColors = {
   backgroundStatement: '#111827',
   foregroundStatement: '#f9fafb',
   accentStatement: '#3b82f6',
+  titleLine1Color: '#f9fafb',
   titleLine2Color: '#3b82f6',
   chartColors: ['#3b82f6', '#60a5fa', '#34d399'],
   fontFamily: "'e-Ukraine', sans-serif",

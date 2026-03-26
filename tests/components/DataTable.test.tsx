@@ -32,6 +32,7 @@ const THEME: ThemeColors = {
   backgroundStatement: '#ffffff',
   foregroundStatement: '#111827',
   accentStatement: '#2563eb',
+  titleLine1Color: '#111827',
   titleLine2Color: '#2563eb',
   chartColors: ['#16a34a', '#ea580c'],
   fontFamily: 'sans-serif',

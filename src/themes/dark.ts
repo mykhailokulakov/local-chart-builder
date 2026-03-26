@@ -21,6 +21,7 @@ const dark: ThemeColors = {
   backgroundStatement: '#0C0C0E',
   foregroundStatement: '#FFFFFF',
   accentStatement: '#7B6EF6',
+  titleLine1Color: '#FFFFFF',
   titleLine2Color: '#7B6EF6',
 
   chartColors: [
