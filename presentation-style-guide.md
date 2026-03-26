@@ -9,6 +9,7 @@ You are building slides for a presentation builder. This document is the complet
 The aesthetic is **institutional minimalism with a single accent color**. Think: a government ministry that hired a world-class design agency. Every slide has massive breathing room, confident typography, and exactly one visual anchor. There is no decoration — every element communicates.
 
 **Core rules:**
+
 - One accent color (periwinkle `#7B6EF6`) used everywhere — never introduce a second brand color
 - The 4px left-edge accent bar appears on every slide, without exception
 - Left-aligned text, generous bottom anchoring — titles sit in the lower third, never centered vertically
@@ -22,38 +23,38 @@ The aesthetic is **institutional minimalism with a single accent color**. Think:
 
 ### Dark theme
 
-| Token | Hex | Usage |
-|---|---|---|
-| `bg` | `#0C0C0E` | Slide background (content, divider, chart, text slides) |
-| `bg-accent` | `#7B6EF6` | Title and ending slide backgrounds (light theme only — in dark theme this is the accent, not the bg) |
-| `fg-primary` | `#FFFFFF` | Titles, headings, primary text |
-| `fg-secondary` | `#FFFFFF` at 40% opacity | Subtitles, descriptions, body text |
-| `fg-tertiary` | `#FFFFFF` at 20–25% opacity | Footer labels, page numbers, metadata |
-| `accent` | `#7B6EF6` | Left-edge bar, accent bars next to text items, section numbers, title highlight line, chart primary color |
-| `accent-muted` | `#7B6EF6` at 30–40% opacity | Decorative rules, short accent lines |
-| `chart-secondary` | `#3A3A4A` at 50% opacity | Chart comparison bars (target/baseline) |
-| `rule` | `#FFFFFF` at 6–8% opacity | Horizontal divider rules, axis lines |
-| `trident` | `#FFFFFF` at 12% opacity | Watermark Trident on ending slide |
-| `trident-header` | `#7B6EF6` at 90% opacity | Trident in header position (title slide) |
+| Token             | Hex                         | Usage                                                                                                     |
+| ----------------- | --------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `bg`              | `#0C0C0E`                   | Slide background (content, divider, chart, text slides)                                                   |
+| `bg-accent`       | `#7B6EF6`                   | Title and ending slide backgrounds (light theme only — in dark theme this is the accent, not the bg)      |
+| `fg-primary`      | `#FFFFFF`                   | Titles, headings, primary text                                                                            |
+| `fg-secondary`    | `#FFFFFF` at 40% opacity    | Subtitles, descriptions, body text                                                                        |
+| `fg-tertiary`     | `#FFFFFF` at 20–25% opacity | Footer labels, page numbers, metadata                                                                     |
+| `accent`          | `#7B6EF6`                   | Left-edge bar, accent bars next to text items, section numbers, title highlight line, chart primary color |
+| `accent-muted`    | `#7B6EF6` at 30–40% opacity | Decorative rules, short accent lines                                                                      |
+| `chart-secondary` | `#3A3A4A` at 50% opacity    | Chart comparison bars (target/baseline)                                                                   |
+| `rule`            | `#FFFFFF` at 6–8% opacity   | Horizontal divider rules, axis lines                                                                      |
+| `trident`         | `#FFFFFF` at 12% opacity    | Watermark Trident on ending slide                                                                         |
+| `trident-header`  | `#7B6EF6` at 90% opacity    | Trident in header position (title slide)                                                                  |
 
 ### Light theme
 
-| Token | Hex | Usage |
-|---|---|---|
-| `bg-content` | `#F3F2FA` | Content, divider, chart, text slide backgrounds |
-| `bg-statement` | `#7B6EF6` | Title and ending slide backgrounds |
-| `fg-primary` on content | `#1A1A2E` | Titles, headings on content slides |
-| `fg-primary` on statement | `#FFFFFF` | Text on periwinkle backgrounds |
-| `fg-secondary` on content | `#1A1A2E` at 45% opacity | Subtitles, body text |
-| `fg-secondary` on statement | `#1A1A2E` at 50% opacity | Subtitles on periwinkle backgrounds |
-| `fg-tertiary` | `#1A1A2E` at 25–30% opacity | Footer labels, page numbers |
-| `accent` on content | `#7B6EF6` | Accent bars, section numbers, chart color |
-| `accent` on statement | `#1A1A2E` | Left-edge bar and accent elements on periwinkle background |
-| `highlight-text` on statement | `#FFFFFF` | The second line of the title (contrast against dark first line) |
-| `chart-secondary` | `#D4D0F0` | Light-theme chart comparison bars |
-| `rule` on content | `#1A1A2E` at 6–8% opacity | Horizontal divider rules |
-| `trident-header` on statement | `#1A1A2E` at 80% opacity | Trident in header on periwinkle |
-| `trident` on statement | `#1A1A2E` at 10% opacity | Watermark Trident on ending slide |
+| Token                         | Hex                         | Usage                                                           |
+| ----------------------------- | --------------------------- | --------------------------------------------------------------- |
+| `bg-content`                  | `#F3F2FA`                   | Content, divider, chart, text slide backgrounds                 |
+| `bg-statement`                | `#7B6EF6`                   | Title and ending slide backgrounds                              |
+| `fg-primary` on content       | `#1A1A2E`                   | Titles, headings on content slides                              |
+| `fg-primary` on statement     | `#FFFFFF`                   | Text on periwinkle backgrounds                                  |
+| `fg-secondary` on content     | `#1A1A2E` at 45% opacity    | Subtitles, body text                                            |
+| `fg-secondary` on statement   | `#1A1A2E` at 50% opacity    | Subtitles on periwinkle backgrounds                             |
+| `fg-tertiary`                 | `#1A1A2E` at 25–30% opacity | Footer labels, page numbers                                     |
+| `accent` on content           | `#7B6EF6`                   | Accent bars, section numbers, chart color                       |
+| `accent` on statement         | `#1A1A2E`                   | Left-edge bar and accent elements on periwinkle background      |
+| `highlight-text` on statement | `#FFFFFF`                   | The second line of the title (contrast against dark first line) |
+| `chart-secondary`             | `#D4D0F0`                   | Light-theme chart comparison bars                               |
+| `rule` on content             | `#1A1A2E` at 6–8% opacity   | Horizontal divider rules                                        |
+| `trident-header` on statement | `#1A1A2E` at 80% opacity    | Trident in header on periwinkle                                 |
+| `trident` on statement        | `#1A1A2E` at 10% opacity    | Watermark Trident on ending slide                               |
 
 ### Key theme logic
 
@@ -72,30 +73,32 @@ Use DM Sans as the primary typeface. Fall back to Inter. Never use serif fonts, 
 
 ### Type scale
 
-| Element | Size (pt) | Weight | Letter-spacing | Case | Notes |
-|---|---|---|---|---|---|
-| Title line (large) | 54pt | 700 (bold) | -1pt (tight) | Sentence case | Two-line titles split into separate text elements |
-| Section title (divider) | 42pt | 600 (semibold) | -0.5pt | Sentence case | |
-| Slide heading | 22pt | 600 (semibold) | -0.3pt | Sentence case | Top of content/chart slides |
-| Body item heading | 15pt | 500 (medium) | 0 | Sentence case | Bold line in text item blocks |
-| Body text | 13pt | 300 (light) | 0 | Sentence case | Description under item headings |
-| Subtitle / tagline | 16pt | 300 (light) | 0.5pt | Sentence case | Below title, muted opacity |
-| Section number | 14pt | 500 (medium) | 3pt | Numerals | "01", "02" etc. on divider slides |
-| Organization label | 13pt | 400 (regular) | 0.3pt | Sentence case | Next to Trident mark |
-| Ending main text | 40pt | 300 (light) | 1pt | Sentence case | "Thank you" — intentionally thin |
-| Contact info | 13–14pt | 400 (regular) | 0 | lowercase | URL, email on ending slide |
-| Footer text | 11pt | 400 (regular) | 0.5–1.5pt | ALL CAPS | Date, "CONFIDENTIAL", org name |
-| Chart label | 11pt | 400–500 | 0 | Sentence case | Axis labels, data values, legend |
+| Element                 | Size (pt) | Weight         | Letter-spacing | Case          | Notes                                             |
+| ----------------------- | --------- | -------------- | -------------- | ------------- | ------------------------------------------------- |
+| Title line (large)      | 54pt      | 700 (bold)     | -1pt (tight)   | Sentence case | Two-line titles split into separate text elements |
+| Section title (divider) | 42pt      | 600 (semibold) | -0.5pt         | Sentence case |                                                   |
+| Slide heading           | 22pt      | 600 (semibold) | -0.3pt         | Sentence case | Top of content/chart slides                       |
+| Body item heading       | 15pt      | 500 (medium)   | 0              | Sentence case | Bold line in text item blocks                     |
+| Body text               | 13pt      | 300 (light)    | 0              | Sentence case | Description under item headings                   |
+| Subtitle / tagline      | 16pt      | 300 (light)    | 0.5pt          | Sentence case | Below title, muted opacity                        |
+| Section number          | 14pt      | 500 (medium)   | 3pt            | Numerals      | "01", "02" etc. on divider slides                 |
+| Organization label      | 13pt      | 400 (regular)  | 0.3pt          | Sentence case | Next to Trident mark                              |
+| Ending main text        | 40pt      | 300 (light)    | 1pt            | Sentence case | "Thank you" — intentionally thin                  |
+| Contact info            | 13–14pt   | 400 (regular)  | 0              | lowercase     | URL, email on ending slide                        |
+| Footer text             | 11pt      | 400 (regular)  | 0.5–1.5pt      | ALL CAPS      | Date, "CONFIDENTIAL", org name                    |
+| Chart label             | 11pt      | 400–500        | 0              | Sentence case | Axis labels, data values, legend                  |
 
 ### Title split rule
 
 Titles are always split across two lines, rendered as two separate text elements. **The second line uses the accent/contrast color** — periwinkle `#7B6EF6` on dark theme, white `#FFFFFF` on light (periwinkle bg). This two-tone treatment is the primary visual signature of the deck.
 
 Example on dark theme:
+
 - Line 1: "C-UAS pilot" → white `#FFFFFF`
 - Line 2: "digital cabinet" → periwinkle `#7B6EF6`
 
 Example on light theme (periwinkle background):
+
 - Line 1: "C-UAS pilot" → navy `#1A1A2E`
 - Line 2: "digital cabinet" → white `#FFFFFF`
 
@@ -146,19 +149,19 @@ Since PptxGenJS doesn't support arbitrary SVG paths natively, render the Trident
 
 ### Margins and spacing
 
-| Element | Value | Notes |
-|---|---|---|
-| Left margin | 60px (0.625") | All content starts here |
-| Right margin | 60px (0.625") | Content ends at 900px (9.375") |
-| Top margin | 48–56px (0.5") | First content element |
-| Bottom margin | ~30px above footer | Content breathing room |
-| Footer y-position | 510px (5.3") | Bottom metadata line |
-| Left-edge bar | x=0, width=4px, full height | Always present |
-| Item spacing | 72px between item blocks | Vertical rhythm for text slides |
-| Accent bar width | 3px | Vertical bars next to text items |
-| Accent bar height | 48px | Matches two-line item block |
-| Horizontal rule | full width, 0.5px | Below headings |
-| Short accent rule | 40px wide, 1px tall | Below Trident header area |
+| Element           | Value                       | Notes                            |
+| ----------------- | --------------------------- | -------------------------------- |
+| Left margin       | 60px (0.625")               | All content starts here          |
+| Right margin      | 60px (0.625")               | Content ends at 900px (9.375")   |
+| Top margin        | 48–56px (0.5")              | First content element            |
+| Bottom margin     | ~30px above footer          | Content breathing room           |
+| Footer y-position | 510px (5.3")                | Bottom metadata line             |
+| Left-edge bar     | x=0, width=4px, full height | Always present                   |
+| Item spacing      | 72px between item blocks    | Vertical rhythm for text slides  |
+| Accent bar width  | 3px                         | Vertical bars next to text items |
+| Accent bar height | 48px                        | Matches two-line item block      |
+| Horizontal rule   | full width, 0.5px           | Below headings                   |
+| Short accent rule | 40px wide, 1px tall         | Below Trident header area        |
 
 ### Content zones
 
@@ -190,10 +193,12 @@ Since PptxGenJS doesn't support arbitrary SVG paths natively, render the Trident
 **Purpose:** Opening slide. Sets the tone.
 
 **Background:**
+
 - Dark theme: `#0C0C0E`
 - Light theme: `#7B6EF6` (solid periwinkle)
 
 **Elements:**
+
 1. Left-edge bar (4px, full height)
 2. Trident header mark (top-left, at left margin, ~y=48)
 3. Organization label (to right of Trident, vertically centered with mark)
@@ -211,10 +216,12 @@ Since PptxGenJS doesn't support arbitrary SVG paths natively, render the Trident
 **Purpose:** Section separator. Creates a pause between content sections.
 
 **Background:**
+
 - Dark theme: `#0C0C0E`
 - Light theme: `#F3F2FA`
 
 **Elements:**
+
 1. Left-edge bar (4px, full height)
 2. Section number ("01", "02", etc.) — 14pt medium, accent color, letter-spacing 3pt, at ~y=235
 3. Short accent rule (24px wide, 2px tall, accent color at 35–40% opacity, at ~y=252)
@@ -228,10 +235,12 @@ Since PptxGenJS doesn't support arbitrary SVG paths natively, render the Trident
 **Purpose:** Structured information. Key points, objectives, features.
 
 **Background:**
+
 - Dark theme: `#0C0C0E`
 - Light theme: `#F3F2FA`
 
 **Elements:**
+
 1. Left-edge bar (4px, full height)
 2. Slide heading (22pt semibold, primary text color, at ~y=56)
 3. Horizontal rule (full content width, 0.5px, rule color, at ~y=74)
@@ -240,6 +249,7 @@ Since PptxGenJS doesn't support arbitrary SVG paths natively, render the Trident
 6. Footer right: page number (11pt, tertiary)
 
 **Content item block** (repeats vertically, 72px apart):
+
 ```
 │▌ [3px accent bar, 48px tall, periwinkle]
 │   Item heading (15pt medium, primary text)
@@ -256,10 +266,12 @@ Since PptxGenJS doesn't support arbitrary SVG paths natively, render the Trident
 **Purpose:** Data visualization with clean, branded appearance.
 
 **Background:**
+
 - Dark theme: `#0C0C0E`
 - Light theme: `#F3F2FA`
 
 **Elements:**
+
 1. Left-edge bar (4px, full height)
 2. Chart title (22pt semibold, primary text, at ~y=56)
 3. Chart subtitle / date range (13pt light, secondary text, at ~y=78)
@@ -271,6 +283,7 @@ Since PptxGenJS doesn't support arbitrary SVG paths natively, render the Trident
 9. Footer (same as text slide)
 
 **Chart styling:**
+
 - Primary data bars: accent color `#7B6EF6`, border-radius 3px on top corners
 - Secondary/target bars: `#3A3A4A` at 50% opacity (dark) or `#D4D0F0` (light)
 - X-axis line: 0.5px, rule color
@@ -280,11 +293,15 @@ Since PptxGenJS doesn't support arbitrary SVG paths natively, render the Trident
 - No chart background fill — transparent to slide background
 
 **PptxGenJS chart implementation:**
+
 ```javascript
 slide.addChart(pres.charts.BAR, chartData, {
-  x: 0.6, y: 1.1, w: 8.5, h: 3.5,
+  x: 0.6,
+  y: 1.1,
+  w: 8.5,
+  h: 3.5,
   barDir: 'col',
-  chartColors: ['7B6EF6', '3A3A4A'],  // dark theme; use '7B6EF6','D4D0F0' for light
+  chartColors: ['7B6EF6', '3A3A4A'], // dark theme; use '7B6EF6','D4D0F0' for light
   barGapWidthPct: 50,
   chartArea: { fill: { color: bgColor, transparency: 100 } },
   plotArea: { fill: { color: bgColor, transparency: 100 } },
@@ -299,10 +316,11 @@ slide.addChart(pres.charts.BAR, chartData, {
   dataLabelPosition: 'outEnd',
   dataLabelColor: textSecondary,
   showLegend: false,
-});
+})
 ```
 
 **For donut/pie charts:**
+
 - Use accent color for primary segment, progressively lighter/muted for others
 - Dark theme series: `['7B6EF6', '5B4EC6', '3A3A4A', '2A2A3A']`
 - Light theme series: `['7B6EF6', 'A49BF8', 'D4D0F0', 'E8E6F5']`
@@ -313,10 +331,12 @@ slide.addChart(pres.charts.BAR, chartData, {
 **Purpose:** Closing. Clean, centered, resolved.
 
 **Background:**
+
 - Dark theme: `#0C0C0E`
 - Light theme: `#7B6EF6` (solid periwinkle — mirrors title slide)
 
 **Elements:**
+
 1. Left-edge bar (4px, full height)
 2. Watermark Trident (centered, large, very low opacity — see Trident section)
 3. Main text: "Thank you" (40pt light weight, centered horizontally at x=480, ~y=310, primary text at 90–95% opacity)
