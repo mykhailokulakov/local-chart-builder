@@ -276,7 +276,7 @@ describe('SET_THEME', () => {
 
   it('does not affect slides', () => {
     const report = reportWithSlides('s1')
-    const next = reportReducer(report, setTheme(ThemePreset.slate))
+    const next = reportReducer(report, setTheme(ThemePreset.light))
     expect(next.slides).toEqual(report.slides)
   })
 })

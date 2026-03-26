@@ -1,29 +1,51 @@
 /** All built-in colour presets for the report output */
 export enum ThemePreset {
-  /** Dark background — NCSI / Diia City visual style */
+  /** Dark background — Trident design system */
   dark = 'dark',
-  /** Dark green + gold — official Ministry of Digital Transformation palette */
-  mindigit = 'mindigit',
-  /** White background with vivid chart colours */
+  /** Light background — Trident design system */
   light = 'light',
-  /** Dark gray with muted, desaturated tones */
-  slate = 'slate',
 }
 
-/** Resolved colour tokens for a single theme preset */
+/** Resolved colour tokens for a single theme preset (Trident design system) */
 export interface ThemeColors {
-  /** Slide background fill (hex or CSS colour) */
+  // ---------------------------------------------------------------------------
+  // Content slides (text, chart, divider)
+  // ---------------------------------------------------------------------------
+
+  /** Slide background fill for content slides */
   background: string
-  /** Slightly elevated surface colour for cards, panels and tile backgrounds */
+  /** Subtle surface elevation — used for chart grid lines and tile backgrounds */
   surface: string
-  /** Primary text colour */
+  /** Primary text colour on content slides */
   foreground: string
-  /** Subdued text colour for secondary labels and captions */
+  /** Secondary / muted text (rgba string with opacity baked in) */
   muted: string
-  /** Highlight / call-to-action colour used for headings and key values */
+  /** Tertiary text for footers and metadata (rgba string with opacity baked in) */
+  foregroundTertiary: string
+  /** Periwinkle accent — left-edge bar, section numbers, chart primary colour */
   accent: string
-  /** Secondary accent used for decorative dividers and supporting highlights */
-  accentSecondary: string
+  /** Thin horizontal rules and axis lines (rgba string with opacity baked in) */
+  rule: string
+  /** Secondary chart bar colour (comparison / baseline series) */
+  chartSecondary: string
+
+  // ---------------------------------------------------------------------------
+  // Statement slides (title, ending)
+  // ---------------------------------------------------------------------------
+
+  /** Background fill for title and ending slides */
+  backgroundStatement: string
+  /** Primary text colour on statement slide backgrounds */
+  foregroundStatement: string
+  /** Left-edge bar and accent marks on statement slide backgrounds */
+  accentStatement: string
+  /** Second line of the two-tone title (accent/contrast colour) */
+  titleLine2Color: string
+
+  // ---------------------------------------------------------------------------
+  // Shared
+  // ---------------------------------------------------------------------------
+
   /**
    * Ordered palette for chart series.
    * Chart renderers cycle through this array when assigning dataset colours.

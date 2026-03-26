@@ -1,15 +1,20 @@
 import type { ThemeColors } from '../types/theme'
 
-/**
- * Slate theme — dark gray with muted blue/purple accents and neutral tones.
- */
+// Dead code — slate is no longer a ThemePreset.
+// Kept to avoid breaking any external tooling that may reference this file.
 const slate: ThemeColors = {
   background: '#1e1e2e',
-  surface: '#2a2a3e',
+  surface: 'rgba(255,255,255,0.06)',
   foreground: '#cdd6f4',
-  muted: '#7f849c',
+  muted: 'rgba(205,214,244,0.45)',
+  foregroundTertiary: 'rgba(205,214,244,0.22)',
   accent: '#89b4fa',
-  accentSecondary: '#cba6f7',
+  rule: 'rgba(205,214,244,0.07)',
+  chartSecondary: 'rgba(137,180,250,0.30)',
+  backgroundStatement: '#1e1e2e',
+  foregroundStatement: '#cdd6f4',
+  accentStatement: '#89b4fa',
+  titleLine2Color: '#89b4fa',
   chartColors: [
     '#89b4fa',
     '#cba6f7',

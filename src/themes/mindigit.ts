@@ -1,16 +1,20 @@
 import type { ThemeColors } from '../types/theme'
 
-/**
- * MinDigit theme — official Ministry of Digital Transformation branding.
- * Dark green background with gold accents and green highlights.
- */
+// Dead code — mindigit is no longer a ThemePreset.
+// Kept to avoid breaking any external tooling that may reference this file.
 const mindigit: ThemeColors = {
   background: '#0a2e1f',
-  surface: '#0f3d29',
+  surface: 'rgba(255,255,255,0.06)',
   foreground: '#f5f0e8',
-  muted: '#a8c4b0',
+  muted: 'rgba(245,240,232,0.45)',
+  foregroundTertiary: 'rgba(245,240,232,0.22)',
   accent: '#c5a24d',
-  accentSecondary: '#4caf7a',
+  rule: 'rgba(245,240,232,0.07)',
+  chartSecondary: 'rgba(76,175,122,0.50)',
+  backgroundStatement: '#0a2e1f',
+  foregroundStatement: '#f5f0e8',
+  accentStatement: '#c5a24d',
+  titleLine2Color: '#c5a24d',
   chartColors: [
     '#c5a24d',
     '#4caf7a',
