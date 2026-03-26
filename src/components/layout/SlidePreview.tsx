@@ -40,40 +40,35 @@ const OUTER: CSSProperties = {
 
 // ---------------------------------------------------------------------------
 // TridentMark — Ukrainian coat of arms rendered from the official PNG asset.
-// Uses CSS mask-image so any color can be applied via the `color` prop.
-// The PNG (src/assets/trident.png) is black-on-transparent; the mask
-// reveals the colored `background` through the trident silhouette.
+// The PNG (src/assets/trident.png) is black-on-transparent (200×320 px).
+// Theme color is applied via the CSS custom property --slide-trident-filter
+// which is injected by Canvas.tsx:
+//   dark theme  → filter: invert(1)  (black PNG appears white on dark bg)
+//   light theme → filter: none       (black PNG appears navy on periwinkle bg)
 // ---------------------------------------------------------------------------
 
 interface TridentMarkProps {
   /** Rendered width in px; height is derived from the 200×320 aspect ratio */
   width: number
-  /** CSS color string applied as the fill; use CSS variables for theming */
-  color: string
   opacity?: number
 }
 
-function TridentMark({ width, color, opacity = 1 }: TridentMarkProps) {
+function TridentMark({ width, opacity = 1 }: TridentMarkProps) {
   const height = Math.round(width * TRIDENT_ASPECT)
-  // Intentional cast: CSS mask-* properties are valid CSSProperties but some
-  // type definitions omit the webkit-prefixed variants.
-  const style = {
+  const style: CSSProperties = {
     width,
     height,
-    background: color,
     opacity,
     flexShrink: 0,
     display: 'block',
-    WebkitMaskImage: `url(${tridentUrl})`,
-    WebkitMaskSize: 'contain',
-    WebkitMaskRepeat: 'no-repeat',
-    WebkitMaskPosition: 'center',
-    maskImage: `url(${tridentUrl})`,
-    maskSize: 'contain',
-    maskRepeat: 'no-repeat',
-    maskPosition: 'center',
-  } as CSSProperties
-  return <div style={style} aria-hidden="true" />
+    // filter uses a CSS variable so the theme can flip black→white without
+    // needing separate image files.  Intentional cast: 'filter' accepts
+    // var() strings at runtime but TS only expects FilterFunction literals.
+    filter: 'var(--slide-trident-filter)',
+  }
+  return (
+    <img src={tridentUrl} width={width} height={height} style={style} aria-hidden="true" alt="" />
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -206,7 +201,7 @@ function TitleContent({ data }: { data: TitleSlideData }) {
       <div style={TITLE_INNER}>
         <div style={TITLE_HEADER_ZONE}>
           <div style={TITLE_ORG_ROW}>
-            <TridentMark width={28} color="var(--slide-accent-statement)" opacity={0.9} />
+            <TridentMark width={28} opacity={0.9} />
             {data.author ? <span style={TITLE_ORG_LABEL}>{data.author}</span> : null}
           </div>
           <div style={TITLE_HEADER_RULE} />
@@ -319,7 +314,7 @@ function EndingContent({ data }: { data: EndingSlideData }) {
 
       <div style={ENDING_CONTENT}>
         <div style={ENDING_TRIDENT_WRAP}>
-          <TridentMark width={52} color="var(--slide-fg-statement)" opacity={0.85} />
+          <TridentMark width={52} opacity={0.85} />
         </div>
         <div style={ENDING_MESSAGE}>{data.message || '…'}</div>
         <div style={ENDING_ACCENT_RULE} />

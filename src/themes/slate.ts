@@ -16,6 +16,7 @@ const slate: ThemeColors = {
   accentStatement: '#89b4fa',
   titleLine1Color: '#cdd6f4',
   titleLine2Color: '#89b4fa',
+  tridentFilterStatement: 'invert(1)',
   chartColors: [
     '#89b4fa',
     '#cba6f7',

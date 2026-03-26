@@ -34,6 +34,7 @@ const THEME: ThemeColors = {
   accentStatement: '#2563eb',
   titleLine1Color: '#111827',
   titleLine2Color: '#2563eb',
+  tridentFilterStatement: 'invert(1)',
   chartColors: ['#16a34a', '#ea580c'],
   fontFamily: 'sans-serif',
 }

@@ -23,6 +23,7 @@ const dark: ThemeColors = {
   accentStatement: '#7B6EF6',
   titleLine1Color: '#FFFFFF',
   titleLine2Color: '#7B6EF6',
+  tridentFilterStatement: 'invert(1)',
 
   chartColors: [
     '#7B6EF6',

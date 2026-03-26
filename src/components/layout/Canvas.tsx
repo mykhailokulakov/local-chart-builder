@@ -133,6 +133,7 @@ export function Canvas() {
         '--slide-accent-statement': theme.accentStatement,
         '--slide-title-line1': theme.titleLine1Color,
         '--slide-title-line2': theme.titleLine2Color,
+        '--slide-trident-filter': theme.tridentFilterStatement,
         // Shared
         '--slide-font': theme.fontFamily,
         // CSS custom properties are valid at runtime but not in the CSSProperties type

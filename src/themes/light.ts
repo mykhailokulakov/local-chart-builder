@@ -24,6 +24,7 @@ const light: ThemeColors = {
   accentStatement: '#1A1A2E',
   titleLine1Color: '#1A1A2E',
   titleLine2Color: '#FFFFFF',
+  tridentFilterStatement: 'none',
 
   chartColors: [
     '#7B6EF6',

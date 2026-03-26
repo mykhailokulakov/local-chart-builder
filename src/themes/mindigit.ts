@@ -16,6 +16,7 @@ const mindigit: ThemeColors = {
   accentStatement: '#c5a24d',
   titleLine1Color: '#f5f0e8',
   titleLine2Color: '#c5a24d',
+  tridentFilterStatement: 'invert(1)',
   chartColors: [
     '#c5a24d',
     '#4caf7a',

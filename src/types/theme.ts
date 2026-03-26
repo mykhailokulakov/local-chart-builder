@@ -43,6 +43,12 @@ export interface ThemeColors {
   titleLine1Color: string
   /** Second line of the two-tone title (accent/contrast colour) */
   titleLine2Color: string
+  /**
+   * CSS filter applied to the black-on-transparent trident PNG on statement slides.
+   * Dark theme: 'invert(1)' → makes the PNG appear white on a dark background.
+   * Light theme: 'none'     → keeps the PNG black/navy on a periwinkle background.
+   */
+  tridentFilterStatement: string
 
   // ---------------------------------------------------------------------------
   // Shared
