@@ -6,6 +6,7 @@ import type {
   TextSlideData,
   DividerSlideData,
 } from '../../types/slide'
+import tridentUrl from '../../assets/trident.png'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -23,6 +24,9 @@ const LEFT_MARGIN = 60
 const RIGHT_MARGIN = 60
 const FOOTER_BOTTOM = 12
 
+// Cropped PNG dimensions: 200×320 px → aspect ratio 1.6 (h/w)
+const TRIDENT_ASPECT = 320 / 200
+
 // ---------------------------------------------------------------------------
 // Shared structural styles
 // ---------------------------------------------------------------------------
@@ -35,47 +39,41 @@ const OUTER: CSSProperties = {
 }
 
 // ---------------------------------------------------------------------------
-// TridentMark — Ukrainian coat of arms rendered as line-art SVG.
-// Paths from the Trident design system specification.
-// ViewBox covers x:[0,36] y:[-14,46] to frame the full symbol.
+// TridentMark — Ukrainian coat of arms rendered from the official PNG asset.
+// Uses CSS mask-image so any color can be applied via the `color` prop.
+// The PNG (src/assets/trident.png) is black-on-transparent; the mask
+// reveals the colored `background` through the trident silhouette.
 // ---------------------------------------------------------------------------
 
-const TRIDENT_PATH =
-  'M18 6 L18 -2 L16 -6 L18 -12 L20 -6 L18 -2 ' +
-  'M18 6 L18 36 ' +
-  'M4 14 C4 4, 8 0, 13 -4 ' +
-  'M4 14 L4 36 ' +
-  'M32 14 C32 4, 28 0, 23 -4 ' +
-  'M32 14 L32 36 ' +
-  'M4 36 Q4 44, 11 44 L25 44 Q32 44, 32 36 ' +
-  'M18 36 L18 44'
-
 interface TridentMarkProps {
+  /** Rendered width in px; height is derived from the 200×320 aspect ratio */
   width: number
-  strokeColor: string
-  opacity: number
-  strokeWidth?: number
+  /** CSS color string applied as the fill; use CSS variables for theming */
+  color: string
+  opacity?: number
 }
 
-function TridentMark({ width, strokeColor, opacity, strokeWidth = 1.8 }: TridentMarkProps) {
-  // ViewBox: 36 wide × 60 tall (y runs from -14 to +46)
-  const height = Math.round((width * 60) / 36)
-  return (
-    <svg
-      width={width}
-      height={height}
-      viewBox="0 -14 36 60"
-      fill="none"
-      stroke={strokeColor}
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      opacity={opacity}
-      aria-hidden="true"
-    >
-      <path d={TRIDENT_PATH} />
-    </svg>
-  )
+function TridentMark({ width, color, opacity = 1 }: TridentMarkProps) {
+  const height = Math.round(width * TRIDENT_ASPECT)
+  // Intentional cast: CSS mask-* properties are valid CSSProperties but some
+  // type definitions omit the webkit-prefixed variants.
+  const style = {
+    width,
+    height,
+    background: color,
+    opacity,
+    flexShrink: 0,
+    display: 'block',
+    WebkitMaskImage: `url(${tridentUrl})`,
+    WebkitMaskSize: 'contain',
+    WebkitMaskRepeat: 'no-repeat',
+    WebkitMaskPosition: 'center',
+    maskImage: `url(${tridentUrl})`,
+    maskSize: 'contain',
+    maskRepeat: 'no-repeat',
+    maskPosition: 'center',
+  } as CSSProperties
+  return <div style={style} aria-hidden="true" />
 }
 
 // ---------------------------------------------------------------------------
@@ -208,7 +206,7 @@ function TitleContent({ data }: { data: TitleSlideData }) {
       <div style={TITLE_INNER}>
         <div style={TITLE_HEADER_ZONE}>
           <div style={TITLE_ORG_ROW}>
-            <TridentMark width={28} strokeColor="var(--slide-accent-statement)" opacity={0.9} />
+            <TridentMark width={28} color="var(--slide-accent-statement)" opacity={0.9} />
             {data.author ? <span style={TITLE_ORG_LABEL}>{data.author}</span> : null}
           </div>
           <div style={TITLE_HEADER_RULE} />
@@ -234,7 +232,8 @@ function TitleContent({ data }: { data: TitleSlideData }) {
 // ---------------------------------------------------------------------------
 // Ending slide
 // Background: var(--slide-bg-statement)
-// Layout: left bar + watermark Trident (absolute, centered) + centered content
+// Layout: left bar + centered column: Trident → message → rule → contact
+// The Trident sits ABOVE the "Thank you" text, not behind it.
 // ---------------------------------------------------------------------------
 
 const ENDING_OUTER: CSSProperties = {
@@ -258,14 +257,6 @@ const ENDING_LEFT_BAR: CSSProperties = {
   background: 'var(--slide-accent-statement)',
 }
 
-const ENDING_WATERMARK: CSSProperties = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  pointerEvents: 'none',
-}
-
 const ENDING_CONTENT: CSSProperties = {
   position: 'relative',
   display: 'flex',
@@ -273,6 +264,11 @@ const ENDING_CONTENT: CSSProperties = {
   alignItems: 'center',
   textAlign: 'center',
   paddingBottom: 24,
+}
+
+const ENDING_TRIDENT_WRAP: CSSProperties = {
+  marginBottom: 24,
+  display: 'flex',
 }
 
 const ENDING_MESSAGE: CSSProperties = {
@@ -293,17 +289,18 @@ const ENDING_ACCENT_RULE: CSSProperties = {
 }
 
 const ENDING_CONTACT: CSSProperties = {
-  color: 'var(--slide-accent)',
+  color: 'var(--slide-accent-statement)',
   fontSize: 13,
   fontWeight: 400,
   letterSpacing: '0',
 }
 
 const ENDING_FOOTNOTE: CSSProperties = {
-  color: 'var(--slide-fg-tertiary)',
+  color: 'var(--slide-fg-statement)',
   fontSize: 11,
   fontWeight: 400,
   marginTop: 8,
+  opacity: 0.45,
 }
 
 const ENDING_FOOTER: CSSProperties = {
@@ -320,16 +317,10 @@ function EndingContent({ data }: { data: EndingSlideData }) {
     <div style={ENDING_OUTER}>
       <div style={ENDING_LEFT_BAR} />
 
-      <div style={ENDING_WATERMARK}>
-        <TridentMark
-          width={144}
-          strokeColor="var(--slide-title-line1)"
-          opacity={0.11}
-          strokeWidth={2}
-        />
-      </div>
-
       <div style={ENDING_CONTENT}>
+        <div style={ENDING_TRIDENT_WRAP}>
+          <TridentMark width={52} color="var(--slide-fg-statement)" opacity={0.85} />
+        </div>
         <div style={ENDING_MESSAGE}>{data.message || '…'}</div>
         <div style={ENDING_ACCENT_RULE} />
         {data.contact ? <div style={ENDING_CONTACT}>{data.contact}</div> : null}
