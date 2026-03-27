@@ -129,7 +129,8 @@
     "gantt": "Gantt",
     "choropleth": "Map",
     "data-table": "Table",
-    "text": "Text"
+    "text": "Text",
+    "noSpace": "No space — resize existing tiles to add more"
   },
   "charts": {
     "noData": "No data to display"

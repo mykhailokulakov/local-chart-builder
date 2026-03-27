@@ -67,6 +67,12 @@ export const DEFAULT_TILE_W = 6
 /** Default tile height in grid rows when a new tile is added */
 export const DEFAULT_TILE_H = 4
 
+/** Minimum tile width in grid columns — lower bound for auto-placement fallback */
+export const MIN_TILE_W = 3
+
+/** Minimum tile height in grid rows — lower bound for auto-placement fallback */
+export const MIN_TILE_H = 2
+
 /** Height of the slide title bar on chart slides, in pixels */
 export const CHART_SLIDE_TITLE_HEIGHT_PX = 44
 
