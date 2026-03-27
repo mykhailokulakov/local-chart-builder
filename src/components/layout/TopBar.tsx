@@ -62,9 +62,7 @@ export function TopBar() {
   const themeOptions = useMemo(
     () => [
       { value: ThemePreset.dark, label: t('themes.dark') },
-      { value: ThemePreset.mindigit, label: t('themes.mindigit') },
       { value: ThemePreset.light, label: t('themes.light') },
-      { value: ThemePreset.slate, label: t('themes.slate') },
     ],
     [t],
   )

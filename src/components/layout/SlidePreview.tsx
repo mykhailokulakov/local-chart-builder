@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import type {
   Slide,
   TitleSlideData,
@@ -6,6 +6,7 @@ import type {
   TextSlideData,
   DividerSlideData,
 } from '../../types/slide'
+import tridentUrl from '../../assets/trident.png'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -16,304 +17,475 @@ interface SlidePreviewProps {
 }
 
 // ---------------------------------------------------------------------------
-// Module-level style constants
+// Layout constants — Trident design system (960×540 reference canvas)
 // ---------------------------------------------------------------------------
 
-const OUTER_STYLE: CSSProperties = {
+const LEFT_MARGIN = 60
+const RIGHT_MARGIN = 60
+const FOOTER_BOTTOM = 12
+
+// Cropped PNG dimensions: 200×320 px → aspect ratio 1.6 (h/w)
+const TRIDENT_ASPECT = 320 / 200
+
+// ---------------------------------------------------------------------------
+// Shared structural styles
+// ---------------------------------------------------------------------------
+
+const OUTER: CSSProperties = {
   width: '100%',
   height: '100%',
-  background: 'var(--slide-bg)',
   fontFamily: 'var(--slide-font)',
   overflow: 'hidden',
 }
 
 // ---------------------------------------------------------------------------
-// Title slide
-// Layout: structural top stripe → content zone → footer zone
-// No decorative elements placed arbitrarily — every element has a structural role.
+// TridentMark — Ukrainian coat of arms rendered from the official PNG asset.
+// The PNG (src/assets/trident.png) is black-on-transparent (200×320 px).
+// Theme color is applied via the CSS custom property --slide-trident-filter
+// which is injected by Canvas.tsx:
+//   dark theme  → filter: invert(1)  (black PNG appears white on dark bg)
+//   light theme → filter: none       (black PNG appears navy on periwinkle bg)
 // ---------------------------------------------------------------------------
 
-const TITLE_SHELL: CSSProperties = {
+interface TridentMarkProps {
+  /** Rendered width in px; height is derived from the 200×320 aspect ratio */
+  width: number
+  opacity?: number
+}
+
+function TridentMark({ width, opacity = 1 }: TridentMarkProps) {
+  const height = Math.round(width * TRIDENT_ASPECT)
+  const style: CSSProperties = {
+    width,
+    height,
+    opacity,
+    flexShrink: 0,
+    display: 'block',
+    // filter uses a CSS variable so the theme can flip black→white without
+    // needing separate image files.  Intentional cast: 'filter' accepts
+    // var() strings at runtime but TS only expects FilterFunction literals.
+    filter: 'var(--slide-trident-filter)',
+  }
+  return (
+    <img src={tridentUrl} width={width} height={height} style={style} aria-hidden="true" alt="" />
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Helper: split a heading string at the midpoint word boundary.
+// Returns [line1, line2]. If heading has only one word, line2 is empty.
+// ---------------------------------------------------------------------------
+
+function splitHeading(heading: string): [string, string] {
+  const words = heading.trim().split(/\s+/)
+  if (words.length <= 1) return [heading, '']
+  const mid = Math.ceil(words.length / 2)
+  return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')]
+}
+
+// ---------------------------------------------------------------------------
+// Title slide
+// Background: var(--slide-bg-statement)
+// Layout: top zone (Trident header) → spacer → lower zone (title) → footer
+// ---------------------------------------------------------------------------
+
+const TITLE_OUTER: CSSProperties = {
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  background: 'var(--slide-bg-statement)',
+}
+
+const TITLE_LEFT_BAR: CSSProperties = {
+  position: 'absolute',
+  left: 0,
+  top: 0,
+  width: 4,
+  height: '100%',
+  background: 'var(--slide-accent-statement)',
+}
+
+const TITLE_INNER: CSSProperties = {
+  position: 'relative',
   width: '100%',
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
+  boxSizing: 'border-box',
+  paddingLeft: LEFT_MARGIN,
+  paddingRight: RIGHT_MARGIN,
 }
 
-/** Full-width accent stripe that anchors the top of the slide */
-const TITLE_TOP_STRIPE: CSSProperties = {
-  height: 8,
-  background: 'var(--slide-accent)',
+const TITLE_HEADER_ZONE: CSSProperties = {
   flexShrink: 0,
+  paddingTop: 48,
 }
 
-/** Main content zone — all copy, left-aligned, vertically centred */
-const TITLE_BODY: CSSProperties = {
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  padding: '52px 80px',
-  gap: 0,
-}
-
-/**
- * Heading gets a left accent border — gives the slide a clear spine and
- * removes any need for floating accent shapes.
- */
-const TITLE_HEADING: CSSProperties = {
-  color: 'var(--slide-fg)',
-  fontSize: 58,
-  fontWeight: 700,
-  lineHeight: 1.12,
-  borderLeft: '6px solid var(--slide-accent)',
-  paddingLeft: 24,
-}
-
-const TITLE_SUBHEADING: CSSProperties = {
-  color: 'var(--slide-muted)',
-  fontSize: 22,
-  fontWeight: 400,
-  lineHeight: 1.5,
-  marginTop: 20,
-  paddingLeft: 30,
-}
-
-/** Footer zone — visually separated, dedicated space for meta information */
-const TITLE_FOOTER: CSSProperties = {
-  height: 60,
-  flexShrink: 0,
-  background: 'var(--slide-surface)',
-  padding: '0 80px',
+const TITLE_ORG_ROW: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
-  borderTop: '3px solid var(--slide-accent)',
+  gap: 12,
 }
 
-const TITLE_META_LEFT: CSSProperties = {
-  color: 'var(--slide-muted)',
+const TITLE_ORG_LABEL: CSSProperties = {
+  color: 'var(--slide-title-line1)',
   fontSize: 13,
-  display: 'flex',
-  gap: 32,
-  letterSpacing: '0.02em',
+  fontWeight: 400,
+  letterSpacing: '0.3px',
+  opacity: 0.6,
 }
 
-const TITLE_META_RIGHT: CSSProperties = {
-  width: 24,
-  height: 24,
-  background: 'var(--slide-accent)',
-  borderRadius: 4,
-  opacity: 0.7,
+const TITLE_HEADER_RULE: CSSProperties = {
+  width: 40,
+  height: 1,
+  background: 'var(--slide-accent-statement)',
+  opacity: 0.4,
+  marginTop: 14,
+}
+
+const TITLE_SPACER: CSSProperties = {
+  flex: 1,
+  minHeight: 0,
+}
+
+const TITLE_CONTENT_ZONE: CSSProperties = {
   flexShrink: 0,
+  paddingBottom: 48,
+}
+
+const TITLE_LINE_1: CSSProperties = {
+  color: 'var(--slide-title-line1)',
+  fontSize: 54,
+  fontWeight: 700,
+  lineHeight: 1.1,
+  letterSpacing: '-1px',
+}
+
+const TITLE_LINE_2: CSSProperties = {
+  color: 'var(--slide-title-line2)',
+  fontSize: 54,
+  fontWeight: 700,
+  lineHeight: 1.1,
+  letterSpacing: '-1px',
+}
+
+const TITLE_SUBTITLE: CSSProperties = {
+  color: 'var(--slide-muted)',
+  fontSize: 16,
+  fontWeight: 300,
+  letterSpacing: '0.5px',
+  marginTop: 18,
+}
+
+const TITLE_FOOTER: CSSProperties = {
+  flexShrink: 0,
+  display: 'flex',
+  alignItems: 'flex-end',
+  justifyContent: 'space-between',
+  paddingBottom: FOOTER_BOTTOM,
+}
+
+const FOOTER_TEXT: CSSProperties = {
+  color: 'var(--slide-fg-tertiary)',
+  fontSize: 11,
+  fontWeight: 400,
+  letterSpacing: '1.5px',
+  textTransform: 'uppercase',
+}
+
+function TitleContent({ data }: { data: TitleSlideData }) {
+  const [line1, line2] = splitHeading(data.heading || '…')
+  return (
+    <div style={TITLE_OUTER}>
+      <div style={TITLE_LEFT_BAR} />
+      <div style={TITLE_INNER}>
+        <div style={TITLE_HEADER_ZONE}>
+          <div style={TITLE_ORG_ROW}>
+            <TridentMark width={28} opacity={0.9} />
+            {data.author ? <span style={TITLE_ORG_LABEL}>{data.author}</span> : null}
+          </div>
+          <div style={TITLE_HEADER_RULE} />
+        </div>
+
+        <div style={TITLE_SPACER} />
+
+        <div style={TITLE_CONTENT_ZONE}>
+          <div style={TITLE_LINE_1}>{line1}</div>
+          {line2 ? <div style={TITLE_LINE_2}>{line2}</div> : null}
+          {data.subheading ? <div style={TITLE_SUBTITLE}>{data.subheading}</div> : null}
+        </div>
+
+        <div style={TITLE_FOOTER}>
+          {data.date ? <span style={FOOTER_TEXT}>{data.date}</span> : <span />}
+          <span style={FOOTER_TEXT}>Confidential</span>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 // ---------------------------------------------------------------------------
 // Ending slide
-// Layout: left accent column (structural, full height) + two-zone content area
-// Message occupies the upper zone; contact/footnote the lower zone.
-// Nothing is centred — content anchors to the top-left of the content area.
+// Background: var(--slide-bg-statement)
+// Layout: left bar + centered column: Trident → message → rule → contact
+// The Trident sits ABOVE the "Thank you" text, not behind it.
 // ---------------------------------------------------------------------------
 
-const ENDING_SHELL: CSSProperties = {
+const ENDING_OUTER: CSSProperties = {
+  position: 'relative',
   width: '100%',
   height: '100%',
-  display: 'flex',
-  flexDirection: 'row',
-}
-
-/** Accent column — the visual spine of the ending slide */
-const ENDING_ACCENT_COL: CSSProperties = {
-  width: 10,
-  background: 'var(--slide-accent)',
-  flexShrink: 0,
-}
-
-/** Content area to the right of the accent column */
-const ENDING_CONTENT: CSSProperties = {
-  flex: 1,
+  background: 'var(--slide-bg-statement)',
   display: 'flex',
   flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  boxSizing: 'border-box',
 }
 
-/** Upper zone: holds the closing message */
-const ENDING_MESSAGE_ZONE: CSSProperties = {
-  flex: '0 0 55%',
+const ENDING_LEFT_BAR: CSSProperties = {
+  position: 'absolute',
+  left: 0,
+  top: 0,
+  width: 4,
+  height: '100%',
+  background: 'var(--slide-accent-statement)',
+}
+
+const ENDING_CONTENT: CSSProperties = {
+  position: 'relative',
   display: 'flex',
-  alignItems: 'flex-end',
-  padding: '0 72px 32px 72px',
+  flexDirection: 'column',
+  alignItems: 'center',
+  textAlign: 'center',
+  paddingBottom: 24,
+}
+
+const ENDING_TRIDENT_WRAP: CSSProperties = {
+  marginBottom: 24,
+  display: 'flex',
 }
 
 const ENDING_MESSAGE: CSSProperties = {
-  color: 'var(--slide-accent)',
-  fontSize: 64,
-  fontWeight: 700,
-  lineHeight: 1.1,
+  color: 'var(--slide-fg-statement)',
+  fontSize: 40,
+  fontWeight: 300,
+  letterSpacing: '1px',
+  opacity: 0.92,
 }
 
-/** Divider between the two content zones */
-const ENDING_DIVIDER: CSSProperties = {
-  height: 1,
-  background: 'var(--slide-surface)',
-  margin: '0 72px',
-  flexShrink: 0,
-}
-
-/** Lower zone: contact info and footnote */
-const ENDING_META_ZONE: CSSProperties = {
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  padding: '24px 72px 40px 72px',
-  gap: 8,
+const ENDING_ACCENT_RULE: CSSProperties = {
+  width: 100,
+  height: 2,
+  background: 'var(--slide-accent-statement)',
+  marginTop: 22,
+  marginBottom: 22,
+  alignSelf: 'center',
 }
 
 const ENDING_CONTACT: CSSProperties = {
-  color: 'var(--slide-fg)',
-  fontSize: 18,
-  lineHeight: 1.5,
+  color: 'var(--slide-accent-statement)',
+  fontSize: 13,
+  fontWeight: 400,
+  letterSpacing: '0',
 }
 
 const ENDING_FOOTNOTE: CSSProperties = {
-  color: 'var(--slide-muted)',
-  fontSize: 12,
-  opacity: 0.7,
-  lineHeight: 1.6,
+  color: 'var(--slide-fg-statement)',
+  fontSize: 11,
+  fontWeight: 400,
+  marginTop: 8,
+  opacity: 0.45,
+}
+
+const ENDING_FOOTER: CSSProperties = {
+  position: 'absolute',
+  bottom: FOOTER_BOTTOM,
+  left: 0,
+  right: 0,
+  display: 'flex',
+  justifyContent: 'center',
+}
+
+function EndingContent({ data }: { data: EndingSlideData }) {
+  return (
+    <div style={ENDING_OUTER}>
+      <div style={ENDING_LEFT_BAR} />
+
+      <div style={ENDING_CONTENT}>
+        <div style={ENDING_TRIDENT_WRAP}>
+          <TridentMark width={52} opacity={0.85} />
+        </div>
+        <div style={ENDING_MESSAGE}>{data.message || '…'}</div>
+        <div style={ENDING_ACCENT_RULE} />
+        {data.contact ? <div style={ENDING_CONTACT}>{data.contact}</div> : null}
+        {data.footnote ? <div style={ENDING_FOOTNOTE}>{data.footnote}</div> : null}
+      </div>
+
+      <div style={ENDING_FOOTER}>
+        <span style={FOOTER_TEXT}>{/* date can be added when data model expands */}</span>
+      </div>
+    </div>
+  )
 }
 
 // ---------------------------------------------------------------------------
-// Text slide
+// Text content slide
+// Background: var(--slide-bg)
+// Layout: left bar + heading + rule + body text
 // ---------------------------------------------------------------------------
 
-const TEXT_LAYOUT: CSSProperties = {
+const TEXT_OUTER: CSSProperties = {
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  background: 'var(--slide-bg)',
+}
+
+const TEXT_LEFT_BAR: CSSProperties = {
+  position: 'absolute',
+  left: 0,
+  top: 0,
+  width: 4,
+  height: '100%',
+  background: 'var(--slide-accent)',
+}
+
+const TEXT_INNER: CSSProperties = {
+  position: 'relative',
   width: '100%',
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
-  padding: '52px 72px',
-  gap: 24,
   boxSizing: 'border-box',
+  paddingLeft: LEFT_MARGIN,
+  paddingRight: RIGHT_MARGIN,
+  paddingTop: 56,
+  paddingBottom: 40,
 }
 
 const TEXT_HEADING: CSSProperties = {
   color: 'var(--slide-fg)',
-  fontSize: 32,
-  fontWeight: 700,
-  lineHeight: 1.25,
-  paddingLeft: 16,
-  borderLeft: '4px solid var(--slide-accent)',
+  fontSize: 22,
+  fontWeight: 600,
+  lineHeight: 1.3,
+  letterSpacing: '-0.3px',
   flexShrink: 0,
 }
 
-const TEXT_HEADING_RULE: CSSProperties = {
+const TEXT_RULE: CSSProperties = {
+  width: '100%',
   height: 1,
-  background: 'var(--slide-surface)',
+  background: 'var(--slide-rule)',
+  marginTop: 16,
+  marginBottom: 20,
   flexShrink: 0,
 }
 
 const TEXT_BODY: CSSProperties = {
   color: 'var(--slide-muted)',
-  fontSize: 16,
+  fontSize: 13,
+  fontWeight: 300,
   lineHeight: 1.7,
   flex: 1,
+  overflow: 'hidden',
+}
+
+const TEXT_FOOTER: CSSProperties = {
+  flexShrink: 0,
+  display: 'flex',
+  alignItems: 'flex-end',
+  justifyContent: 'space-between',
+  paddingTop: 8,
+}
+
+function TextContent({ data }: { data: TextSlideData }) {
+  return (
+    <div style={TEXT_OUTER}>
+      <div style={TEXT_LEFT_BAR} />
+      <div style={TEXT_INNER}>
+        <div style={TEXT_HEADING}>{data.heading || '…'}</div>
+        <div style={TEXT_RULE} />
+        {data.body ? <div style={TEXT_BODY}>{data.body}</div> : null}
+        <div style={TEXT_FOOTER}>
+          <span style={FOOTER_TEXT}>{/* org name */}</span>
+          <span style={FOOTER_TEXT}>{/* page number */}</span>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 // ---------------------------------------------------------------------------
-// Divider slide
+// Divider (section separator) slide
+// Background: var(--slide-bg)
+// Layout: left bar + vertically centred section name block
 // ---------------------------------------------------------------------------
 
-const DIVIDER_LAYOUT: CSSProperties = {
+const DIVIDER_OUTER: CSSProperties = {
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  background: 'var(--slide-bg)',
+}
+
+const DIVIDER_LEFT_BAR: CSSProperties = {
+  position: 'absolute',
+  left: 0,
+  top: 0,
+  width: 4,
+  height: '100%',
+  background: 'var(--slide-accent)',
+}
+
+const DIVIDER_INNER: CSSProperties = {
+  position: 'relative',
   width: '100%',
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',
   justifyContent: 'center',
-  padding: '52px 72px',
-  gap: 20,
   boxSizing: 'border-box',
-  borderLeft: '8px solid var(--slide-accent)',
+  paddingLeft: LEFT_MARGIN,
+  paddingRight: RIGHT_MARGIN,
+  paddingBottom: 32,
+}
+
+const DIVIDER_ACCENT_RULE: CSSProperties = {
+  width: 24,
+  height: 2,
+  background: 'var(--slide-accent)',
+  opacity: 0.38,
+  marginBottom: 20,
 }
 
 const DIVIDER_LABEL: CSSProperties = {
-  color: 'var(--slide-accent)',
-  fontSize: 56,
-  fontWeight: 700,
+  color: 'var(--slide-fg)',
+  fontSize: 42,
+  fontWeight: 600,
   lineHeight: 1.1,
+  letterSpacing: '-0.5px',
 }
 
 const DIVIDER_DESCRIPTION: CSSProperties = {
   color: 'var(--slide-muted)',
-  fontSize: 20,
+  fontSize: 16,
+  fontWeight: 300,
   lineHeight: 1.5,
-  maxWidth: '70%',
-}
-
-// ---------------------------------------------------------------------------
-// Per-slide-type content components
-// ---------------------------------------------------------------------------
-
-function TitleContent({ data }: { data: TitleSlideData }) {
-  const hasFooter = data.author !== undefined || data.date !== undefined
-  return (
-    <div style={TITLE_SHELL}>
-      <div style={TITLE_TOP_STRIPE} />
-      <div style={TITLE_BODY}>
-        <div style={TITLE_HEADING}>{data.heading || '…'}</div>
-        {data.subheading ? <div style={TITLE_SUBHEADING}>{data.subheading}</div> : null}
-      </div>
-      {hasFooter ? (
-        <div style={TITLE_FOOTER}>
-          <div style={TITLE_META_LEFT}>
-            {data.author ? <span>{data.author}</span> : null}
-            {data.date ? <span>{data.date}</span> : null}
-          </div>
-          <div style={TITLE_META_RIGHT} />
-        </div>
-      ) : null}
-    </div>
-  )
-}
-
-function EndingContent({ data }: { data: EndingSlideData }) {
-  const hasLower = data.contact !== undefined || data.footnote !== undefined
-  return (
-    <div style={ENDING_SHELL}>
-      <div style={ENDING_ACCENT_COL} />
-      <div style={ENDING_CONTENT}>
-        <div style={ENDING_MESSAGE_ZONE}>
-          <div style={ENDING_MESSAGE}>{data.message || '…'}</div>
-        </div>
-        {hasLower ? (
-          <>
-            <div style={ENDING_DIVIDER} />
-            <div style={ENDING_META_ZONE}>
-              {data.contact ? <div style={ENDING_CONTACT}>{data.contact}</div> : null}
-              {data.footnote ? <div style={ENDING_FOOTNOTE}>{data.footnote}</div> : null}
-            </div>
-          </>
-        ) : null}
-      </div>
-    </div>
-  )
-}
-
-function TextContent({ data }: { data: TextSlideData }) {
-  return (
-    <div style={TEXT_LAYOUT}>
-      <div style={TEXT_HEADING}>{data.heading || '…'}</div>
-      <div style={TEXT_HEADING_RULE} />
-      {data.body ? <div style={TEXT_BODY}>{data.body}</div> : null}
-    </div>
-  )
+  marginTop: 16,
+  maxWidth: '72%',
 }
 
 function DividerContent({ data }: { data: DividerSlideData }) {
   return (
-    <div style={DIVIDER_LAYOUT}>
-      <div style={DIVIDER_LABEL}>{data.label || '…'}</div>
-      {data.description ? <div style={DIVIDER_DESCRIPTION}>{data.description}</div> : null}
+    <div style={DIVIDER_OUTER}>
+      <div style={DIVIDER_LEFT_BAR} />
+      <div style={DIVIDER_INNER}>
+        <div style={DIVIDER_ACCENT_RULE} />
+        <div style={DIVIDER_LABEL}>{data.label || '…'}</div>
+        {data.description ? <div style={DIVIDER_DESCRIPTION}>{data.description}</div> : null}
+      </div>
     </div>
   )
 }
@@ -323,7 +495,7 @@ function DividerContent({ data }: { data: DividerSlideData }) {
 // ---------------------------------------------------------------------------
 
 export function SlidePreview({ slide }: SlidePreviewProps) {
-  let content: React.ReactNode
+  let content: ReactNode
 
   switch (slide.data.type) {
     case 'title':
@@ -344,5 +516,5 @@ export function SlidePreview({ slide }: SlidePreviewProps) {
       break
   }
 
-  return <div style={OUTER_STYLE}>{content}</div>
+  return <div style={OUTER}>{content}</div>
 }

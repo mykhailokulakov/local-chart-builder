@@ -28,9 +28,7 @@
   },
   "themes": {
     "dark": "Темна",
-    "mindigit": "МінЦифра",
-    "light": "Світла",
-    "slate": "Сіра"
+    "light": "Світла"
   },
   "panels": {
     "slidePanel": "Панель слайдів",

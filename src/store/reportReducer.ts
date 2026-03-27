@@ -22,7 +22,7 @@ import { ThemePreset } from '../types/theme'
 
 export const initialReport: Report = {
   slides: [],
-  theme: ThemePreset.light,
+  theme: ThemePreset.dark,
   language: 'ua',
 }
 

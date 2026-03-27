@@ -28,9 +28,7 @@
   },
   "themes": {
     "dark": "Dark",
-    "mindigit": "MinDigit",
-    "light": "Light",
-    "slate": "Slate"
+    "light": "Light"
   },
   "panels": {
     "slidePanel": "Slide Panel",

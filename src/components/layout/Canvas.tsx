@@ -118,12 +118,23 @@ export function Canvas() {
         ...SLIDE_FRAME_SHADOW,
         width: slideW,
         height: slideH,
+        // Content slide tokens
         '--slide-bg': theme.background,
         '--slide-surface': theme.surface,
         '--slide-fg': theme.foreground,
         '--slide-muted': theme.muted,
+        '--slide-fg-tertiary': theme.foregroundTertiary,
         '--slide-accent': theme.accent,
-        '--slide-accent-secondary': theme.accentSecondary,
+        '--slide-rule': theme.rule,
+        '--slide-chart-secondary': theme.chartSecondary,
+        // Statement slide tokens (title, ending)
+        '--slide-bg-statement': theme.backgroundStatement,
+        '--slide-fg-statement': theme.foregroundStatement,
+        '--slide-accent-statement': theme.accentStatement,
+        '--slide-title-line1': theme.titleLine1Color,
+        '--slide-title-line2': theme.titleLine2Color,
+        '--slide-trident-filter': theme.tridentFilterStatement,
+        // Shared
         '--slide-font': theme.fontFamily,
         // CSS custom properties are valid at runtime but not in the CSSProperties type
       }) as CSSProperties,
