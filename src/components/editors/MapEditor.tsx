@@ -35,17 +35,19 @@ interface OblastRowProps {
 }
 
 function OblastRow({ regionId, value, onChange }: OblastRowProps) {
+  const { t } = useTranslation()
   const handleChange = useCallback(
     (v: number | null) => onChange(regionId, v),
     [onChange, regionId],
   )
+  const label = t(`map.regions.${regionId}`, { defaultValue: regionId })
   return (
     <div style={ROW_STYLE}>
-      <Typography.Text style={REGION_TEXT_STYLE} ellipsis>
-        {regionId}
+      <Typography.Text style={REGION_TEXT_STYLE} ellipsis title={label}>
+        {label}
       </Typography.Text>
       <InputNumber
-        aria-label={regionId}
+        aria-label={label}
         value={value}
         onChange={handleChange}
         size="small"
