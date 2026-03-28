@@ -306,7 +306,7 @@ export function ChoroplethMap({ data, theme, valueRange, legendLabel }: Chorople
   // A hint label is overlaid on the SVG when the data array is empty.
 
   return (
-    <div style={{ width: '100%', height: '100%', background: theme.background }}>
+    <div style={{ width: '100%', height: '100%' }}>
       <svg
         width="100%"
         height="100%"

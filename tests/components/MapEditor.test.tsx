@@ -101,9 +101,10 @@ describe('MapEditor', () => {
 
   it('shows all ukraine regions in manual mode by default', () => {
     renderEditor()
-    // Every region should have an input with aria-label = regionId
+    // aria-label is the translated region name (en locale set in beforeAll)
     UKRAINE_REGIONS.forEach((regionId) => {
-      expect(screen.getByLabelText(regionId)).toBeInTheDocument()
+      const label = i18n.t(`map.regions.${regionId}`, { defaultValue: regionId })
+      expect(screen.getByLabelText(label)).toBeInTheDocument()
     })
   })
 
@@ -113,14 +114,16 @@ describe('MapEditor', () => {
   })
 
   it('shows existing region values in inputs', () => {
-    const kyivOblast = 'Київська область'
+    const kyivOblastId = 'Київська область'
     const tile = makeMapTile({
       data: {
-        regions: [{ regionId: kyivOblast, label: kyivOblast, value: 75 }],
+        regions: [{ regionId: kyivOblastId, label: kyivOblastId, value: 75 }],
       },
     })
     renderEditor(tile)
-    const input = screen.getByLabelText(kyivOblast) as HTMLInputElement
+    // aria-label is the translated name (en locale set in beforeAll)
+    const label = i18n.t(`map.regions.${kyivOblastId}`, { defaultValue: kyivOblastId })
+    const input = screen.getByLabelText(label) as HTMLInputElement
     expect(input.value).toBe('75')
   })
 

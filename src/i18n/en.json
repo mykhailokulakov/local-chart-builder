@@ -152,7 +152,35 @@
   },
   "map": {
     "ariaLabel": "Ukraine choropleth map",
-    "crimeaIsUkraine": "Crimea is Ukraine"
+    "crimeaIsUkraine": "Crimea is Ukraine",
+    "regions": {
+      "Автономна Республіка Крим": "Autonomous Republic of Crimea",
+      "Вінницька область": "Vinnytsia Oblast",
+      "Волинська область": "Volyn Oblast",
+      "Дніпропетровська область": "Dnipropetrovsk Oblast",
+      "Донецька область": "Donetsk Oblast",
+      "Житомирська область": "Zhytomyr Oblast",
+      "Закарпатська область": "Zakarpattia Oblast",
+      "Запорізька область": "Zaporizhzhia Oblast",
+      "Івано-Франківська область": "Ivano-Frankivsk Oblast",
+      "Кіровоградська область": "Kirovohrad Oblast",
+      "Луганська область": "Luhansk Oblast",
+      "Львівська область": "Lviv Oblast",
+      "Миколаївська область": "Mykolaiv Oblast",
+      "Одеська область": "Odesa Oblast",
+      "Полтавська область": "Poltava Oblast",
+      "Рівненська область": "Rivne Oblast",
+      "Сумська область": "Sumy Oblast",
+      "Тернопільська область": "Ternopil Oblast",
+      "Харківська область": "Kharkiv Oblast",
+      "Херсонська область": "Kherson Oblast",
+      "Хмельницька область": "Khmelnytskyi Oblast",
+      "Черкаська область": "Cherkasy Oblast",
+      "Чернівецька область": "Chernivtsi Oblast",
+      "Чернігівська область": "Chernihiv Oblast",
+      "Київська область": "Kyiv Oblast",
+      "Севастополь": "Sevastopol"
+    }
   },
   "gantt": {
     "ariaLabel": "Gantt chart",
