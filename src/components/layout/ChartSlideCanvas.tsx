@@ -60,8 +60,6 @@ const CHART_SLIDE_TITLE_STYLE: CSSProperties = {
 }
 
 const TILE_BASE_STYLE: CSSProperties = {
-  width: '100%',
-  height: '100%',
   background: 'var(--slide-surface)',
   borderRadius: 4,
   overflow: 'hidden',
@@ -70,8 +68,6 @@ const TILE_BASE_STYLE: CSSProperties = {
 }
 
 const TILE_SELECTED_STYLE: CSSProperties = {
-  width: '100%',
-  height: '100%',
   background: 'var(--slide-surface)',
   borderRadius: 4,
   overflow: 'hidden',
